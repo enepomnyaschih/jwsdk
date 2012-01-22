@@ -1,0 +1,15 @@
+{
+    "base": "includes/sample",
+    
+    "template": "sample",
+    
+    "title": "Sample jWidget SDK based application",
+    
+    "css": [
+        "sample/app.css"
+    ],
+    
+    "js": [
+        "sample-app"
+    ]
+}

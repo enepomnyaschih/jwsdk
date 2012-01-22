@@ -1,0 +1,13 @@
+{
+    "base": "includes/base",
+    
+    "css": [
+        "sample/base.css"
+    ],
+    
+    "js": [
+        "thirdparty/jquery-1.7.1.js|auto",
+        
+        "sample-base"
+    ]
+}

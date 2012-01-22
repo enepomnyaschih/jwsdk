@@ -4,6 +4,7 @@
     "linkMin"   : true,
     
     "services": [
+        "googleAnalytics"
     ],
     
     "custom": {

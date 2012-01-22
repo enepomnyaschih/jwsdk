@@ -1,4 +1,4 @@
-    Copyright (C) 2011 Egor Nepomnyaschih
+    Copyright (C) 2012 Egor Nepomnyaschih
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -16,6 +16,12 @@
 ---------------------------------------------------------------------
 
 
+
+jWidget SDK version 0.1 (Jan 22 2012)
+
+https://github.com/enepomnyaschih/jwsdk
+
+----
 
 Installation
 
