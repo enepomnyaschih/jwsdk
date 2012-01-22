@@ -399,7 +399,7 @@ class Builder
         // Delete extension from path
         $path = substr($path, 1, strrpos($path, '.') - 1);
         
-        $pageConfig = $this->readPageConfig($this->config['pagesPath'] . "$path");
+        $pageConfig = $this->readPageConfig($this->config['pagesPath'] . "/$path");
         $outputPath = $this->config['publicPath'] . '/' . $this->config['pagesUrl'] . "/$path.html";
         
         $templateName = $pageConfig['template'];
