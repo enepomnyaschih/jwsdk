@@ -6,8 +6,8 @@
     "templatesPath" : "config/templates",
     
     "publicPath"    : "../public",
-    "buildPath"     : "../public/build",
-    "deployPath"    : "../public/pages",
+    "buildUrl"      : "build",
+    "pagesUrl"      : "pages",
     
     "tempPath"      : "temp",
     

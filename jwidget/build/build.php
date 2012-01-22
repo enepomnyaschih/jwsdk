@@ -296,7 +296,7 @@ class Builder
             logLine("Compressing $path");
         
         $jsListPath = $this->config['jslistsPath'] . "/$path.jslist";
-        $outputPath = $this->config['buildPath'] . "/$path.min.js";
+        $outputPath = $this->config['publicPath'] . '/' . $this->config['buildUrl'] . "/$path.min.js";
         $mergePath  = $this->config['tempPath'] . "/$path.js";
         
         $contents = @file_get_contents($jsListPath);
@@ -351,7 +351,7 @@ class Builder
         }
         
         if ($this->mode['linkMin'])
-            $this->jslists[$path] = $this->includeJs("build/$path.min.js"); // TODO: fix hardcoded URL
+            $this->jslists[$path] = $this->includeJs($this->config['buildUrl'] . "/$path.min.js");
         else
             $this->jslists[$path] = implode("\n", $includeBuf);
     }
@@ -394,7 +394,7 @@ class Builder
         $path = substr($path, 1, strrpos($path, '.') - 1);
         
         $pageConfig = $this->readPageConfig("pages/$path");
-        $outputPath = $this->config['deployPath'] . "/$path.html";
+        $outputPath = $this->config['publicPath'] . '/' . $this->config['pagesUrl'] . "/$path.html";
         
         $templateName = $pageConfig['template'];
         $template = $this->readPageTemplate($templateName);
