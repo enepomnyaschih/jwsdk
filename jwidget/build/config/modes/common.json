@@ -1,5 +1,7 @@
 {
-    "custom" : {
-        "xUaCompatible" : "IE=9"
+    "services": {
+    },
+    
+    "custom": {
     }
 }

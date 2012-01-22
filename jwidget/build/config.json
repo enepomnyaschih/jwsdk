@@ -1,6 +1,7 @@
 {
     "configPath"    : "config",
     "jslistsPath"   : "config/jslists",
+    "pagesPath"     : "config/pages",
     "modesPath"     : "config/modes",
     "servicesPath"  : "config/services",
     "templatesPath" : "config/templates",

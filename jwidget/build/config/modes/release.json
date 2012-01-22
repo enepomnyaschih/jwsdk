@@ -1,5 +1,7 @@
 {
-    "services" : {
-        "googleAnalytics" : true
+    "services": {
+    },
+    
+    "custom": {
     }
 }
