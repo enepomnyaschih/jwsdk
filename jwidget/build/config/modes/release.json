@@ -1,12 +1,5 @@
 {
-    "compress"  : true,
-    "link"      : true,
-    "linkMin"   : true,
-    
-    "services": [
-        "googleAnalytics"
-    ],
-    
-    "custom": {
+    "services" : {
+        "googleAnalytics" : true
     }
 }

@@ -19,9 +19,53 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (count($argv) < 2)
+$MODES = array(
+    'debug' => array(
+        'config'   => 'debug',
+        'compress' => false,
+        'link'     => true,
+        'linkMin'  => false,
+        'descr'    =>
+            "        Link html pages in debug mode\n" .
+            "        (no compression, external services are filtered)."
+    ),
+    
+    'release' => array(
+        'config'   => 'release',
+        'compress' => true,
+        'link'     => true,
+        'linkMin'  => true,
+        'descr'    =>
+            "        Compress and link html pages in release mode."
+    ),
+    
+    'compress' => array(
+        'config'   => 'release',
+        'compress' => true,
+        'link'     => false,
+        'descr'    =>
+            "        Just compress source files."
+    ),
+    
+    'link' => array(
+        'config'   => 'release',
+        'compress' => false,
+        'link'     => true,
+        'linkMin'  => true,
+        'descr'    =>
+            "        Link html pages in release mode using existing compressed files.\n" .
+            "        Use only if you are sure that source files were not changed."
+    )
+);
+
+if ((count($argv) < 2) || !isset($MODES[$argv[1]]))
 {
-    echo 'USAGE php build.php <mode>';
+    echo "USAGE php build.php <mode>\n\n" .
+         "Supported modes:\n";
+    
+    foreach ($MODES as $key => $value)
+        echo "    $key\n" . $value['descr'] . "\n";
+    
     exit(1);
 }
 
@@ -85,27 +129,92 @@ function logLine($msg)
     $logger->log($msg);
 }
 
+class Variables
+{
+    private $vars;
+    
+    public function __construct($base = null, $vars = null)
+    {
+        $this->vars = array(
+            'services' => array(),
+            'custom'   => array()
+        );
+        
+        if ($base !== null)
+            $this->apply($base->getVars());
+        
+        $this->apply($vars);
+    }
+    
+    public function getVars()
+    {
+        return $this->vars;
+    }
+    
+    public function getServices()
+    {
+        $result = array();
+        $services = $this->vars['services'];
+        foreach ($services as $key => $value)
+        {
+            if ($value)
+                $result[] = $key;
+        }
+        
+        return $result;
+    }
+    
+    public function getCustom()
+    {
+        return $this->vars['custom'];
+    }
+    
+    public function apply($vars)
+    {
+        if ($vars === null)
+            return;
+        
+        $this->applyVar($vars, 'services');
+        $this->applyVar($vars, 'custom');
+    }
+    
+    private function applyVar($vars, $name)
+    {
+        if (!isset($vars[$name]))
+            return;
+        
+        $target = &$this->vars[$name];
+        $source = $vars[$name];
+        
+        foreach ($source as $key => $value)
+            $target[$key] = $value;
+    }
+}
+
 class Builder
 {
     private $config;    // Dictionary
     private $mode;      // Dictionary
-    private $services;  // String(html)
+    private $variables; // Variables
     
     private $jslists;   // Map from String(name) to String(scripts to include)
     private $jspaths;   // Map from String(jslistName) to Array of String(jsPath)
     private $includes;  // Map from String(name) to Dictionary
+    private $services;  // Map from String(name) to String(html)
     private $templates; // Map from String(name) to String(html)
     
     public function build()
     {
+        $this->variables = new Variables();
+        
         $this->jslists   = array();
         $this->jspaths   = array();
         $this->includes  = array();
+        $this->services  = array();
         $this->templates = array();
         
         $this->readConfig();
         $this->readMode();
-        $this->readServices();
         
         $this->compress();
         $this->link();
@@ -123,29 +232,25 @@ class Builder
     private function readMode()
     {
         global $argv;
-        $modeName = $argv[1];
-        $modePath = $this->config['modesPath'] . "/$modeName.json";
-        $contents = @file_get_contents($modePath);
-        if ($contents === false)
-            throw new Exception("Can't open mode config (name: $modeName, path: $modePath)");
+        global $MODES;
         
-        $this->mode = json_decode($contents, true);
+        $modeName = $argv[1];
+        $this->mode = $MODES[$modeName];
+        
+        $this->readModeConfig('common');
+        $this->readModeConfig($this->mode['config']);
     }
     
-    private function readServices()
+    private function readModeConfig($name)
     {
-        $buf = array();
-        foreach ($this->mode['services'] as $index => $serviceName)
-        {
-            $servicePath = $this->config['servicesPath'] . "/$serviceName.html";
-            $contents = @file_get_contents($servicePath);
-            if ($contents === false)
-                throw new Exception("Can't open service file (name: $serviceName, path: $servicePath)");
-            
-            $buf[] = $contents;
-        }
+        $path     = $this->config['modesPath'] . "/$name.json";
+        $contents = @file_get_contents($path);
+        if ($contents === false)
+            throw new Exception("Can't open mode config (name: $name, path: $path)");
         
-        $this->services = implode("\n", $buf);
+        $config = json_decode($contents, true);
+        
+        $this->variables->apply($config);
     }
     
     private function compress()
@@ -294,32 +399,15 @@ class Builder
         $templateName = $pageConfig['template'];
         $template = $this->readPageTemplate($templateName);
         
-        $replaces = array();
-        foreach ($this->mode['custom'] as $key => $value)
-            $replaces[$key] = $value;
+        $variables = new Variables($this->variables, $pageConfig);
         
-        $buf = array();
-        if (isset($pageConfig['css']))
-        {
-            foreach ($pageConfig['css'] as $value)
-                $buf[] = $this->includeCss($value);
-        }
+        $replaces = $variables->getCustom();
+        $replaces['sources']  = $this->formatSources ($pageConfig, $path);
+        $replaces['services'] = $this->formatServices($variables->getServices());
         
-        $jspaths = array();
-        if (isset($pageConfig['js']))
-        {
-            foreach ($pageConfig['js'] as $value)
-                $buf[] = $this->includeJsList($value, $jspaths);
-        }
-        
-        $jspathsUnique = array_unique($jspaths);
-        if (count($jspaths) != count($jspathsUnique))
-            throw new Exception("Duplicated JS file detected while linking $path");
-        
-        $replaces['sources']  = implode("\n", $buf);
-        $replaces['services'] = $this->services;
-        $replaces['title']    = isset($pageConfig['title'   ]) ? $pageConfig['title'   ] : '';
-        $replaces['redirect'] = isset($pageConfig['redirect']) ? $pageConfig['redirect'] : '';
+        $replaces['title'] =
+            isset($pageConfig['title']) ? $pageConfig['title'] :
+            (isset($replaces['title']) ? $replaces['title'] : '');
         
         $replaceKeys   = array_keys  ($replaces);
         $replaceValues = array_values($replaces);
@@ -423,6 +511,52 @@ class Builder
             $jspaths[] = $jspath;
         
         return $this->jslists[$path];
+    }
+    
+    private function formatSources($pageConfig, $path)
+    {
+        $buf = array();
+        if (isset($pageConfig['css']))
+        {
+            foreach ($pageConfig['css'] as $value)
+                $buf[] = $this->includeCss($value);
+        }
+        
+        $jspaths = array();
+        if (isset($pageConfig['js']))
+        {
+            foreach ($pageConfig['js'] as $value)
+                $buf[] = $this->includeJsList($value, $jspaths);
+        }
+        
+        $jspathsUnique = array_unique($jspaths);
+        if (count($jspaths) != count($jspathsUnique))
+            throw new Exception("Duplicated JS file detected while linking $path");
+        
+        return implode("\n", $buf);
+    }
+    
+    private function formatServices($services)
+    {
+        $buf = array();
+        for ($i = 0; $i < count($services); $i++)
+            $buf[] = $this->readService($services[$i]);
+        
+        return implode("\n", $buf);
+    }
+    
+    private function readService($name)
+    {
+        if (isset($this->services[$name]))
+            return $this->services[$name];
+        
+        $path = $this->config['servicesPath'] . "/$name.html";
+        $contents = @file_get_contents($path);
+        if ($contents === false)
+            throw new Exception("Can't open service file (name: $name, path: $path)");
+        
+        $this->services[$name] = $contents;
+        return $contents;
     }
 }
 
