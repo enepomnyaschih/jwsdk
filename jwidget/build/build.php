@@ -287,7 +287,7 @@ class Builder
     
     private function compressFile($path)
     {
-        if (!preg_match('/.json$/', $path))
+        if (!preg_match('/\.jslist$/', $path))
             return;
         
         $compress = $this->mode['compress'];
@@ -371,7 +371,7 @@ class Builder
 
     private function linkDir($path)
     {
-        $fullPath = $this->config['pagesPath'] . "$path";
+        $fullPath = $this->config['configPath'] . '/' . $this->config['pagesFolder'] . "$path";
         
         if (is_file($fullPath))
         {
@@ -393,13 +393,13 @@ class Builder
     
     private function linkFile($path)
     {
-        if (!preg_match('/.json$/', $path))
+        if (!preg_match('/\.json$/', $path))
             return;
         
         // Delete extension from path
         $path = substr($path, 1, strrpos($path, '.') - 1);
         
-        $pageConfig = $this->readPageConfig($this->config['pagesPath'] . "/$path");
+        $pageConfig = $this->readPageConfig($this->config['pagesFolder'] . "/$path");
         $outputPath = $this->config['publicPath'] . '/' . $this->config['pagesUrl'] . "/$path.html";
         
         $templateName = $pageConfig['template'];
