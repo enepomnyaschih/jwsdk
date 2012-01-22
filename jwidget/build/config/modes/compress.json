@@ -1,0 +1,10 @@
+{
+    "compress"  : true,
+    "link"      : false,
+    
+    "services": [
+    ],
+    
+    "custom": {
+    }
+}

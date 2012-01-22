@@ -1,0 +1,15 @@
+{
+    "configPath"    : "config",
+    "jslistsPath"   : "config/jslists",
+    "modesPath"     : "config/modes",
+    "servicesPath"  : "config/services",
+    "templatesPath" : "config/templates",
+    
+    "publicPath"    : "../public",
+    "buildPath"     : "../public/build",
+    "deployPath"    : "../public/pages",
+    
+    "tempPath"      : "temp",
+    
+    "urlPrefix"     : "/"
+}

@@ -1,0 +1,6 @@
+build/yuicompressor.jar
+build/build.log
+build/temp
+build/yui.log
+public/build
+public/pages
