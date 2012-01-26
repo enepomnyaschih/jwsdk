@@ -1,9 +1,3 @@
 {
-    "template": "base",
-    
-    "services": {
-    },
-    
-    "custom": {
-    }
+    "template": "base"
 }

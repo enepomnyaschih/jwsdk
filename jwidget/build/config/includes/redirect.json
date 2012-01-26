@@ -1,9 +1,6 @@
 {
     "template": "redirect",
     
-    "services": {
-    },
-    
     "custom": {
         "redirect": "/"
     }
