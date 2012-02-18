@@ -402,6 +402,9 @@ class Builder
         $pageConfig = $this->readPageConfig($this->config['pagesFolder'] . "/$path");
         $outputPath = $this->config['publicPath'] . '/' . $this->config['pagesUrl'] . "/$path.html";
         
+        if (!isset($pageConfig['template']))
+            throw new Exception("Page template is undefined (page: $path)");
+        
         $templateName = $pageConfig['template'];
         $template = $this->readPageTemplate($templateName);
         
