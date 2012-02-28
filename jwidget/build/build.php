@@ -216,6 +216,8 @@ class JsResource
         if (!$resource->converted)
             return $source;
         
+        logLine("Converting JS template $source");
+        
         if (count($tokens) == 1)
         {
             $params = array();
@@ -239,7 +241,7 @@ class JsResource
         
         $outputFile = fopen_recursive($outputPath, 'w');
         if ($outputFile === false)
-            throw new Exception("Can't create resource target file (source: $source, target: $outputUrl)");
+            throw new Exception("Can't create JS resource target file (source: $source, target: $outputUrl)");
         
         fwrite($outputFile, $outputContents);
         fclose($outputFile);
@@ -272,9 +274,7 @@ class JwHtmlJsResource extends JsResource
     public function convertResource($source, $contents, $params, $jslist, $config)
     {
         if (count($params) < 1)
-            throw new Exception("JW.UI.Template resource requires class name in first parameter (source: $source, jslist: $jslist)");
-        
-        logLine("Converting JW.UI.Component template $source");
+            throw new Exception("JS jw.html resource requires class name in first parameter (source: $source, jslist: $jslist)");
         
         $className = $params[0];
         
