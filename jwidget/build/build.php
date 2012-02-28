@@ -191,6 +191,110 @@ class Variables
     }
 }
 
+class JsResource
+{
+    private static $instances = array();
+    
+    public $type;
+    public $converted = true;
+    
+    public function convertResource($source, $contents, $params, $jslist, $config)
+    {
+    }
+    
+    public static function register($instance)
+    {
+        self::$instances[$instance->type] = $instance;
+    }
+    
+    public static function convert($definition, $jslist, $config)
+    {
+        $tokens = explode(":", $definition);
+        $source = trim($tokens[0]);
+        
+        $resource = self::getResource($source, $jslist);
+        if (!$resource->converted)
+            return $source;
+        
+        if (count($tokens) == 1)
+        {
+            $params = array();
+        }
+        else
+        {
+            $params = explode(",", $tokens[1]);
+            for ($i = 0; $i < count($params); $i++)
+                $params[$i] = trim($params[$i]);
+        }
+        
+        $sourcePath = $config['publicPath'] . "/$source";
+        $sourceContents = @file_get_contents($sourcePath);
+        if ($sourceContents === false)
+            throw new Exception("Can't open JS resource file (path: $source, jslist: $jslist)");
+        
+        $outputContents = $resource->convertResource($source, $sourceContents, $params, $jslist, $config);
+        
+        $outputUrl = $config['buildUrl'] . "/$source.js";
+        $outputPath = $config['publicPath'] . "/$outputUrl";
+        
+        $outputFile = fopen_recursive($outputPath, 'w');
+        if ($outputFile === false)
+            throw new Exception("Can't create resource target file (source: $source, target: $outputUrl)");
+        
+        fwrite($outputFile, $outputContents);
+        fclose($outputFile);
+        
+        return $outputUrl;
+    }
+    
+    private static function getResource($source, $jslist)
+    {
+        foreach (self::$instances as $type => $instance)
+        {
+            if (preg_match("/\.$type$/i", $source))
+                return $instance;
+        }
+        
+        throw new Exception("Unknown JS resource type (source: $source, jslist: $jslist)");
+    }
+}
+
+class JsJsResource
+{
+    public $type = 'js';
+    public $converted = false;
+}
+
+class JwHtmlJsResource extends JsResource
+{
+    public $type = 'jw.html';
+    
+    public function convertResource($source, $contents, $params, $jslist, $config)
+    {
+        if (count($params) < 1)
+            throw new Exception("JW.UI.Template resource requires class name in first parameter (source: $source, jslist: $jslist)");
+        
+        logLine("Converting JW.UI.Component template $source");
+        
+        $className = $params[0];
+        
+        if (count($params) < 2)
+            $templateName = 'main';
+        else
+            $templateName = $params[1];
+        
+        $contents = trim($contents);
+        $contents = preg_replace('/>\ *\n\s*</', '><', $contents);
+        $contents = preg_replace('/\ *\n\s*/', ' ', $contents);
+        $contents = str_replace ("'", "\\'", $contents);
+        
+        return "JW.UI.template($className, { $templateName: '$contents' });\n";
+    }
+}
+
+JsResource::register(new JwHtmlJsResource());
+JsResource::register(new JsJsResource());
+
 class Builder
 {
     private $config;    // Dictionary
@@ -308,6 +412,9 @@ class Builder
         
         $scripts = explode("\n", str_replace("\r", "\n", $contents));
         $scripts = removeEmptyStrings($scripts);
+        
+        for ($i = 0; $i < count($scripts); ++$i)
+            $scripts[$i] = JsResource::convert($scripts[$i], $path, $this->config);
         
         $this->jspaths[$path] = $scripts;
         
