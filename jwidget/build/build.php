@@ -97,6 +97,26 @@ function removeEmptyStrings($source)
     return $result;
 }
 
+function defineJsVar($varName)
+{
+    return (strpos($varName, ".") === false) ? "var $varName" : $varName;
+}
+
+function smoothHtml($contents)
+{
+    $contents = trim($contents);
+    $contents = preg_replace('/>\ *\n\s*</', '><', $contents);
+    $contents = preg_replace('/\ *\n\s*/', ' ', $contents);
+    $contents = str_replace ("'", "\\'", $contents);
+    
+    return $contents;
+}
+
+function smoothText($contents)
+{
+    return str_replace(array("\n", "\r", "\t", "'"), array("\\n\\\n", "\\r", "\\t", "\\'"), $contents);
+}
+
 class Logger
 {
     private $f;
@@ -283,16 +303,63 @@ class JwHtmlJsResource extends JsResource
         else
             $templateName = $params[1];
         
-        $contents = trim($contents);
-        $contents = preg_replace('/>\ *\n\s*</', '><', $contents);
-        $contents = preg_replace('/\ *\n\s*/', ' ', $contents);
-        $contents = str_replace ("'", "\\'", $contents);
+        $contents = smoothHtml($contents);
         
         return "JW.UI.template($className, { $templateName: '$contents' });\n";
     }
 }
 
+class TxtJsResource extends JsResource
+{
+    public $type = 'txt';
+    
+    public function convertResource($source, $contents, $params, $jslist, $config)
+    {
+        if (count($params) < 1)
+            throw new Exception("JS txt resource requires variable name in first parameter (source: $source, jslist: $jslist)");
+        
+        $varName  = defineJsVar($params[0]);
+        $contents = smoothText($contents);
+        
+        return "$varName = '$contents';\n";
+    }
+}
+
+class HtmlJsResource extends JsResource
+{
+    public $type = 'html';
+    
+    public function convertResource($source, $contents, $params, $jslist, $config)
+    {
+        if (count($params) < 1)
+            throw new Exception("JS html resource requires variable name in first parameter (source: $source, jslist: $jslist)");
+        
+        $varName  = defineJsVar($params[0]);
+        $contents = smoothHtml($contents);
+        
+        return "$varName = '$contents';\n";
+    }
+}
+
+class JsonJsResource extends JsResource
+{
+    public $type = 'json';
+    
+    public function convertResource($source, $contents, $params, $jslist, $config)
+    {
+        if (count($params) < 1)
+            throw new Exception("JS json resource requires variable name in first parameter (source: $source, jslist: $jslist)");
+        
+        $varName = defineJsVar($params[0]);
+        
+        return "$varName = $contents;\n";
+    }
+}
+
 JsResource::register(new JwHtmlJsResource());
+JsResource::register(new TxtJsResource());
+JsResource::register(new HtmlJsResource());
+JsResource::register(new JsonJsResource());
 JsResource::register(new JsJsResource());
 
 class Builder
