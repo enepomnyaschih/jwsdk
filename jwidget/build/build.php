@@ -690,6 +690,9 @@ class Builder
             return $this->includeJs($path);
         }
         
+        if (!isset($this->jspaths[$path]))
+            throw new Exception("Can't find JS list (jslist: $path)");
+        
         foreach ($this->jspaths[$path] as $jspath)
             $jspaths[] = $jspath;
         
