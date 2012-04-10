@@ -117,6 +117,54 @@ function smoothText($contents)
     return str_replace(array("\n", "\r", "\t", "'"), array("\\n\\\n", "\\r", "\\t", "\\'"), $contents);
 }
 
+function smoothCrlf($contents)
+{
+    $contents = str_replace("\r\n", "\n", $contents);
+    $contents = str_replace("\r", "\n", $contents);
+    return $contents;
+}
+
+function removeComments($text)
+{
+    $text = smoothCrlf($text);
+    
+    $last  = 0;
+    $index = 0;
+    $buf   = array();
+    
+    while ($index < strlen($text))
+    {
+        if (substr($text, $index, 2) == '//')
+        {
+            $buf[] = substr($text, $last, $index - $last);
+            $index = strpos($text, "\n", $index);
+            if ($index === false)
+                break;
+            
+            $last = $index;
+        }
+        else if (substr($text, $index, 2) == '/*')
+        {
+            $buf[] = substr($text, $last, $index - $last);
+            $index = strpos($text, '*/', $index);
+            if ($index === false)
+                break;
+            
+            $index += 2;
+            $last = $index;
+        }
+        else
+        {
+            $index++;
+        }
+    }
+    
+    if ($index !== false)
+        $buf[] = substr($text, $last);
+    
+    return implode('', $buf);
+}
+
 class Logger
 {
     private $f;
@@ -476,6 +524,8 @@ class Builder
         $contents = @file_get_contents($jsListPath);
         if ($contents === false)
             throw new Exception("Can't open jslist file (name: $path, path: $jsListPath)");
+        
+        $contents = removeComments($contents);
         
         $scripts = explode("\n", str_replace("\r", "\n", $contents));
         $scripts = removeEmptyStrings($scripts);
