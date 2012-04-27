@@ -19,245 +19,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-$MODES = array(
-    'debug' => array(
-        'config'   => 'debug',
-        'compress' => false,
-        'link'     => true,
-        'linkMin'  => false,
-        'descr'    =>
-            "        Link html pages in debug mode\n" .
-            "        (no compression, external services are filtered)."
-    ),
-    
-    'release' => array(
-        'config'   => 'release',
-        'compress' => true,
-        'link'     => true,
-        'linkMin'  => true,
-        'descr'    =>
-            "        Compress and link html pages in release mode."
-    ),
-    
-    'compress' => array(
-        'config'   => 'release',
-        'compress' => true,
-        'link'     => false,
-        'descr'    =>
-            "        Just compress source files."
-    ),
-    
-    'link' => array(
-        'config'   => 'release',
-        'compress' => false,
-        'link'     => true,
-        'linkMin'  => true,
-        'descr'    =>
-            "        Link html pages in release mode using existing compressed files.\n" .
-            "        Use only if you are sure that source files were not changed."
-    )
-);
+include_once 'php/rubbish.php';
 
-if ((count($argv) < 2) || !isset($MODES[$argv[1]]))
+include_once 'php/Util/File.php';
+include_once 'php/Util/String.php';
+
+include_once 'php/Mode.php';
+include_once 'php/Mode/Compress.php';
+include_once 'php/Mode/Debug.php';
+include_once 'php/Mode/Link.php';
+include_once 'php/Mode/Release.php';
+
+if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 {
-    echo "USAGE php build.php <mode>\n\n" .
-         "Supported modes:\n";
-    
-    foreach ($MODES as $key => $value)
-        echo "    $key\n" . $value['descr'] . "\n";
-    
-    exit(1);
+	echo "USAGE php build.php <mode>\n\n" .
+	     "Supported modes:\n" .
+	     JWSDK_Mode::getModesDescription();
+	
+	exit(1);
 }
 
-function fopen_recursive($path, $mode, $chmod = 0755)
-{
-    $i = strrpos($path, '/');
-    if ($i !== false)
-    {
-        $directory = substr($path, 0, $i);
-        if (!is_dir($directory) && !mkdir($directory, $chmod, 1))
-            return false;
-    }
-    
-    return @fopen($path, $mode);
-}
-
-function removeEmptyStrings($source)
-{
-    $result = array();
-    foreach ($source as $value)
-    {
-        $row = trim($value);
-        if (empty($row))
-            continue;
-        
-        $result[] = $row;
-    }
-    
-    return $result;
-}
-
-function defineJsVar($varName)
-{
-    return (strpos($varName, ".") === false) ? "var $varName" : $varName;
-}
-
-function smoothHtml($contents)
-{
-    $contents = trim($contents);
-    $contents = preg_replace('/>\ *\n\s*</', '><', $contents);
-    $contents = preg_replace('/\ *\n\s*/', ' ', $contents);
-    $contents = str_replace ("'", "\\'", $contents);
-    
-    return $contents;
-}
-
-function smoothText($contents)
-{
-    return str_replace(array("\n", "\r", "\t", "'"), array("\\n\\\n", "\\r", "\\t", "\\'"), $contents);
-}
-
-function smoothCrlf($contents)
-{
-    $contents = str_replace("\r\n", "\n", $contents);
-    $contents = str_replace("\r", "\n", $contents);
-    return $contents;
-}
-
-function removeComments($text)
-{
-    $text = smoothCrlf($text);
-    
-    $last  = 0;
-    $index = 0;
-    $buf   = array();
-    
-    while ($index < strlen($text))
-    {
-        if (substr($text, $index, 2) == '//')
-        {
-            $buf[] = substr($text, $last, $index - $last);
-            $index = strpos($text, "\n", $index);
-            if ($index === false)
-                break;
-            
-            $last = $index;
-        }
-        else if (substr($text, $index, 2) == '/*')
-        {
-            $buf[] = substr($text, $last, $index - $last);
-            $index = strpos($text, '*/', $index);
-            if ($index === false)
-                break;
-            
-            $index += 2;
-            $last = $index;
-        }
-        else
-        {
-            $index++;
-        }
-    }
-    
-    if ($index !== false)
-        $buf[] = substr($text, $last);
-    
-    return implode('', $buf);
-}
-
-class Logger
-{
-    private $f;
-    
-    public function __construct()
-    {
-        $this->f = fopen('build.log', 'a');
-        if ($this->f === false)
-            throw new Exception("Can't open log file");
-    }
-    
-    public function __destruct()
-    {
-        @fclose($this->f);
-    }
-    
-    public function log($msg)
-    {
-        $msg = $msg . "\n";
-        echo $msg;
-        fwrite($this->f, $msg);
-    }
-}
-
-$logger = new Logger();
-
-function logLine($msg)
-{
-    global $logger;
-    $logger->log($msg);
-}
-
-class Variables
-{
-    private $vars;
-    
-    public function __construct($base = null, $vars = null)
-    {
-        $this->vars = array(
-            'services' => array(),
-            'custom'   => array()
-        );
-        
-        if ($base !== null)
-            $this->apply($base->getVars());
-        
-        $this->apply($vars);
-    }
-    
-    public function getVars()
-    {
-        return $this->vars;
-    }
-    
-    public function getServices()
-    {
-        $result = array();
-        $services = $this->vars['services'];
-        foreach ($services as $key => $value)
-        {
-            if ($value)
-                $result[] = $key;
-        }
-        
-        return $result;
-    }
-    
-    public function getCustom()
-    {
-        return $this->vars['custom'];
-    }
-    
-    public function apply($vars)
-    {
-        if ($vars === null)
-            return;
-        
-        $this->applyVar($vars, 'services');
-        $this->applyVar($vars, 'custom');
-    }
-    
-    private function applyVar($vars, $name)
-    {
-        if (!isset($vars[$name]))
-            return;
-        
-        $target = &$this->vars[$name];
-        $source = $vars[$name];
-        
-        foreach ($source as $key => $value)
-            $target[$key] = $value;
-    }
-}
+include_once 'php/Log.php';
+include_once 'php/Variables.php';
 
 class JsResource
 {
@@ -284,7 +67,7 @@ class JsResource
         if (!$resource->converted)
             return $source;
         
-        logLine("Converting JS template $source");
+        JWSDK_Log::logTo('build.log', "Converting JS template $source");
         
         if (count($tokens) == 1)
         {
@@ -307,7 +90,7 @@ class JsResource
         $outputUrl = $config['buildUrl'] . "/$source.js";
         $outputPath = $config['publicPath'] . "/$outputUrl";
         
-        $outputFile = fopen_recursive($outputPath, 'w');
+        $outputFile = JWSDK_Util_File::fopen_recursive($outputPath, 'w');
         if ($outputFile === false)
             throw new Exception("Can't create JS resource target file (source: $source, target: $outputUrl)");
         
@@ -413,8 +196,8 @@ JsResource::register(new JsJsResource());
 class Builder
 {
     private $config;    // Dictionary
-    private $mode;      // Dictionary
-    private $variables; // Variables
+    private $mode;      // JWSDK_Mode
+    private $variables; // JWSDK_Variables
     
     private $jslists;   // Map from String(name) to String(scripts to include)
     private $jspaths;   // Map from String(jslistName) to Array of String(jsPath)
@@ -424,7 +207,7 @@ class Builder
     
     public function build()
     {
-        $this->variables = new Variables();
+        $this->variables = new JWSDK_Variables();
         
         $this->jslists   = array();
         $this->jspaths   = array();
@@ -451,13 +234,12 @@ class Builder
     private function readMode()
     {
         global $argv;
-        global $MODES;
         
         $modeName = $argv[1];
-        $this->mode = $MODES[$modeName];
+        $this->mode = JWSDK_Mode::getMode($modeName);
         
         $this->readModeConfig('common');
-        $this->readModeConfig($this->mode['config']);
+        $this->readModeConfig($this->mode->getConfigId());
     }
     
     private function readModeConfig($name)
@@ -474,10 +256,10 @@ class Builder
     
     private function compress()
     {
-        if ($this->mode['compress'])
-            logLine('Compressing JS lists...');
+        if ($this->mode->isCompress())
+            JWSDK_Log::logTo('build.log', 'Compressing JS lists...');
         else
-            logLine('Reading JS lists...');
+            JWSDK_Log::logTo('build.log', 'Reading JS lists...');
         
         $this->compressDir('');
     }
@@ -509,13 +291,13 @@ class Builder
         if (!preg_match('/\.jslist$/', $path))
             return;
         
-        $compress = $this->mode['compress'];
+        $compress = $this->mode->isCompress();
         
         // Delete extension from path
         $path = substr($path, 1, strrpos($path, '.') - 1);
         
-        if ($this->mode['compress'])
-            logLine("Compressing $path");
+        if ($this->mode->isCompress())
+            JWSDK_Log::logTo('build.log', "Compressing $path");
         
         $jsListPath = $this->config['jslistsPath'] . "/$path.jslist";
         $outputPath = $this->config['publicPath'] . '/' . $this->config['buildUrl'] . "/$path.min.js";
@@ -537,7 +319,7 @@ class Builder
         
         if ($compress)
         {
-            $output = fopen_recursive($mergePath, 'w');
+            $output = JWSDK_Util_File::fopen_recursive($mergePath, 'w');
             if ($output === false)
                 throw new Exception("Can't create temporary merged js file (name: $path, path: $mergePath)");
         }
@@ -577,7 +359,7 @@ class Builder
                 throw new Exception("Error while running YUI Compressor (name: $path, input: $mergePath, output: $outputPath). See signin/build/yui.log for details");
         }
         
-        if ($this->mode['linkMin'])
+        if ($this->mode->isLinkMin())
             $this->jslists[$path] = $this->includeJs($this->config['buildUrl'] . "/$path.min.js");
         else
             $this->jslists[$path] = implode("\n", $includeBuf);
@@ -585,10 +367,10 @@ class Builder
     
     private function link()
     {
-        if (!$this->mode['link'])
+        if (!$this->mode->isLink())
             return;
         
-        logLine('Linking pages...');
+        JWSDK_Log::logTo('build.log', 'Linking pages...');
         
         $this->linkDir('');
     }
@@ -632,7 +414,7 @@ class Builder
         $templateName = $pageConfig['template'];
         $template = $this->readPageTemplate($templateName);
         
-        $variables = new Variables($this->variables, $pageConfig);
+        $variables = new JWSDK_Variables($this->variables, $pageConfig);
         
         $replaces = $variables->getCustom();
         $replaces['sources']  = $this->formatSources ($pageConfig, $path);
@@ -650,7 +432,7 @@ class Builder
         
         $html = str_replace($replaceKeys, $replaceValues, $template);
         
-        $output = fopen_recursive($outputPath, 'w');
+        $output = JWSDK_Util_File::fopen_recursive($outputPath, 'w');
         if ($output === false)
             throw new Exception("Can't create linked page file (name: $path, path: $outputPath)");
         
@@ -732,7 +514,7 @@ class Builder
     function includeJsList($path, &$jspaths)
     {
         if (preg_match('/\|auto$/', $path))
-            $path = substr($path, 0, strrpos($path, '.')) . ($this->mode['linkMin'] ?  '.min.js' : '.js');
+            $path = substr($path, 0, strrpos($path, '.')) . ($this->mode->isLinkMin() ?  '.min.js' : '.js');
         
         if (preg_match('/\.js$/', $path))
         {
@@ -797,8 +579,8 @@ class Builder
 }
 
 $date = date('Y-m-d H:i:s');
-logLine("\n\n[$date]");
-logLine('Building frontend...');
+JWSDK_Log::logTo('build.log', "\n\n[$date]");
+JWSDK_Log::logTo('build.log', 'Building frontend...');
 
 try
 {
@@ -807,11 +589,11 @@ try
 }
 catch (Exception $e)
 {
-    logLine("ERROR! " . $e->getMessage());
+    JWSDK_Log::logTo('build.log', "ERROR! " . $e->getMessage());
     exit(1);
 }
 
-logLine('Done');
+JWSDK_Log::logTo('build.log', 'Done');
 
 exit(0);
 
