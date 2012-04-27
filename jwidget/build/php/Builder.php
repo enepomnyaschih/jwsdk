@@ -133,10 +133,10 @@ class JWSDK_Builder
 		if ($contents === false)
 			throw new Exception("Can't open jslist file (name: $path, path: $jsListPath)");
 		
-		$contents = removeComments($contents);
+		$contents = JWSDK_Util_String::removeComments($contents);
 		
 		$scripts = explode("\n", str_replace("\r", "\n", $contents));
-		$scripts = removeEmptyStrings($scripts);
+		$scripts = self::removeEmptyStrings($scripts);
 		
 		for ($i = 0; $i < count($scripts); ++$i)
 			$scripts[$i] = JWSDK_Converter::convert($scripts[$i], $path, $this->config);
@@ -401,5 +401,20 @@ class JWSDK_Builder
 		
 		$this->services[$name] = $contents;
 		return $contents;
+	}
+	
+	private static function removeEmptyStrings($source)
+	{
+		$result = array();
+		foreach ($source as $value)
+		{
+			$row = trim($value);
+			if (empty($row))
+				continue;
+			
+			$result[] = $row;
+		}
+		
+		return $result;
 	}
 }

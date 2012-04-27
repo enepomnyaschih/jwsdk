@@ -19,20 +19,25 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Converter_Txt extends JWSDK_Converter
+class JWSDK_Converter_Util
 {
-	public $type = 'txt';
-	
-	public function convertResource($source, $contents, $params, $jslist, $config)
+	static function defineJsVar($varName)
 	{
-		if (count($params) < 1)
-			throw new Exception("JS txt resource requires variable name in first parameter (source: $source, jslist: $jslist)");
+		return (strpos($varName, ".") === false) ? "var $varName" : $varName;
+	}
+	
+	static function smoothHtml($contents)
+	{
+		$contents = trim($contents);
+		$contents = preg_replace('/>\ *\n\s*</', '><', $contents);
+		$contents = preg_replace('/\ *\n\s*/', ' ', $contents);
+		$contents = str_replace ("'", "\\'", $contents);
 		
-		$varName  = JWSDK_Converter_Util::defineJsVar($params[0]);
-		$contents = JWSDK_Converter_Util::smoothText($contents);
-		
-		return "$varName = '$contents';\n";
+		return $contents;
+	}
+	
+	static function smoothText($contents)
+	{
+		return str_replace(array("\n", "\r", "\t", "'"), array("\\n\\\n", "\\r", "\\t", "\\'"), $contents);
 	}
 }
-
-JWSDK_Converter::register(new JWSDK_Converter_Txt());

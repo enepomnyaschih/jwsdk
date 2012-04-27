@@ -19,8 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-include_once 'php/rubbish.php';
-
 include_once 'php/Util/File.php';
 include_once 'php/Util/String.php';
 
@@ -48,6 +46,7 @@ include_once 'php/Converter/Txt.php';
 include_once 'php/Converter/Html.php';
 include_once 'php/Converter/Json.php';
 include_once 'php/Converter/Js.php';
+include_once 'php/Converter/Util.php';
 include_once 'php/Variables.php';
 
 $date = date('Y-m-d H:i:s');

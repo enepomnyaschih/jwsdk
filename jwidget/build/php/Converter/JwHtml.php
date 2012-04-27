@@ -35,7 +35,7 @@ class JWSDK_Converter_JwHtml extends JWSDK_Converter
 		else
 			$templateName = $params[1];
 		
-		$contents = smoothHtml($contents);
+		$contents = JWSDK_Converter_Util::smoothHtml($contents);
 		
 		return "JW.UI.template($className, { $templateName: '$contents' });\n";
 	}

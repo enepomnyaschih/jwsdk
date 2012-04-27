@@ -28,7 +28,7 @@ class JWSDK_Converter_Json extends JWSDK_Converter
 		if (count($params) < 1)
 			throw new Exception("JS json resource requires variable name in first parameter (source: $source, jslist: $jslist)");
 		
-		$varName = defineJsVar($params[0]);
+		$varName = JWSDK_Converter_Util::defineJsVar($params[0]);
 		
 		return "$varName = $contents;\n";
 	}

@@ -38,4 +38,52 @@ class JWSDK_Util_String
 		
 		return implode("\n", $lines);
 	}
+	
+	public static function smoothCrlf($contents)
+	{
+		$contents = str_replace("\r\n", "\n", $contents);
+		$contents = str_replace("\r", "\n", $contents);
+		return $contents;
+	}
+	
+	public static function removeComments($text)
+	{
+		$text = self::smoothCrlf($text);
+		
+		$last  = 0;
+		$index = 0;
+		$buf   = array();
+		
+		while ($index < strlen($text))
+		{
+			if (substr($text, $index, 2) == '//')
+			{
+				$buf[] = substr($text, $last, $index - $last);
+				$index = strpos($text, "\n", $index);
+				if ($index === false)
+					break;
+				
+				$last = $index;
+			}
+			else if (substr($text, $index, 2) == '/*')
+			{
+				$buf[] = substr($text, $last, $index - $last);
+				$index = strpos($text, '*/', $index);
+				if ($index === false)
+					break;
+				
+				$index += 2;
+				$last = $index;
+			}
+			else
+			{
+				$index++;
+			}
+		}
+		
+		if ($index !== false)
+			$buf[] = substr($text, $last);
+		
+		return implode('', $buf);
+	}
 }

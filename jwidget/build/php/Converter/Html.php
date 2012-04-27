@@ -28,8 +28,8 @@ class JWSDK_Converter_Html extends JWSDK_Converter
 		if (count($params) < 1)
 			throw new Exception("JS html resource requires variable name in first parameter (source: $source, jslist: $jslist)");
 		
-		$varName  = defineJsVar($params[0]);
-		$contents = smoothHtml($contents);
+		$varName  = JWSDK_Converter_Util::defineJsVar($params[0]);
+		$contents = JWSDK_Converter_Util::smoothHtml($contents);
 		
 		return "$varName = '$contents';\n";
 	}
