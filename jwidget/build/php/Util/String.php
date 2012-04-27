@@ -27,7 +27,7 @@ class JWSDK_Util_String
 		for ($i = 0; $i < $num; $i++)
 			$buf[] = $str;
 		
-		return implode('', $str);
+		return implode('', $buf);
 	}
 	
 	public static function tabulize($str, $num)

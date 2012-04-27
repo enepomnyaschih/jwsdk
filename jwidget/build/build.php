@@ -23,10 +23,10 @@ include_once 'php/Util/File.php';
 include_once 'php/Util/String.php';
 
 include_once 'php/Mode.php';
-include_once 'php/Mode/Compress.php';
 include_once 'php/Mode/Debug.php';
-include_once 'php/Mode/Link.php';
 include_once 'php/Mode/Release.php';
+include_once 'php/Mode/Compress.php';
+include_once 'php/Mode/Link.php';
 
 if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 {
