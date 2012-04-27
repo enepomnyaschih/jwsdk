@@ -40,158 +40,14 @@ if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 }
 
 include_once 'php/Log.php';
+
+include_once 'php/Converter.php';
+include_once 'php/Converter/JwHtml.php';
+include_once 'php/Converter/Txt.php';
+include_once 'php/Converter/Html.php';
+include_once 'php/Converter/Json.php';
+include_once 'php/Converter/Js.php';
 include_once 'php/Variables.php';
-
-class JsResource
-{
-    private static $instances = array();
-    
-    public $type;
-    public $converted = true;
-    
-    public function convertResource($source, $contents, $params, $jslist, $config)
-    {
-    }
-    
-    public static function register($instance)
-    {
-        self::$instances[$instance->type] = $instance;
-    }
-    
-    public static function convert($definition, $jslist, $config)
-    {
-        $tokens = explode(":", $definition);
-        $source = trim($tokens[0]);
-        
-        $resource = self::getResource($source, $jslist);
-        if (!$resource->converted)
-            return $source;
-        
-        JWSDK_Log::logTo('build.log', "Converting JS template $source");
-        
-        if (count($tokens) == 1)
-        {
-            $params = array();
-        }
-        else
-        {
-            $params = explode(",", $tokens[1]);
-            for ($i = 0; $i < count($params); $i++)
-                $params[$i] = trim($params[$i]);
-        }
-        
-        $sourcePath = $config['publicPath'] . "/$source";
-        $sourceContents = @file_get_contents($sourcePath);
-        if ($sourceContents === false)
-            throw new Exception("Can't open JS resource file (path: $source, jslist: $jslist)");
-        
-        $outputContents = $resource->convertResource($source, $sourceContents, $params, $jslist, $config);
-        
-        $outputUrl = $config['buildUrl'] . "/$source.js";
-        $outputPath = $config['publicPath'] . "/$outputUrl";
-        
-        $outputFile = JWSDK_Util_File::fopen_recursive($outputPath, 'w');
-        if ($outputFile === false)
-            throw new Exception("Can't create JS resource target file (source: $source, target: $outputUrl)");
-        
-        fwrite($outputFile, $outputContents);
-        fclose($outputFile);
-        
-        return $outputUrl;
-    }
-    
-    private static function getResource($source, $jslist)
-    {
-        foreach (self::$instances as $type => $instance)
-        {
-            if (preg_match("/\.$type$/i", $source))
-                return $instance;
-        }
-        
-        throw new Exception("Unknown JS resource type (source: $source, jslist: $jslist)");
-    }
-}
-
-class JsJsResource
-{
-    public $type = 'js';
-    public $converted = false;
-}
-
-class JwHtmlJsResource extends JsResource
-{
-    public $type = 'jw.html';
-    
-    public function convertResource($source, $contents, $params, $jslist, $config)
-    {
-        if (count($params) < 1)
-            throw new Exception("JS jw.html resource requires class name in first parameter (source: $source, jslist: $jslist)");
-        
-        $className = $params[0];
-        
-        if (count($params) < 2)
-            $templateName = 'main';
-        else
-            $templateName = $params[1];
-        
-        $contents = smoothHtml($contents);
-        
-        return "JW.UI.template($className, { $templateName: '$contents' });\n";
-    }
-}
-
-class TxtJsResource extends JsResource
-{
-    public $type = 'txt';
-    
-    public function convertResource($source, $contents, $params, $jslist, $config)
-    {
-        if (count($params) < 1)
-            throw new Exception("JS txt resource requires variable name in first parameter (source: $source, jslist: $jslist)");
-        
-        $varName  = defineJsVar($params[0]);
-        $contents = smoothText($contents);
-        
-        return "$varName = '$contents';\n";
-    }
-}
-
-class HtmlJsResource extends JsResource
-{
-    public $type = 'html';
-    
-    public function convertResource($source, $contents, $params, $jslist, $config)
-    {
-        if (count($params) < 1)
-            throw new Exception("JS html resource requires variable name in first parameter (source: $source, jslist: $jslist)");
-        
-        $varName  = defineJsVar($params[0]);
-        $contents = smoothHtml($contents);
-        
-        return "$varName = '$contents';\n";
-    }
-}
-
-class JsonJsResource extends JsResource
-{
-    public $type = 'json';
-    
-    public function convertResource($source, $contents, $params, $jslist, $config)
-    {
-        if (count($params) < 1)
-            throw new Exception("JS json resource requires variable name in first parameter (source: $source, jslist: $jslist)");
-        
-        $varName = defineJsVar($params[0]);
-        
-        return "$varName = $contents;\n";
-    }
-}
-
-JsResource::register(new JwHtmlJsResource());
-JsResource::register(new TxtJsResource());
-JsResource::register(new HtmlJsResource());
-JsResource::register(new JsonJsResource());
-JsResource::register(new JsJsResource());
 
 class Builder
 {
@@ -313,7 +169,7 @@ class Builder
         $scripts = removeEmptyStrings($scripts);
         
         for ($i = 0; $i < count($scripts); ++$i)
-            $scripts[$i] = JsResource::convert($scripts[$i], $path, $this->config);
+            $scripts[$i] = JWSDK_Converter::convert($scripts[$i], $path, $this->config);
         
         $this->jspaths[$path] = $scripts;
         
