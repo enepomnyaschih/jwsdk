@@ -23,7 +23,7 @@ class JWSDK_Converter_Html extends JWSDK_Converter
 {
 	public $type = 'html';
 	
-	public function convertResource($source, $contents, $params, $jslist, $config)
+	public function convertResource($source, $contents, $params, $jslist)
 	{
 		if (count($params) < 1)
 			throw new Exception("JS html resource requires variable name in first parameter (source: $source, jslist: $jslist)");

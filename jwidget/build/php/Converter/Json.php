@@ -23,7 +23,7 @@ class JWSDK_Converter_Json extends JWSDK_Converter
 {
 	public $type = 'json';
 	
-	public function convertResource($source, $contents, $params, $jslist, $config)
+	public function convertResource($source, $contents, $params, $jslist)
 	{
 		if (count($params) < 1)
 			throw new Exception("JS json resource requires variable name in first parameter (source: $source, jslist: $jslist)");

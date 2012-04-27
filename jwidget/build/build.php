@@ -47,6 +47,7 @@ include_once 'php/Converter/Html.php';
 include_once 'php/Converter/Json.php';
 include_once 'php/Converter/Js.php';
 include_once 'php/Converter/Util.php';
+include_once 'php/GlobalConfig.php';
 include_once 'php/Variables.php';
 
 $date = date('Y-m-d H:i:s');

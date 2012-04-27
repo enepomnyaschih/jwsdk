@@ -26,7 +26,7 @@ class JWSDK_Converter
 	public $type;
 	public $converted = true;
 	
-	public function convertResource($source, $contents, $params, $jslist, $config)
+	public function convertResource($source, $contents, $params, $jslist)
 	{
 	}
 	
@@ -35,7 +35,7 @@ class JWSDK_Converter
 		self::$instances[$instance->type] = $instance;
 	}
 	
-	public static function convert($definition, $jslist, $config)
+	public static function convert($definition, $jslist, $globalConfig)
 	{
 		$tokens = explode(":", $definition);
 		$source = trim($tokens[0]);
@@ -57,15 +57,15 @@ class JWSDK_Converter
 				$params[$i] = trim($params[$i]);
 		}
 		
-		$sourcePath = $config['publicPath'] . "/$source";
+		$sourcePath = $globalConfig->getResourceSourcePath($source);
 		$sourceContents = @file_get_contents($sourcePath);
 		if ($sourceContents === false)
 			throw new Exception("Can't open JS resource file (path: $source, jslist: $jslist)");
 		
-		$outputContents = $resource->convertResource($source, $sourceContents, $params, $jslist, $config);
+		$outputContents = $resource->convertResource($source, $sourceContents, $params, $jslist);
 		
-		$outputUrl = $config['buildUrl'] . "/$source.js";
-		$outputPath = $config['publicPath'] . "/$outputUrl";
+		$outputUrl  = $globalConfig->getResourceBuildUrl($source);
+		$outputPath = $globalConfig->getResourceBuildPath($source);
 		
 		$outputFile = JWSDK_Util_File::fopen_recursive($outputPath, 'w');
 		if ($outputFile === false)

@@ -21,15 +21,15 @@
 
 class JWSDK_Builder
 {
-	private $config;    // Dictionary
-	private $mode;      // JWSDK_Mode
-	private $variables; // JWSDK_Variables
+	private $globalConfig; // JWSDK_GlobalConfig
+	private $mode;         // JWSDK_Mode
+	private $variables;    // JWSDK_Variables
 	
-	private $jslists;   // Map from String(name) to String(scripts to include)
-	private $jspaths;   // Map from String(jslistName) to Array of String(jsPath)
-	private $includes;  // Map from String(name) to Dictionary
-	private $services;  // Map from String(name) to String(html)
-	private $templates; // Map from String(name) to String(html)
+	private $jslists;      // Map from String(name) to String(scripts to include)
+	private $jspaths;      // Map from String(jslistName) to Array of String(jsPath)
+	private $includes;     // Map from String(name) to Dictionary
+	private $services;     // Map from String(name) to String(html)
+	private $templates;    // Map from String(name) to String(html)
 	
 	public function build()
 	{
@@ -41,20 +41,11 @@ class JWSDK_Builder
 		$this->services  = array();
 		$this->templates = array();
 		
-		$this->readConfig();
+		$this->globalConfig = new JWSDK_GlobalConfig();
 		$this->readMode();
 		
 		$this->compress();
 		$this->link();
-	}
-	
-	private function readConfig()
-	{
-		$contents = @file_get_contents('config.json', 'r');
-		if ($contents === false)
-			throw new Exception("Can't open main config (path: config.json)");
-		
-		$this->config = json_decode($contents, true);
 	}
 	
 	private function readMode()
@@ -70,7 +61,7 @@ class JWSDK_Builder
 	
 	private function readModeConfig($name)
 	{
-		$path     = $this->config['modesPath'] . "/$name.json";
+		$path     = $this->globalConfig->getModeConfigPath($name);
 		$contents = @file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Can't open mode config (name: $name, path: $path)");
@@ -92,7 +83,7 @@ class JWSDK_Builder
 
 	private function compressDir($path)
 	{
-		$fullPath = $this->config['jslistsPath'] . $path;
+		$fullPath = $this->globalConfig->getJsListConfigsPath() . $path;
 		
 		if (is_file($fullPath))
 		{
@@ -120,18 +111,18 @@ class JWSDK_Builder
 		$compress = $this->mode->isCompress();
 		
 		// Delete extension from path
-		$path = substr($path, 1, strrpos($path, '.') - 1);
+		$name = substr($path, 1, strrpos($path, '.') - 1);
 		
 		if ($this->mode->isCompress())
-			JWSDK_Log::logTo('build.log', "Compressing $path");
+			JWSDK_Log::logTo('build.log', "Compressing $name");
 		
-		$jsListPath = $this->config['jslistsPath'] . "/$path.jslist";
-		$outputPath = $this->config['publicPath'] . '/' . $this->config['buildUrl'] . "/$path.min.js";
-		$mergePath  = $this->config['tempPath'] . "/$path.js";
+		$jsListPath = $this->globalConfig->getJsListPath($name);
+		$buildPath  = $this->globalConfig->getJsListBuildPath($name);
+		$mergePath  = $this->globalConfig->getJsListMergePath($name);
 		
 		$contents = @file_get_contents($jsListPath);
 		if ($contents === false)
-			throw new Exception("Can't open jslist file (name: $path, path: $jsListPath)");
+			throw new Exception("Can't open jslist file (name: $name, path: $jsListPath)");
 		
 		$contents = JWSDK_Util_String::removeComments($contents);
 		
@@ -139,15 +130,15 @@ class JWSDK_Builder
 		$scripts = self::removeEmptyStrings($scripts);
 		
 		for ($i = 0; $i < count($scripts); ++$i)
-			$scripts[$i] = JWSDK_Converter::convert($scripts[$i], $path, $this->config);
+			$scripts[$i] = JWSDK_Converter::convert($scripts[$i], $name, $this->globalConfig);
 		
-		$this->jspaths[$path] = $scripts;
+		$this->jspaths[$name] = $scripts;
 		
 		if ($compress)
 		{
 			$output = JWSDK_Util_File::fopen_recursive($mergePath, 'w');
 			if ($output === false)
-				throw new Exception("Can't create temporary merged js file (name: $path, path: $mergePath)");
+				throw new Exception("Can't create temporary merged js file (name: $name, path: $mergePath)");
 		}
 		
 		$includeBuf = array();
@@ -159,10 +150,10 @@ class JWSDK_Builder
 			if (!$compress)
 				continue;
 			
-			$script = $this->config['publicPath'] . "/$script";
-			$scriptContent = @file_get_contents($script);
+			$scriptPath = $this->globalConfig->getResourceSourcePath($script);
+			$scriptContent = @file_get_contents($scriptPath);
 			if ($scriptContent === false)
-				throw new Exception("Can't open js file (path: $script)");
+				throw new Exception("Can't open js file (path: $scriptPath)");
 			
 			fwrite($output, $scriptContent . "\n");
 		}
@@ -171,24 +162,24 @@ class JWSDK_Builder
 		{
 			fclose($output);
 			
-			$outputDir = substr($outputPath, 0, strrpos($outputPath, '/'));
-			if (!is_dir($outputDir))
-				@mkdir($outputDir, 0755, 1);
+			$buildDir = substr($buildPath, 0, strrpos($buildPath, '/'));
+			if (!is_dir($buildDir))
+				@mkdir($buildDir, 0755, 1);
 			
 			$yuiOutput = array();
 			$yuiStatus = 0;
 			
-			$command = "java -jar yuicompressor.jar $mergePath -o $outputPath --charset utf-8 --line-break 8000 2>> yui.log";
+			$command = "java -jar yuicompressor.jar $mergePath -o $buildPath --charset utf-8 --line-break 8000 2>> yui.log";
 			exec($command, $yuiOutput, $yuiStatus);
 			
 			if ($yuiStatus != 0)
-				throw new Exception("Error while running YUI Compressor (name: $path, input: $mergePath, output: $outputPath). See signin/build/yui.log for details");
+				throw new Exception("Error while running YUI Compressor (name: $name, input: $mergePath, output: $buildPath). See signin/build/yui.log for details");
 		}
 		
 		if ($this->mode->isLinkMin())
-			$this->jslists[$path] = $this->includeJs($this->config['buildUrl'] . "/$path.min.js");
+			$this->jslists[$name] = $this->includeJs($this->globalConfig->getJsListBuildUrl($name));
 		else
-			$this->jslists[$path] = implode("\n", $includeBuf);
+			$this->jslists[$name] = implode("\n", $includeBuf);
 	}
 	
 	private function link()
@@ -203,7 +194,7 @@ class JWSDK_Builder
 
 	private function linkDir($path)
 	{
-		$fullPath = $this->config['configPath'] . '/' . $this->config['pagesFolder'] . "$path";
+		$fullPath = $this->globalConfig->getPageConfigsPath() . $path;
 		
 		if (is_file($fullPath))
 		{
@@ -229,13 +220,13 @@ class JWSDK_Builder
 			return;
 		
 		// Delete extension from path
-		$path = substr($path, 1, strrpos($path, '.') - 1);
+		$name = substr($path, 1, strrpos($path, '.') - 1);
 		
-		$pageConfig = $this->readPageConfig($this->config['pagesFolder'] . "/$path");
-		$outputPath = $this->config['publicPath'] . '/' . $this->config['pagesUrl'] . "/$path.html";
+		$pageConfig = $this->readPageConfig($this->globalConfig->getPageConfigName($name));
+		$buildPath  = $this->globalConfig->getPageBuildPath($name);
 		
 		if (!isset($pageConfig['template']))
-			throw new Exception("Page template is undefined (page: $path)");
+			throw new Exception("Page template is undefined (page: $name)");
 		
 		$templateName = $pageConfig['template'];
 		$template = $this->readPageTemplate($templateName);
@@ -243,7 +234,7 @@ class JWSDK_Builder
 		$variables = new JWSDK_Variables($this->variables, $pageConfig);
 		
 		$replaces = $variables->getCustom();
-		$replaces['sources']  = $this->formatSources ($pageConfig, $path);
+		$replaces['sources']  = $this->formatSources ($pageConfig, $name);
 		$replaces['services'] = $this->formatServices($variables->getServices());
 		
 		$replaces['title'] =
@@ -258,9 +249,9 @@ class JWSDK_Builder
 		
 		$html = str_replace($replaceKeys, $replaceValues, $template);
 		
-		$output = JWSDK_Util_File::fopen_recursive($outputPath, 'w');
+		$output = JWSDK_Util_File::fopen_recursive($buildPath, 'w');
 		if ($output === false)
-			throw new Exception("Can't create linked page file (name: $path, path: $outputPath)");
+			throw new Exception("Can't create linked page file (name: $name, path: $buildPath)");
 		
 		fwrite($output, $html);
 		fclose($output);
@@ -271,7 +262,7 @@ class JWSDK_Builder
 		if (isset($this->includes[$name]))
 			return $this->includes[$name];
 		
-		$path = $this->config['configPath'] . "/$name.json";
+		$path = $this->globalConfig->getPageConfigPath($name);
 		$contents = @file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Can't open page config file (name: $name, path: $path)");
@@ -307,7 +298,7 @@ class JWSDK_Builder
 		if (isset($this->templates[$name]))
 			return $this->templates[$name];
 		
-		$path = $this->config['templatesPath'] . "/$name.html";
+		$path = $this->globalConfig->getTemplatePath($name);
 		$contents = @file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Can't open template file (name: $name, path: $path)");
@@ -318,11 +309,7 @@ class JWSDK_Builder
 	
 	function includeSource($path, $template)
 	{
-		$jsPath = $this->config['publicPath'] . "/$path";
-		if (!file_exists($jsPath))
-			throw new Exception("Can't find js file (path: $path)");
-		
-		$path = $this->config['urlPrefix'] . "$path?timestamp=" . filemtime($jsPath);
+		$path = $this->globalConfig->getResourceInclusionUrl($path);
 		$path = htmlspecialchars($path);
 		return '        ' . str_replace('%path%', $path, $template);
 	}
@@ -394,7 +381,7 @@ class JWSDK_Builder
 		if (isset($this->services[$name]))
 			return $this->services[$name];
 		
-		$path = $this->config['servicesPath'] . "/$name.html";
+		$path = $this->globalConfig->getServicePath($name);
 		$contents = @file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Can't open service file (name: $name, path: $path)");
