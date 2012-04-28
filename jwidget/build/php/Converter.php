@@ -35,12 +35,17 @@ class JWSDK_Converter
 		self::$instances[$instance->type] = $instance;
 	}
 	
+	public static function getConverter($type)
+	{
+		return isset(self::$instances[$type]) ? self::$instances[$type] : null;
+	}
+	
 	public static function convert($definition, $jslist, $globalConfig)
 	{
 		$tokens = explode(":", $definition);
 		$source = trim($tokens[0]);
 		
-		$resource = self::getResource($source, $jslist);
+		$resource = self::getResourceConverter($source, $jslist);
 		if (!$resource->converted)
 			return $source;
 		
@@ -77,14 +82,23 @@ class JWSDK_Converter
 		return $outputUrl;
 	}
 	
-	private static function getResource($source, $jslist)
+	private static function getResourceConverter($source, $jslist)
+	{
+		$type = self::getResourceType($source);
+		if (!$type)
+			throw new Exception("Unknown converter type (source: $source, jslist: $jslist)");
+		
+		return self::getConverter($type);
+	}
+	
+	public static function getResourceType($name)
 	{
 		foreach (self::$instances as $type => $instance)
 		{
-			if (preg_match("/\.$type$/i", $source))
-				return $instance;
+			if (preg_match("/\.$type$/i", $name))
+				return $type;
 		}
 		
-		throw new Exception("Unknown JS resource type (source: $source, jslist: $jslist)");
+		return null;
 	}
 }

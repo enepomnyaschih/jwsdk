@@ -25,24 +25,29 @@ class JWSDK_Builder
 	private $mode;         // JWSDK_Mode
 	private $variables;    // JWSDK_Variables
 	
-	private $jslists;      // Map from String(name) to String(scripts to include)
-	private $jspaths;      // Map from String(jslistName) to Array of String(jsPath)
-	private $includes;     // Map from String(name) to Dictionary
-	private $services;     // Map from String(name) to String(html)
-	private $templates;    // Map from String(name) to String(html)
+	private $jsListManager; // JWSDK_JsList_Manager
+	
+	//private $jslists;      // Map from String(name) to String(scripts to include)
+	//private $jspaths;      // Map from String(jslistName) to Array of String(jsPath)
+	//private $includes;     // Map from String(name) to Dictionary
+	//private $services;     // Map from String(name) to String(html)
+	//private $templates;    // Map from String(name) to String(html)
 	
 	public function build()
 	{
-		$this->variables = new JWSDK_Variables();
+		$this->globalConfig = new JWSDK_GlobalConfig();
 		
-		$this->jslists   = array();
+		$this->variables = new JWSDK_Variables();
+		$this->readMode();
+		
+		$this->jsListManager = new JWSDK_JsList_Manager($this->globalConfig);
+		$jslists = $this->jsListManager->readJsLists();
+		
 		$this->jspaths   = array();
 		$this->includes  = array();
 		$this->services  = array();
 		$this->templates = array();
 		
-		$this->globalConfig = new JWSDK_GlobalConfig();
-		$this->readMode();
 		
 		$this->compress();
 		$this->link();
