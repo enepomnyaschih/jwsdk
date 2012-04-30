@@ -51,7 +51,7 @@ class JWSDK_GlobalConfig
 		return $this->json['modesPath'] . "/$name.json";
 	}
 	
-	// ##### JS lists #####
+	// ##### Packages #####
 	
 	public function getBuildUrl()
 	{
@@ -63,27 +63,27 @@ class JWSDK_GlobalConfig
 		return $this->getPublicPath() . '/' . $this->getBuildUrl();
 	}
 	
-	public function getJsListConfigsPath()
+	public function getPackageConfigsPath()
 	{
 		return $this->json['jslistsPath'];
 	}
 	
-	public function getJsListPath($name)
+	public function getPackagePath($name)
 	{
 		return $this->json['jslistsPath'] . "/$name.jslist";
 	}
 	
-	public function getJsListMergePath($name)
+	public function getPackageMergePath($name)
 	{
 		return $this->json['tempPath'] . "/$name.js";
 	}
 	
-	public function getJsListBuildPath($name)
+	public function getPackageBuildPath($name)
 	{
 		return $this->getBuildPath() . "/$name.min.js";
 	}
 	
-	public function getJsListBuildUrl($name)
+	public function getPackageBuildUrl($name)
 	{
 		return $this->getBuildUrl() . "/$name.min.js";
 	}

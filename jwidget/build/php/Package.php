@@ -19,26 +19,28 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Converter_JwHtml extends JWSDK_Converter
+class JWSDK_Package
 {
-	public $type = 'jw.html';
+	private $name;
+	private $resources = array();
 	
-	public function convertResource($source, $contents, $params, $package)
+	public function __construct($name)
 	{
-		if (count($params) < 1)
-			throw new Exception("JS jw.html resource requires class name in first parameter (source: $source, jslist: $package)");
-		
-		$className = $params[0];
-		
-		if (count($params) < 2)
-			$templateName = 'main';
-		else
-			$templateName = $params[1];
-		
-		$contents = JWSDK_Converter_Util::smoothHtml($contents);
-		
-		return "JW.UI.template($className, { $templateName: '$contents' });\n";
+		$this->name = $name;
+	}
+	
+	public function getName()
+	{
+		return $this->name;
+	}
+	
+	public function addResource($resource)
+	{
+		$this->resources[] = $resource;
+	}
+	
+	public function getResources()
+	{
+		return $this->resources;
 	}
 }
-
-JWSDK_Converter::register(new JWSDK_Converter_JwHtml());

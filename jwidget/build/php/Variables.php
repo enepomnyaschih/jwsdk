@@ -68,6 +68,16 @@ class JWSDK_Variables
 		$this->applyVar($vars, 'custom');
 	}
 	
+	public function applyConfig($path)
+	{
+		$contents = @file_get_contents($path);
+		if ($contents === false)
+			throw new Exception("Can't open mode config (path: $path)");
+		
+		$config = json_decode($contents, true);
+		$this->apply($config);
+	}
+	
 	private function applyVar($vars, $name)
 	{
 		if (!isset($vars[$name]))

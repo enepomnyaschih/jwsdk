@@ -19,23 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_JsList
+class JWSDK_Util_Array
 {
-	private $name;
-	private $resources = array();
-	
-	public function __construct($name)
+	public static function get($array, $property, $default = null)
 	{
-		$this->name = $name;
-	}
-	
-	public function getName()
-	{
-		return $this->name;
-	}
-	
-	public function addResource($name)
-	{
-		$this->resources[] = $name;
+		return isset($array[$property]) ? $array[$property] : $default;
 	}
 }

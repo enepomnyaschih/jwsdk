@@ -21,11 +21,11 @@
 
 class JWSDK_Builder
 {
-	private $globalConfig; // JWSDK_GlobalConfig
-	private $mode;         // JWSDK_Mode
-	private $variables;    // JWSDK_Variables
+	private $globalConfig;   // JWSDK_GlobalConfig
+	private $mode;           // JWSDK_Mode
+	private $variables;      // JWSDK_Variables
 	
-	private $jsListManager; // JWSDK_JsList_Manager
+	private $packageManager; // JWSDK_Package_Manager
 	
 	//private $jslists;      // Map from String(name) to String(scripts to include)
 	//private $jspaths;      // Map from String(jslistName) to Array of String(jsPath)
@@ -33,47 +33,24 @@ class JWSDK_Builder
 	//private $services;     // Map from String(name) to String(html)
 	//private $templates;    // Map from String(name) to String(html)
 	
-	public function build()
+	public function build($modeName)
 	{
 		$this->globalConfig = new JWSDK_GlobalConfig();
+		$this->mode = JWSDK_Mode::getMode($modeName);
 		
 		$this->variables = new JWSDK_Variables();
-		$this->readMode();
+		$this->variables->applyConfig($this->globalConfig->getModeConfigPath('common'));
+		$this->variables->applyConfig($this->globalConfig->getModeConfigPath($this->mode->getConfigId()));
 		
-		$this->jsListManager = new JWSDK_JsList_Manager($this->globalConfig);
-		$jslists = $this->jsListManager->readJsLists();
+		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig);
+		$this->packageManager->readPackages();
 		
 		$this->jspaths   = array();
 		$this->includes  = array();
 		$this->services  = array();
 		$this->templates = array();
 		
-		
-		$this->compress();
 		$this->link();
-	}
-	
-	private function readMode()
-	{
-		global $argv;
-		
-		$modeName = $argv[1];
-		$this->mode = JWSDK_Mode::getMode($modeName);
-		
-		$this->readModeConfig('common');
-		$this->readModeConfig($this->mode->getConfigId());
-	}
-	
-	private function readModeConfig($name)
-	{
-		$path     = $this->globalConfig->getModeConfigPath($name);
-		$contents = @file_get_contents($path);
-		if ($contents === false)
-			throw new Exception("Can't open mode config (name: $name, path: $path)");
-		
-		$config = json_decode($contents, true);
-		
-		$this->variables->apply($config);
 	}
 	
 	private function compress()
@@ -88,7 +65,7 @@ class JWSDK_Builder
 
 	private function compressDir($path)
 	{
-		$fullPath = $this->globalConfig->getJsListConfigsPath() . $path;
+		$fullPath = $this->globalConfig->getPackageConfigsPath() . $path;
 		
 		if (is_file($fullPath))
 		{
@@ -121,13 +98,13 @@ class JWSDK_Builder
 		if ($this->mode->isCompress())
 			JWSDK_Log::logTo('build.log', "Compressing $name");
 		
-		$jsListPath = $this->globalConfig->getJsListPath($name);
-		$buildPath  = $this->globalConfig->getJsListBuildPath($name);
-		$mergePath  = $this->globalConfig->getJsListMergePath($name);
+		$packagePath = $this->globalConfig->getPackagePath($name);
+		$buildPath   = $this->globalConfig->getPackageBuildPath($name);
+		$mergePath   = $this->globalConfig->getPackageMergePath($name);
 		
-		$contents = @file_get_contents($jsListPath);
+		$contents = @file_get_contents($packagePath);
 		if ($contents === false)
-			throw new Exception("Can't open jslist file (name: $name, path: $jsListPath)");
+			throw new Exception("Can't open jslist file (name: $name, path: $packagePath)");
 		
 		$contents = JWSDK_Util_String::removeComments($contents);
 		
@@ -182,9 +159,9 @@ class JWSDK_Builder
 		}
 		
 		if ($this->mode->isLinkMin())
-			$this->jslists[$name] = $this->includeJs($this->globalConfig->getJsListBuildUrl($name));
+			$this->packages[$name] = $this->includeJs($this->globalConfig->getPackageBuildUrl($name));
 		else
-			$this->jslists[$name] = implode("\n", $includeBuf);
+			$this->packages[$name] = implode("\n", $includeBuf);
 	}
 	
 	private function link()
@@ -329,7 +306,7 @@ class JWSDK_Builder
 		return $this->includeSource($path, '<script type="text/javascript" charset="utf-8" src="%path%"></script>');
 	}
 	
-	function includeJsList($path, &$jspaths)
+	function includePackage($path, &$jspaths)
 	{
 		if (preg_match('/\|auto$/', $path))
 			$path = substr($path, 0, strrpos($path, '.')) . ($this->mode->isLinkMin() ?  '.min.js' : '.js');
@@ -346,7 +323,7 @@ class JWSDK_Builder
 		foreach ($this->jspaths[$path] as $jspath)
 			$jspaths[] = $jspath;
 		
-		return $this->jslists[$path];
+		return $this->packages[$path];
 	}
 	
 	private function formatSources($pageConfig, $path)
@@ -362,7 +339,7 @@ class JWSDK_Builder
 		if (isset($pageConfig['js']))
 		{
 			foreach ($pageConfig['js'] as $value)
-				$buf[] = $this->includeJsList($value, $jspaths);
+				$buf[] = $this->includePackage($value, $jspaths);
 		}
 		
 		$jspathsUnique = array_unique($jspaths);

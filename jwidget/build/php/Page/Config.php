@@ -19,12 +19,29 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_JsList_Manager
+class JWSDK_Page_Config
 {
-	private $globalConfig;
+	private $name;
+	private $base;
+	private $template;
+	private $title;
+	private $css = array();
+	private $js = array();
+	private $services = array();
+	private $custom = array();
 	
-	public function readJsLists($globalConfig)
+	public function __construct($name, $json)
 	{
+		$this->name     = name;
+		$this->base     = JWSDK_Util_Array::get($json, 'base');
+		$this->template = JWSDK_Util_Array::get($json, 'template');
+		$this->title    = JWSDK_Util_Array::get($json, 'title');
 		
+		if (isset($json['css']))
+		{
+			$csss = $json['css'];
+			for ($i = 0; $i < count($csss); $i++)
+				$this->css[] = $csss[$i];
+		}
 	}
 }

@@ -26,7 +26,7 @@ class JWSDK_Converter
 	public $type;
 	public $converted = true;
 	
-	public function convertResource($source, $contents, $params, $jslist)
+	public function convertResource($source, $contents, $params, $package)
 	{
 	}
 	
@@ -40,12 +40,12 @@ class JWSDK_Converter
 		return isset(self::$instances[$type]) ? self::$instances[$type] : null;
 	}
 	
-	public static function convert($definition, $jslist, $globalConfig)
+	public static function convert($definition, $package, $globalConfig)
 	{
 		$tokens = explode(":", $definition);
 		$source = trim($tokens[0]);
 		
-		$resource = self::getResourceConverter($source, $jslist);
+		$resource = self::getResourceConverter($source, $package);
 		if (!$resource->converted)
 			return $source;
 		
@@ -65,9 +65,9 @@ class JWSDK_Converter
 		$sourcePath = $globalConfig->getResourceSourcePath($source);
 		$sourceContents = @file_get_contents($sourcePath);
 		if ($sourceContents === false)
-			throw new Exception("Can't open JS resource file (path: $source, jslist: $jslist)");
+			throw new Exception("Can't open JS resource file (path: $source, jslist: $package)");
 		
-		$outputContents = $resource->convertResource($source, $sourceContents, $params, $jslist);
+		$outputContents = $resource->convertResource($source, $sourceContents, $params, $package);
 		
 		$outputUrl  = $globalConfig->getResourceBuildUrl($source);
 		$outputPath = $globalConfig->getResourceBuildPath($source);
@@ -82,11 +82,11 @@ class JWSDK_Converter
 		return $outputUrl;
 	}
 	
-	private static function getResourceConverter($source, $jslist)
+	private static function getResourceConverter($source, $package)
 	{
 		$type = self::getResourceType($source);
 		if (!$type)
-			throw new Exception("Unknown converter type (source: $source, jslist: $jslist)");
+			throw new Exception("Unknown converter type (source: $source, jslist: $package)");
 		
 		return self::getConverter($type);
 	}

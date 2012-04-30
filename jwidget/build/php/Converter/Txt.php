@@ -23,10 +23,10 @@ class JWSDK_Converter_Txt extends JWSDK_Converter
 {
 	public $type = 'txt';
 	
-	public function convertResource($source, $contents, $params, $jslist)
+	public function convertResource($source, $contents, $params, $package)
 	{
 		if (count($params) < 1)
-			throw new Exception("JS txt resource requires variable name in first parameter (source: $source, jslist: $jslist)");
+			throw new Exception("JS txt resource requires variable name in first parameter (source: $source, jslist: $package)");
 		
 		$varName  = JWSDK_Converter_Util::defineJsVar($params[0]);
 		$contents = JWSDK_Converter_Util::smoothText($contents);
