@@ -25,6 +25,7 @@ class JWSDK_Builder
 	private $mode;           // JWSDK_Mode
 	private $variables;      // JWSDK_Variables
 	
+	private $pageManager;    // JWSDK_Page_Manager
 	private $packageManager; // JWSDK_Package_Manager
 	
 	//private $jslists;      // Map from String(name) to String(scripts to include)
@@ -41,6 +42,9 @@ class JWSDK_Builder
 		$this->variables = new JWSDK_Variables();
 		$this->variables->applyConfig($this->globalConfig->getModeConfigPath('common'));
 		$this->variables->applyConfig($this->globalConfig->getModeConfigPath($this->mode->getConfigId()));
+		
+		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig);
+		$this->pageManager->readPages();
 		
 		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig);
 		$this->packageManager->readPackages();

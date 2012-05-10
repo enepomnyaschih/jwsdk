@@ -22,11 +22,30 @@
 class JWSDK_Page
 {
 	private $name;
-	private $resources = array();
+	private $base;
+	private $template;
+	private $title;
+	private $css = array();
+	private $js = array();
+	private $services = array();
+	private $custom = array();
+	private $_hasOutput;
 	
-	public function __construct($name)
+	public function __construct($name, $json, $hasOutput)
 	{
-		$this->name = $name;
+		$this->name     = name;
+		$this->base     = JWSDK_Util_Array::get($json, 'base');
+		$this->template = JWSDK_Util_Array::get($json, 'template');
+		$this->title    = JWSDK_Util_Array::get($json, 'title');
+		
+		if (isset($json['css']))
+		{
+			$csss = $json['css'];
+			for ($i = 0; $i < count($csss); $i++)
+				$this->css[] = $csss[$i];
+		}
+		
+		$this->_hasOutput = $hasOutput;
 	}
 	
 	public function getName()
@@ -34,13 +53,62 @@ class JWSDK_Page
 		return $this->name;
 	}
 	
-	public function addResource($resource)
+	public function getBase()
 	{
-		$this->resources[] = $resource;
+		return $this->base;
 	}
 	
-	public function getResources()
+	public function getTemplate()
 	{
-		return $this->resources;
+		return $this->template;
+	}
+	
+	public function getTitle()
+	{
+		return $this->title;
+	}
+	
+	public function getCss()
+	{
+		return $this->css;
+	}
+	
+	public function getJs()
+	{
+		return $this->js;
+	}
+	
+	public function getServices()
+	{
+		return $this->services;
+	}
+	
+	public function getCustom()
+	{
+		return $this->custom;
+	}
+	
+	public function hasOutput()
+	{
+		return $this->_hasOutput;
+	}
+	
+	public function setHasOutput($value)
+	{
+		$this->_hasOutput = $value;
+	}
+	
+	public function applyBase($base)
+	{
+		if (!$this->getTemplate())
+			$this->template = $base->getTemplate();
+		
+		if (!$this->getTitle())
+			$this->title = $base->getTitle();
+		
+		$this->css      = array_merge($base->getCss(),      $this->getCss());
+		$this->js       = array_merge($base->getJs(),       $this->getJs());
+		$this->services = array_merge($base->getServices(), $this->getServices());
+		$this->custom   = array_merge($base->getCustom(),   $this->getCustom());
 	}
 }
