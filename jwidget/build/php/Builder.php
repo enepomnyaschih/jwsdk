@@ -33,7 +33,6 @@ class JWSDK_Builder
 	
 	public function __construct(
 		$modeName) // String
-		// throws JWSDK_Exception
 	{
 		$this->globalConfig = new JWSDK_GlobalConfig();
 		$this->mode = JWSDK_Mode::getMode($modeName);
@@ -51,7 +50,6 @@ class JWSDK_Builder
 	}
 	
 	public function buildPages()
-		// throws JWSDK_Exception
 	{
 		$this->pageManager->buildPages();
 	}

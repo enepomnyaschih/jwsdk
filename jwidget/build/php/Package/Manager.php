@@ -40,29 +40,36 @@ class JWSDK_Package_Manager
 		if ($package)
 			return $package;
 		
-		$path = $this->getPackagePath($name);
-		
-		$contents = JWSDK_Util_File::file_get_contents($path);
-		if ($contents === false)
-			throw new Exception("Package doesn't exist (name: $name)");
-		
-		$contents = JWSDK_Util_String::removeComments($contents);
-		
-		$scripts = explode("\n", JWSDK_Util_String::smoothCrlf($contents));
-		$scripts = self::removeEmptyStrings($scripts);
-		
-		$package = new JWSDK_Package($name);
-		for ($i = 0; $i < count($scripts); ++$i)
+		try
 		{
-			$resource = $this->resourceManager->getResourceByDefinition($scripts[$i]);
-			$resource = $this->resourceManager->convertResource($resource);
+			$path = $this->getPackagePath($name);
 			
-			$package->addResource($resource);
+			$contents = JWSDK_Util_File::file_get_contents($path);
+			if ($contents === false)
+				throw new JWSDK_Exception_PackageDoesNotExist($name);
+			
+			$contents = JWSDK_Util_String::removeComments($contents);
+			
+			$scripts = explode("\n", JWSDK_Util_String::smoothCrlf($contents));
+			$scripts = self::removeEmptyStrings($scripts);
+			
+			$package = new JWSDK_Package($name);
+			for ($i = 0; $i < count($scripts); ++$i)
+			{
+				$resource = $this->resourceManager->getResourceByDefinition($scripts[$i]);
+				$resource = $this->resourceManager->convertResource($resource);
+				
+				$package->addResource($resource);
+			}
+			
+			$this->addPackage($package);
+			
+			return $package;
 		}
-		
-		$this->addPackage($package);
-		
-		return $package;
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_PackageReadError($name, $e);
+		}
 	}
 	
 	public function compressPackage( // JWSDK_Resource, compressed file
@@ -72,21 +79,28 @@ class JWSDK_Package_Manager
 		if ($compressedResource)
 			return $compressedResource;
 		
-		$name = $package->getName();
-		
-		JWSDK_Log::logTo('build.log', "Compressing package $name");
-		
-		$mergePath = $this->getPackageMergePath($name);
-		$buildPath = $this->getPackageBuildPath($name);
-		
-		JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package));
-		JWSDK_Util_File::mkdir_recursive($buildPath);
-		JWSDK_Util_File::compress($mergePath, $buildPath);
-		
-		$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name), 'js');
-		$package->setCompressedResource($compressedResource);
-		
-		return $compressedResource;
+		try
+		{
+			$name = $package->getName();
+			
+			JWSDK_Log::logTo('build.log', "Compressing package $name");
+			
+			$mergePath = $this->getPackageMergePath($name);
+			$buildPath = $this->getPackageBuildPath($name);
+			
+			JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package));
+			JWSDK_Util_File::mkdir_recursive($buildPath);
+			JWSDK_Util_File::compress($mergePath, $buildPath);
+			
+			$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name), 'js');
+			$package->setCompressedResource($compressedResource);
+			
+			return $compressedResource;
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_PackageCompressError($name, $e);
+		}
 	}
 	
 	private function getPackageMergedContents( // String

@@ -44,6 +44,10 @@ include_once 'php/Exception/CanNotMakeDirectory.php';
 include_once 'php/Exception/CanNotOpenGlobalConfig.php';
 include_once 'php/Exception/CanNotWriteFile.php';
 include_once 'php/Exception/CompressorError.php';
+include_once 'php/Exception/PackageCompressError.php';
+include_once 'php/Exception/PackageDoesNotExist.php';
+include_once 'php/Exception/PackageReadError.php';
+include_once 'php/Exception/PageBuildError.php';
 include_once 'php/Exception/PageTemplateIsUndefined.php';
 include_once 'php/GlobalConfig.php';
 include_once 'php/Package.php';
@@ -76,12 +80,12 @@ try
 }
 catch (JWSDK_Exception $e)
 {
-    JWSDK_Log::logTo('build.log', "ERROR: " . $e->getMessage());
+    JWSDK_Log::logTo('build.log', "\nERROR\n" . $e->getMessage());
     exit(1);
 }
 catch (Exception $e)
 {
-    JWSDK_Log::logTo('build.log', "\nUnexpected error occured!\nPlease report this to jWidget SDK developers.\ERROR: " . $e->getMessage());
+    JWSDK_Log::logTo('build.log', "\nUNEXPECTED ERROR\nPlease report to https://github.com/enepomnyaschih/jwsdk/issues/new\n\n" . $e);
     exit(1);
 }
 

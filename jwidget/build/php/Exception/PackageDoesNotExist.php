@@ -19,25 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception extends Exception
+class JWSDK_Exception_PackageDoesNotExist extends JWSDK_Exception
 {
-	private $cause;
-	
-	public function __construct($message = '', $cause = null)
+	public function __construct()
 	{
-		parent::__construct($message, 0);
-		$this->cause = $cause;
-	}
-	
-	public function getCause()
-	{
-		return $this->cause;
-	}
-	
-	public function __toString()
-	{
-		$cause = $this->getCause();
-		return "JWSDK_Exception:\n" . parent::__toString() .
-			(isset($cause) ? ("\nCaused By:\n" . $cause->__toString()) : '');
+		parent::__construct('Package does not exist');
 	}
 }

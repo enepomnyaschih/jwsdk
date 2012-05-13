@@ -52,14 +52,12 @@ class JWSDK_Page_Manager
 	}
 	
 	public function buildPages()
-		// throws JWSDK_Exception_PageTemplateIsUndefined
 	{
 		$this->buildDir('');
 	}
 	
 	private function buildDir(
 		$path) // String
-		// throws JWSDK_Exception_PageTemplateIsUndefined
 	{
 		$fullPath = $this->getPageConfigsPath() . $path;
 		
@@ -86,7 +84,6 @@ class JWSDK_Page_Manager
 	
 	private function buildFile(
 		$fullPath) // String
-		// throws JWSDK_Exception_PageTemplateIsUndefined
 	{
 		if (!preg_match('/\.json$/', $fullPath))
 			return;
@@ -99,22 +96,28 @@ class JWSDK_Page_Manager
 	
 	private function buildPage( // JWSDK_Page
 		$name) // String
-		// throws JWSDK_Exception_PageTemplateIsUndefined
 	{
 		JWSDK_Log::logTo('build.log', "Building page $name");
 		
-		$page = $this->readPage("pages/$name");
-		
-		$templateName = $page->getTemplate();
-		if (!$templateName)
-			throw new JWSDK_Exception_PageTemplateIsUndefined($name);
-		
-		$template = $this->templateManager->readTemplate($templateName);
-		$contents = $this->applyTemplate($template, $page);
-		
-		JWSDK_Util_File::write($this->getPageBuildPath($name), $contents);
-		
-		return $page;
+		try
+		{
+			$page = $this->readPage("pages/$name");
+			
+			$templateName = $page->getTemplate();
+			if (!$templateName)
+				throw new JWSDK_Exception_PageTemplateIsUndefined();
+			
+			$template = $this->templateManager->readTemplate($templateName);
+			$contents = $this->applyTemplate($template, $page);
+			
+			JWSDK_Util_File::write($this->getPageBuildPath($name), $contents);
+			
+			return $page;
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_PageBuildError($name, $e);
+		}
 	}
 	
 	private function readPage( // JWSDK_Page

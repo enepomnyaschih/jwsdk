@@ -19,25 +19,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception extends Exception
+class JWSDK_Exception_PackageReadError extends JWSDK_Exception
 {
-	private $cause;
+	private $name;
 	
-	public function __construct($message = '', $cause = null)
+	public function __construct($name, $cause)
 	{
-		parent::__construct($message, 0);
-		$this->cause = $cause;
+		parent::__construct("Error occured while reading package '$name'\n" . $cause->getMessage(), $cause);
+		$this->name = $name;
 	}
 	
-	public function getCause()
+	public function getName()
 	{
-		return $this->cause;
-	}
-	
-	public function __toString()
-	{
-		$cause = $this->getCause();
-		return "JWSDK_Exception:\n" . parent::__toString() .
-			(isset($cause) ? ("\nCaused By:\n" . $cause->__toString()) : '');
+		return $this->name;
 	}
 }
