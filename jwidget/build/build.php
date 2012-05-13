@@ -19,14 +19,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+include_once 'php/Util/Array.php';
 include_once 'php/Util/File.php';
 include_once 'php/Util/String.php';
 
 include_once 'php/Mode.php';
 include_once 'php/Mode/Debug.php';
 include_once 'php/Mode/Release.php';
-include_once 'php/Mode/Compress.php';
-include_once 'php/Mode/Link.php';
 
 if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 {
@@ -40,14 +39,24 @@ if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 include_once 'php/Log.php';
 
 include_once 'php/Builder.php';
-include_once 'php/Converter.php';
-include_once 'php/Converter/JwHtml.php';
-include_once 'php/Converter/Txt.php';
-include_once 'php/Converter/Html.php';
-include_once 'php/Converter/Json.php';
-include_once 'php/Converter/Js.php';
-include_once 'php/Converter/Util.php';
 include_once 'php/GlobalConfig.php';
+include_once 'php/Package.php';
+include_once 'php/Package/Manager.php';
+include_once 'php/Page.php';
+include_once 'php/Page/Manager.php';
+include_once 'php/Resource.php';
+include_once 'php/Resource/Converter.php';
+include_once 'php/Resource/Converter/JwHtml.php';
+include_once 'php/Resource/Converter/Txt.php';
+include_once 'php/Resource/Converter/Html.php';
+include_once 'php/Resource/Converter/Json.php';
+include_once 'php/Resource/Converter/Js.php';
+include_once 'php/Resource/Converter/Util.php';
+include_once 'php/Resource/Manager.php';
+include_once 'php/Service.php';
+include_once 'php/Service/Manager.php';
+include_once 'php/Template.php';
+include_once 'php/Template/Manager.php';
 include_once 'php/Variables.php';
 
 $date = date('Y-m-d H:i:s');
@@ -56,8 +65,8 @@ JWSDK_Log::logTo('build.log', 'Building frontend...');
 
 try
 {
-    $builder = new JWSDK_Builder();
-    $builder->build($argv[1]);
+    $builder = new JWSDK_Builder($argv[1]);
+    $builder->build();
 }
 catch (Exception $e)
 {

@@ -19,13 +19,26 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Util_Array
+class JWSDK_Service
 {
-	public static function get( // *
-		$array,          // Array
-		$property,       // String
-		$default = null) // *
+	private $name;     // String
+	private $contents; // String
+	
+	public function __construct(
+		$name,     // String
+		$contents) // String
 	{
-		return isset($array[$property]) ? $array[$property] : $default;
+		$this->name     = $name;
+		$this->contents = $contents;
+	}
+	
+	public function getName() // String
+	{
+		return $this->name;
+	}
+	
+	public function getContents() // String
+	{
+		return $this->contents;
 	}
 }

@@ -21,84 +21,79 @@
 
 class JWSDK_Page
 {
-	private $name;
-	private $base;
-	private $template;
-	private $title;
-	private $css = array();
-	private $js = array();
-	private $services = array();
-	private $custom = array();
-	private $_hasOutput;
+	private $name;               // String
+	private $base;               // String
+	private $template;           // String
+	private $title = '';         // String
+	private $css = array();      // Array of String
+	private $js = array();       // Array of String
+	private $services = array(); // Map from String to Boolean
+	private $custom = array();   // Map from String to String
 	
-	public function __construct($name, $json, $hasOutput)
+	public function __construct(
+		$name, // String
+		$json) // Object
 	{
-		$this->name     = name;
+		$this->name     = $name;
 		$this->base     = JWSDK_Util_Array::get($json, 'base');
 		$this->template = JWSDK_Util_Array::get($json, 'template');
 		$this->title    = JWSDK_Util_Array::get($json, 'title');
 		
 		if (isset($json['css']))
-		{
-			$csss = $json['css'];
-			for ($i = 0; $i < count($csss); $i++)
-				$this->css[] = $csss[$i];
-		}
+			$this->css = array_merge($this->css, $json['css']);
 		
-		$this->_hasOutput = $hasOutput;
+		if (isset($json['js']))
+			$this->js = array_merge($this->js, $json['js']);
+		
+		if (isset($json['services']))
+			$this->services = array_merge($this->services, $json['services']);
+		
+		if (isset($json['custom']))
+			$this->custom = array_merge($this->custom, $json['custom']);
 	}
 	
-	public function getName()
+	public function getName() // String
 	{
 		return $this->name;
 	}
 	
-	public function getBase()
+	public function getBase() // String
 	{
 		return $this->base;
 	}
 	
-	public function getTemplate()
+	public function getTemplate() // String
 	{
 		return $this->template;
 	}
 	
-	public function getTitle()
+	public function getTitle() // String
 	{
 		return $this->title;
 	}
 	
-	public function getCss()
+	public function getCss() // Array of String
 	{
 		return $this->css;
 	}
 	
-	public function getJs()
+	public function getJs() // Array of String
 	{
 		return $this->js;
 	}
 	
-	public function getServices()
+	public function getServices() // Map from String to Boolean
 	{
 		return $this->services;
 	}
 	
-	public function getCustom()
+	public function getCustom() // Map from String to String
 	{
 		return $this->custom;
 	}
 	
-	public function hasOutput()
-	{
-		return $this->_hasOutput;
-	}
-	
-	public function setHasOutput($value)
-	{
-		$this->_hasOutput = $value;
-	}
-	
-	public function applyBase($base)
+	public function applyBase(
+		$base) // JWSDK_Page
 	{
 		if (!$this->getTemplate())
 			$this->template = $base->getTemplate();
@@ -110,5 +105,13 @@ class JWSDK_Page
 		$this->js       = array_merge($base->getJs(),       $this->getJs());
 		$this->services = array_merge($base->getServices(), $this->getServices());
 		$this->custom   = array_merge($base->getCustom(),   $this->getCustom());
+	}
+	
+	public function getVariables() // Map from String to Map from String to *
+	{
+		return array(
+			'services' => $this->getServices(),
+			'custom'   => $this->getCustom()
+		);
 	}
 }

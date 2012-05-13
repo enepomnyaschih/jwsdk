@@ -21,26 +21,40 @@
 
 class JWSDK_Package
 {
-	private $name;
-	private $resources = array();
+	private $name;                // String
+	private $resources = array(); // Array of JWSDK_Resource
+	private $compressedResource;  // JWSDK_Resource
 	
-	public function __construct($name)
+	public function __construct(
+		$name) // String
 	{
 		$this->name = $name;
 	}
 	
-	public function getName()
+	public function getName() // String
 	{
 		return $this->name;
 	}
 	
-	public function addResource($resource)
+	public function addResource(
+		$resource) // JWSDK_Resource
 	{
 		$this->resources[] = $resource;
 	}
 	
-	public function getResources()
+	public function getResources() // Array of JWSDK_Resource
 	{
 		return $this->resources;
+	}
+	
+	public function getCompressedResource() // JWSDK_Resource
+	{
+		return $this->compressedResource;
+	}
+	
+	public function setCompressedResource(
+		$value) // JWSDK_Resource
+	{
+		$this->compressedResource = $value;
 	}
 }

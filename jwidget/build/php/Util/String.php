@@ -21,7 +21,9 @@
 
 class JWSDK_Util_String
 {
-	public static function repeat($str, $num)
+	public static function repeat( // String
+		$str, // String
+		$num) // Integer
 	{
 		$buf = array();
 		for ($i = 0; $i < $num; $i++)
@@ -30,7 +32,9 @@ class JWSDK_Util_String
 		return implode('', $buf);
 	}
 	
-	public static function tabulize($str, $num)
+	public static function tabulize( // String
+		$str, // String
+		$num) // Integer
 	{
 		$lines = explode("\n", $str);
 		for ($i = 0; $i < count($lines); $i++)
@@ -39,14 +43,16 @@ class JWSDK_Util_String
 		return implode("\n", $lines);
 	}
 	
-	public static function smoothCrlf($contents)
+	public static function smoothCrlf( // String
+		$contents) // String
 	{
 		$contents = str_replace("\r\n", "\n", $contents);
 		$contents = str_replace("\r", "\n", $contents);
 		return $contents;
 	}
 	
-	public static function removeComments($text)
+	public static function removeComments( // String
+		$text) // String
 	{
 		$text = self::smoothCrlf($text);
 		

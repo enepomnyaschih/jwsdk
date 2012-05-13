@@ -19,38 +19,24 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Mode_Link extends JWSDK_Mode
+class JWSDK_Resource_Converter_Txt extends JWSDK_Resource_Converter
 {
-	public function getId()
+	public function getType() // String
 	{
-		return 'link';
+		return 'txt';
 	}
 	
-	public function getConfigId()
+	public function convertResource( // String, output contents
+		$name,     // String
+		$contents, // String
+		$params)   // Array of String
 	{
-		return 'release';
-	}
-	
-	public function isCompress()
-	{
-		return false;
-	}
-	
-	public function isLink()
-	{
-		return true;
-	}
-	
-	public function isLinkMin()
-	{
-		return true;
-	}
-	
-	public function getDescription()
-	{
-		return "Link html pages in release mode using existing compressed files.\n" .
-		       "Use only if you are sure that source files were not changed.";
+		if (count($params) < 1)
+			throw new Exception("JS txt resource requires variable name in first parameter (name: $name)");
+		
+		$varName  = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
+		$contents = JWSDK_Resource_Converter_Util::smoothText($contents);
+		
+		return "$varName = '$contents';\n";
 	}
 }
-
-JWSDK_Mode::registerMode(new JWSDK_Mode_Link());

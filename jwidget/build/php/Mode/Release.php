@@ -21,32 +21,22 @@
 
 class JWSDK_Mode_Release extends JWSDK_Mode
 {
-	public function getId()
+	public function getId() // String
 	{
 		return 'release';
 	}
 	
-	public function getConfigId()
+	public function getConfigId() // String
 	{
 		return 'release';
 	}
 	
-	public function isCompress()
+	public function isCompress() // Boolean
 	{
 		return true;
 	}
 	
-	public function isLink()
-	{
-		return true;
-	}
-	
-	public function isLinkMin()
-	{
-		return true;
-	}
-	
-	public function getDescription()
+	public function getDescription() // String
 	{
 		return "Compress and link html pages in release mode.";
 	}

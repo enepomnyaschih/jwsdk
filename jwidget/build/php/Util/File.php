@@ -21,7 +21,20 @@
 
 class JWSDK_Util_File
 {
-	public static function fopen_recursive($path, $mode, $chmod = 0755)
+	public static function fopen_recursive( // File
+		$path,         // String
+		$mode,         // String
+		$chmod = 0755) // Integer
+	{
+		if (!self::mkdir_recursive($path, $chmod))
+			return false;
+		
+		return @fopen($path, $mode);
+	}
+	
+	public static function mkdir_recursive( // Boolean
+		$path,         // String
+		$chmod = 0755) // Integer
 	{
 		$i = strrpos($path, '/');
 		if ($i !== false)
@@ -31,6 +44,31 @@ class JWSDK_Util_File
 				return false;
 		}
 		
-		return @fopen($path, $mode);
+		return true;
+	}
+	
+	public static function write( // Boolean
+		$path,     // String
+		$contents) // String
+	{
+		$file = self::fopen_recursive($mergePath, 'w');
+		if ($file === false)
+			return false;
+		
+		fwrite($file, $contents);
+		fclose($file);
+	}
+	
+	public static function compress( // Boolean
+		$source, // String
+		$target) // String
+	{
+		$yuiOutput = array();
+		$yuiStatus = 0;
+		
+		$command = "java -jar yuicompressor.jar $source -o $target --charset utf-8 --line-break 8000 2>> yui.log";
+		exec($command, $yuiOutput, $yuiStatus);
+		
+		return $yuiStatus == 0;
 	}
 }

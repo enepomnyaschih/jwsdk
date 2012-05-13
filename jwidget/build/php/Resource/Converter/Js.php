@@ -19,32 +19,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Mode_Compress extends JWSDK_Mode
+class JWSDK_Resource_Converter_Js extends JWSDK_Resource_Converter
 {
-	public function getId()
+	public function getType() // String
 	{
-		return 'compress';
+		return 'js';
 	}
 	
-	public function getConfigId()
-	{
-		return 'release';
-	}
-	
-	public function isCompress()
-	{
-		return true;
-	}
-	
-	public function isLink()
+	public function isConvertion() // Boolean
 	{
 		return false;
 	}
-	
-	public function getDescription()
-	{
-		return "Just compress source files.";
-	}
 }
-
-JWSDK_Mode::registerMode(new JWSDK_Mode_Compress());

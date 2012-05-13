@@ -19,20 +19,24 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Converter_Html extends JWSDK_Converter
+class JWSDK_Resource_Converter_Html extends JWSDK_Resource_Converter
 {
-	public $type = 'html';
+	public function getType() // String
+	{
+		return 'html';
+	}
 	
-	public function convertResource($source, $contents, $params, $package)
+	public function convertResource( // String, output contents
+		$name,     // String
+		$contents, // String
+		$params)   // Array of String
 	{
 		if (count($params) < 1)
-			throw new Exception("JS html resource requires variable name in first parameter (source: $source, jslist: $package)");
+			throw new Exception("Html resource requires variable name in first parameter (name: $name)");
 		
-		$varName  = JWSDK_Converter_Util::defineJsVar($params[0]);
-		$contents = JWSDK_Converter_Util::smoothHtml($contents);
+		$varName  = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
+		$contents = JWSDK_Resource_Converter_Util::smoothHtml($contents);
 		
 		return "$varName = '$contents';\n";
 	}
 }
-
-JWSDK_Converter::register(new JWSDK_Converter_Html());

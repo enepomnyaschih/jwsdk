@@ -21,67 +21,30 @@
 
 class JWSDK_Package_Manager
 {
-	private $globalConfig;
-	private $packageMap = array();
+	private $globalConfig;         // JWSDK_GlobalConfig
+	private $resourceManager;      // JWSDK_Resource_Manager
+	private $packageMap = array(); // Map from name:String to JWSDK_Package
 	
-	public function __construct($globalConfig)
+	public function __construct(
+		$globalConfig,    // JWSDK_GlobalConfig
+		$resourceManager) // JWSDK_Resource_Manager
 	{
 		$this->globalConfig = $globalConfig;
+		$this->resourceManager = $resourceManager;
 	}
 	
-	public function addPackage($package)
+	public function readPackage( // JWSDK_Package
+		$name) // String
 	{
-		$this->packageMap[$package->getName()] = $package;
-	}
-	
-	public function readPackages()
-	{
-		JWSDK_Log::logTo('build.log', 'Reading JS lists...');
-		$this->readDir('');
-	}
-	
-	public function compressPackages()
-	{
-		JWSDK_Log::logTo('build.log', 'Compressing JS lists...');
-	}
-	
-	private function readDir($path)
-	{
-		$fullPath = $this->globalConfig->getPackageConfigsPath() . $path;
+		$package = $this->getPackage($name);
+		if ($package)
+			return $package;
 		
-		if (is_file($fullPath))
-		{
-			$this->readFile($path);
-			return;
-		}
-		
-		$dir = @opendir($fullPath);
-		if ($dir === false)
-			throw new Exception("Can't open jslists folder (path: $dir)");
-		
-		while (false !== ($child = readdir($dir)))
-		{
-			if ($child !== '.' && $child !== '..')
-				$this->readDir("$path/$child");
-		}
-		closedir($dir);
-	}
-	
-	private function readFile($fullPath)
-	{
-		if (!preg_match('/\.jslist$/', $fullPath))
-			return;
-		
-		// Delete initial slash and extension from path
-		$name = substr($fullPath, 1, strrpos($fullPath, '.') - 1);
-		
-		$path      = $this->globalConfig->getPackagePath     ($name);
-		$buildPath = $this->globalConfig->getPackageBuildPath($name);
-		$mergePath = $this->globalConfig->getPackageMergePath($name);
+		$path = $this->globalConfig->getPackagePath($name);
 		
 		$contents = @file_get_contents($path);
 		if ($contents === false)
-			throw new Exception("Can't open jslist file (name: $name, path: $path)");
+			throw new Exception("Package doesn't exist (name: $name)");
 		
 		$contents = JWSDK_Util_String::removeComments($contents);
 		
@@ -90,8 +53,64 @@ class JWSDK_Package_Manager
 		
 		$package = new JWSDK_Package($name);
 		for ($i = 0; $i < count($scripts); ++$i)
-			$package->addResource(JWSDK_Resource::fromString($scripts[$i]));
+		{
+			$resource = $this->resourceManager->getResourceByDefinition($scripts[$i]);
+			$resource = $this->resourceManager->convertResource($resource);
+			
+			$package->addResource($resource);
+		}
 		
 		$this->addPackage($package);
+		
+		return $package;
+	}
+	
+	public function compressPackage( // JWSDK_Resource, compressed file
+		$package) // JWSDK_Package
+	{
+		$compressedResource = $package->getCompressedResource();
+		if ($compressedResource)
+			return $compressedResource;
+		
+		$name = $package->getName();
+		
+		$mergePath = $this->globalConfig->getPackageMergePath($name);
+		$buildPath = $this->globalConfig->getPackageBuildPath($name);
+		
+		if (!JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package)))
+			throw new Exception("Can't create merged js file (name: $name)");
+		
+		if (!JWSDK_Util_File::mkdir_recursive($buildPath))
+			throw new Exception("Can't create directory for output js file (name: $name)");
+		
+		if (!JWSDK_Util_File::compress($mergePath, $buildPath))
+			throw new Exception("Error while running YUI Compressor (name: $name, input: $mergePath, output: $buildPath). See signin/build/yui.log for details");
+		
+		$compressedResource = new JWSDK_Resource($this->globalConfig->getPackageBuildUrl($name), 'js');
+		$package->setCompressedResource($compressedResource);
+		
+		return $compressedResource;
+	}
+	
+	private function getPackageMergedContents( // String
+		$package) // JWSDK_Package
+	{
+		$buf = array()
+		foreach ($package->getResources() as $resource)
+			$buf[] = $this->resourceManager->getResourceContents($resource);
+		
+		return implode("\n", $buf);
+	}
+	
+	private function addPackage(
+		$package) // JWSDK_Package
+	{
+		$this->packages[$package->getName()] = $package;
+	}
+	
+	private function getPackage( // JWSDK_Package
+		$name) // String
+	{
+		return JWSDK_Util_Array::get($this->packages, $name);
 	}
 }

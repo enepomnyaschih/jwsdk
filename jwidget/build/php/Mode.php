@@ -21,44 +21,36 @@
 
 class JWSDK_Mode
 {
-	private static $modes = array();
+	private static $modes = array(); // Map from id:String to JWSDK_Mode
 	
-	public function getId()
+	public function getId() // String
 	{
 		throw new Exception('Method not implemented');
 	}
 	
-	public function getConfigId()
+	public function getConfigId() // String
 	{
 		throw new Exception('Method not implemented');
 	}
 	
-	public function isCompress()
+	public function isCompress() // Boolean
 	{
 		throw new Exception('Method not implemented');
 	}
 	
-	public function isLink()
+	public function getDescription() // String
 	{
 		throw new Exception('Method not implemented');
 	}
 	
-	public function isLinkMin()
-	{
-		throw new Exception('Method not implemented');
-	}
-	
-	public function getDescription()
-	{
-		throw new Exception('Method not implemented');
-	}
-	
-	public static function registerMode($mode)
+	public static function registerMode(
+		$mode) // JWSDK_Mode
 	{
 		self::$modes[$mode->getId()] = $mode;
 	}
 	
-	public static function getMode($id)
+	public static function getMode( // JWSDK_Mode
+		$id) // String
 	{
 		if (!isset(self::$modes[$id]))
 			return null;
@@ -66,7 +58,7 @@ class JWSDK_Mode
 		return self::$modes[$id];
 	}
 	
-	public static function getModesDescription()
+	public static function getModesDescription() // String
 	{
 		$buf = array();
 		

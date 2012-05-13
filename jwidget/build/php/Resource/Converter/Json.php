@@ -19,20 +19,23 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Converter_Txt extends JWSDK_Converter
+class JWSDK_Resource_Converter_Json extends JWSDK_Resource_Converter
 {
-	public $type = 'txt';
+	public function getType() // String
+	{
+		return 'json';
+	}
 	
-	public function convertResource($source, $contents, $params, $package)
+	public function convertResource( // String, output contents
+		$name,     // String
+		$contents, // String
+		$params)   // Array of String
 	{
 		if (count($params) < 1)
-			throw new Exception("JS txt resource requires variable name in first parameter (source: $source, jslist: $package)");
+			throw new Exception("Json resource requires variable name in first parameter (name: $name)");
 		
-		$varName  = JWSDK_Converter_Util::defineJsVar($params[0]);
-		$contents = JWSDK_Converter_Util::smoothText($contents);
+		$varName = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
 		
-		return "$varName = '$contents';\n";
+		return "$varName = $contents;\n";
 	}
 }
-
-JWSDK_Converter::register(new JWSDK_Converter_Txt());

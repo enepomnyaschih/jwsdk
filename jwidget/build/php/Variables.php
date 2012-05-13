@@ -21,9 +21,11 @@
 
 class JWSDK_Variables
 {
-	private $vars;
+	private $vars; // Map from String to Map from String to *
 	
-	public function __construct($base = null, $vars = null)
+	public function __construct(
+		$base = null, // JWSDK_Variables
+		$vars = null) // Map from String to Map from String to *
 	{
 		$this->vars = array(
 			'services' => array(),
@@ -36,12 +38,12 @@ class JWSDK_Variables
 		$this->apply($vars);
 	}
 	
-	public function getVars()
+	public function getVars() // Map from String to Map from String to *
 	{
 		return $this->vars;
 	}
 	
-	public function getServices()
+	public function getServices() // Array of String
 	{
 		$result = array();
 		$services = $this->vars['services'];
@@ -54,12 +56,13 @@ class JWSDK_Variables
 		return $result;
 	}
 	
-	public function getCustom()
+	public function getCustom() // Map from String to String
 	{
 		return $this->vars['custom'];
 	}
 	
-	public function apply($vars)
+	public function apply(
+		$vars) // Map from String to Map from String to *
 	{
 		if ($vars === null)
 			return;
@@ -68,7 +71,8 @@ class JWSDK_Variables
 		$this->applyVar($vars, 'custom');
 	}
 	
-	public function applyConfig($path)
+	public function applyConfig(
+		$path) // String
 	{
 		$contents = @file_get_contents($path);
 		if ($contents === false)
@@ -78,7 +82,9 @@ class JWSDK_Variables
 		$this->apply($config);
 	}
 	
-	private function applyVar($vars, $name)
+	private function applyVar(
+		$vars, // Map from String to Map from String to *
+		$name) // String
 	{
 		if (!isset($vars[$name]))
 			return;

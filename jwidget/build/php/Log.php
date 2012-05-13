@@ -21,12 +21,13 @@
 
 class JWSDK_Log
 {
-	private $path;
-	private $file;
+	private $path; // String
+	private $file; // File
 	
-	private static $logs = array();
+	private static $logs = array(); // Map from path:String to JWSDK_Log
 	
-	public function __construct($path)
+	public function __construct(
+		$path) // String
 	{
 		$this->path = $path;
 		$this->file = fopen($path, 'a');
@@ -39,14 +40,16 @@ class JWSDK_Log
 		@fclose($this->file);
 	}
 	
-	public function log($msg)
+	public function log(
+		$msg) // String
 	{
 		$msg = $msg . "\n";
 		echo $msg;
 		fwrite($this->file, $msg);
 	}
 	
-	public static function getLog($path)
+	public static function getLog( // JWSDK_Log
+		$path) // String
 	{
 		if (!isset(self::$logs[$path]))
 			self::$logs[$path] = new JWSDK_Log($path);
@@ -54,7 +57,9 @@ class JWSDK_Log
 		return self::$logs[$path];
 	}
 	
-	public static function logTo($path, $msg)
+	public static function logTo(
+		$path, // String
+		$msg)  // String
 	{
 		self::getLog($path)->log($msg);
 	}

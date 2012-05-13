@@ -19,14 +19,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Converter_Util
+class JWSDK_Resource_Converter_Util
 {
-	static function defineJsVar($varName)
+	static function defineJsVar( // String, JS fragment
+		$varName) // String
 	{
 		return (strpos($varName, ".") === false) ? "var $varName" : $varName;
 	}
 	
-	static function smoothHtml($contents)
+	static function smoothHtml( // String
+		$contents) // String
 	{
 		$contents = trim($contents);
 		$contents = preg_replace('/>\ *\n\s*</', '><', $contents);
@@ -36,7 +38,8 @@ class JWSDK_Converter_Util
 		return $contents;
 	}
 	
-	static function smoothText($contents)
+	static function smoothText( // String
+		$contents) // String
 	{
 		return str_replace(array("\n", "\r", "\t", "'"), array("\\n\\\n", "\\r", "\\t", "\\'"), $contents);
 	}

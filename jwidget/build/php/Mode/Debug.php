@@ -21,32 +21,22 @@
 
 class JWSDK_Mode_Debug extends JWSDK_Mode
 {
-	public function getId()
+	public function getId() // String
 	{
 		return 'debug';
 	}
 	
-	public function getConfigId()
+	public function getConfigId() // String
 	{
 		return 'debug';
 	}
 	
-	public function isCompress()
+	public function isCompress() // Boolean
 	{
 		return false;
 	}
 	
-	public function isLink()
-	{
-		return true;
-	}
-	
-	public function isLinkMin()
-	{
-		return false;
-	}
-	
-	public function getDescription()
+	public function getDescription() // String
 	{
 		return "Link html pages in debug mode\n" .
 		       "(no compression, external services are filtered).";

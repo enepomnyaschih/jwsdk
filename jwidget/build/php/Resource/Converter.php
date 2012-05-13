@@ -19,19 +19,23 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Converter_Json extends JWSDK_Converter
+class JWSDK_Resource_Converter
 {
-	public $type = 'json';
-	
-	public function convertResource($source, $contents, $params, $package)
+	public function getType() // String
 	{
-		if (count($params) < 1)
-			throw new Exception("JS json resource requires variable name in first parameter (source: $source, jslist: $package)");
-		
-		$varName = JWSDK_Converter_Util::defineJsVar($params[0]);
-		
-		return "$varName = $contents;\n";
+		throw new Exception('Method not implemented');
+	}
+	
+	public function isConvertion() // Boolean
+	{
+		return true;
+	}
+	
+	public function convertResource( // String, output contents
+		$name,     // String
+		$contents, // String
+		$params)   // Array of String
+	{
+		throw new Exception('Method not implemented');
 	}
 }
-
-JWSDK_Converter::register(new JWSDK_Converter_Json());

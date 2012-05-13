@@ -21,51 +21,32 @@
 
 class JWSDK_Resource
 {
-	private $name;
-	private $type;
-	private $params;
+	private $name;   // String
+	private $type;   // String
+	private $params; // Array of String
 	
-	public function __construct($name, $type, $params = array())
+	public function __construct(
+		$name,             // String
+		$type,             // String
+		$params = array()) // Array of String
 	{
 		$this->name   = $name;
 		$this->type   = $type;
 		$this->params = $params;
 	}
 	
-	public function getName()
+	public function getName() // String
 	{
 		return $this->name;
 	}
 	
-	public function getType()
+	public function getType() // String
 	{
 		return $this->type;
 	}
 	
-	public function getParams()
+	public function getParams() // Array of String
 	{
 		return $this->params;
-	}
-	
-	public static function fromString($str)
-	{
-		$tokens = explode(":", $str);
-		$name = trim($tokens[0]);
-		$type = JWSDK_Converter::getResourceType($name);
-		if (!$type)
-			throw new Exception("Unknown resource type (name: $name)");
-		
-		if (count($tokens) == 1)
-		{
-			$params = array();
-		}
-		else
-		{
-			$params = explode(",", $tokens[1]);
-			for ($i = 0; $i < count($params); $i++)
-				$params[$i] = trim($params[$i]);
-		}
-		
-		return new JWSDK_Resource($name, $type, $params);
 	}
 }
