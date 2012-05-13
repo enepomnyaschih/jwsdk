@@ -71,7 +71,7 @@ class JWSDK_Resource_Manager
 		JWSDK_Log::logTo('build.log', "Converting resource $name");
 		
 		$sourceContents = $this->getResourceContents($resource);
-		$buildContents = $converter->convertResource($name, $sourceContents, $params);
+		$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
 		
 		$buildName = $this->globalConfig->getResourceBuildName($name);
 		$buildPath = $this->globalConfig->getResourceBuildPath($name);

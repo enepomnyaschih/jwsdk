@@ -148,7 +148,7 @@ class JWSDK_GlobalConfig
 		return $this->getPublicPath() . "/$name";
 	}
 	
-	public function getResourceBuildUrl( // String
+	public function getResourceBuildName( // String
 		$name) // String
 	{
 		return $this->getBuildUrl() . "/$name.js";
@@ -157,7 +157,7 @@ class JWSDK_GlobalConfig
 	public function getResourceBuildPath( // String
 		$name) // String
 	{
-		return $this->getPublicPath() . "/" . $this->getResourceBuildUrl($name);
+		return $this->getPublicPath() . "/" . $this->getResourceBuildName($name);
 	}
 	
 	public function getResourceInclusionUrl( // String
