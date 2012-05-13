@@ -39,6 +39,7 @@ if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 include_once 'php/Log.php';
 
 include_once 'php/Builder.php';
+include_once 'php/Exception.php';
 include_once 'php/GlobalConfig.php';
 include_once 'php/Package.php';
 include_once 'php/Package/Manager.php';
@@ -68,9 +69,14 @@ try
     $builder = new JWSDK_Builder($argv[1]);
     $builder->buildPages();
 }
+catch (JWSDK_Exception $e)
+{
+    JWSDK_Log::logTo('build.log', "Error: " . $e->getMessage());
+    exit(1);
+}
 catch (Exception $e)
 {
-    JWSDK_Log::logTo('build.log', "ERROR! " . $e->getMessage());
+    JWSDK_Log::logTo('build.log', "\nUnexpected error occured!\nPlease report this to jWidget SDK developers.\nError: " . $e->getMessage());
     exit(1);
 }
 
