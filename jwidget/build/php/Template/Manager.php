@@ -38,7 +38,7 @@ class JWSDK_Template_Manager
 			return $template;
 		
 		$path = $this->globalConfig->getTemplatePath($name);
-		$contents = @file_get_contents($path);
+		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Template doesn't exist (name: $name)");
 		

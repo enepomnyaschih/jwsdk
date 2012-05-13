@@ -91,7 +91,7 @@ class JWSDK_Page_Manager
 	private function buildPage( // JWSDK_Page
 		$name) // String
 	{
-		JWSDK_Log::logTo('build.log', "Building page $name...");
+		JWSDK_Log::logTo('build.log', "Building page $name");
 		
 		$page = $this->readPage("pages/$name");
 		
@@ -116,7 +116,7 @@ class JWSDK_Page_Manager
 			return $page;
 		
 		$path = $this->globalConfig->getPageConfigPath($name);
-		$contents = @file_get_contents($path);
+		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Can't open page config file (name: $name, path: $path)");
 		

@@ -38,7 +38,7 @@ class JWSDK_Service_Manager
 			return $service;
 		
 		$path = $this->globalConfig->getServicePath($name);
-		$contents = @file_get_contents($path);
+		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Service doesn't exist (name: $name)");
 		

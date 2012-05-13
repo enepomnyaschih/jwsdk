@@ -21,6 +21,12 @@
 
 class JWSDK_Util_File
 {
+	public static function file_get_contents( // String
+		$path) // String
+	{
+		return @file_get_contents($path);
+	}
+	
 	public static function fopen_recursive( // File
 		$path,         // String
 		$mode,         // String

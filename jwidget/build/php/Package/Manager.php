@@ -42,7 +42,7 @@ class JWSDK_Package_Manager
 		
 		$path = $this->globalConfig->getPackagePath($name);
 		
-		$contents = @file_get_contents($path);
+		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Package doesn't exist (name: $name)");
 		
@@ -74,7 +74,7 @@ class JWSDK_Package_Manager
 		
 		$name = $package->getName();
 		
-		JWSDK_Log::logTo('build.log', "Compressing package $name...");
+		JWSDK_Log::logTo('build.log', "Compressing package $name");
 		
 		$mergePath = $this->globalConfig->getPackageMergePath($name);
 		$buildPath = $this->globalConfig->getPackageBuildPath($name);

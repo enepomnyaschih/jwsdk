@@ -91,7 +91,7 @@ class JWSDK_Resource_Manager
 	{
 		$name = $resource->getName();
 		$sourcePath = $this->globalConfig->getResourceSourcePath($name);
-		$contents = @file_get_contents($sourcePath);
+		$contents = JWSDK_Util_File::file_get_contents($sourcePath);
 		if ($contents === false)
 			throw new Exception("Can't open resource file (name: $name)");
 		
