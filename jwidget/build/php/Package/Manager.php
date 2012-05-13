@@ -21,9 +21,9 @@
 
 class JWSDK_Package_Manager
 {
-	private $globalConfig;         // JWSDK_GlobalConfig
-	private $resourceManager;      // JWSDK_Resource_Manager
-	private $packageMap = array(); // Map from name:String to JWSDK_Package
+	private $globalConfig;       // JWSDK_GlobalConfig
+	private $resourceManager;    // JWSDK_Resource_Manager
+	private $packages = array(); // Map from name:String to JWSDK_Package
 	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
@@ -74,6 +74,8 @@ class JWSDK_Package_Manager
 		
 		$name = $package->getName();
 		
+		JWSDK_Log::logTo('build.log', "Compressing package $name...");
+		
 		$mergePath = $this->globalConfig->getPackageMergePath($name);
 		$buildPath = $this->globalConfig->getPackageBuildPath($name);
 		
@@ -112,5 +114,20 @@ class JWSDK_Package_Manager
 		$name) // String
 	{
 		return JWSDK_Util_Array::get($this->packages, $name);
+	}
+	
+	private static function removeEmptyStrings($source)
+	{
+		$result = array();
+		foreach ($source as $value)
+		{
+			$row = trim($value);
+			if (empty($row))
+				continue;
+			
+			$result[] = $row;
+		}
+		
+		return $result;
 	}
 }

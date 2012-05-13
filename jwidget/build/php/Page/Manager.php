@@ -85,14 +85,15 @@ class JWSDK_Page_Manager
 		// Delete initial slash and extension from path
 		$name = substr($fullPath, 1, strrpos($fullPath, '.') - 1);
 		
-		JWSDK_Log::logTo('build.log', "Building page $name...");
 		$this->buildPage($name);
 	}
 	
 	private function buildPage( // JWSDK_Page
 		$name) // String
 	{
-		$page = $this->readPage($name);
+		JWSDK_Log::logTo('build.log', "Building page $name...");
+		
+		$page = $this->readPage("pages/$name");
 		
 		$templateName = $page->getTemplate();
 		if (!$templateName)

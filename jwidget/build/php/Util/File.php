@@ -51,12 +51,14 @@ class JWSDK_Util_File
 		$path,     // String
 		$contents) // String
 	{
-		$file = self::fopen_recursive($mergePath, 'w');
+		$file = self::fopen_recursive($path, 'w');
 		if ($file === false)
 			return false;
 		
 		fwrite($file, $contents);
 		fclose($file);
+		
+		return true;
 	}
 	
 	public static function compress( // Boolean

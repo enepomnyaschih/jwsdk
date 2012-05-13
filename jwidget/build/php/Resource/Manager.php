@@ -113,7 +113,7 @@ class JWSDK_Resource_Manager
 	private function getConverterByResourceName( // JWSDK_Resource_Converter
 		$name) // String
 	{
-		foreach ($this->converters as $converter)
+		foreach ($this->converters as $type => $converter)
 		{
 			if (preg_match("/\.$type$/i", $name))
 				return $converter;
