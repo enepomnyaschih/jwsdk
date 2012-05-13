@@ -46,6 +46,7 @@ include_once 'php/Exception/CanNotWriteFile.php';
 include_once 'php/Exception/CompressorError.php';
 include_once 'php/Exception/DuplicatedResourceError.php';
 include_once 'php/Exception/InvalidResourceParameter.php';
+include_once 'php/Exception/MethodNotImplemented.php';
 include_once 'php/Exception/PackageCompressError.php';
 include_once 'php/Exception/PackageReadError.php';
 include_once 'php/Exception/PageBuildError.php';

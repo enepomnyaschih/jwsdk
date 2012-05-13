@@ -25,22 +25,22 @@ class JWSDK_Mode
 	
 	public function getId() // String
 	{
-		throw new Exception('Method not implemented');
+		throw new JWSDK_Exception_MethodNotImplemented();
 	}
 	
 	public function getConfigId() // String
 	{
-		throw new Exception('Method not implemented');
+		throw new JWSDK_Exception_MethodNotImplemented();
 	}
 	
 	public function isCompress() // Boolean
 	{
-		throw new Exception('Method not implemented');
+		throw new JWSDK_Exception_MethodNotImplemented();
 	}
 	
 	public function getDescription() // String
 	{
-		throw new Exception('Method not implemented');
+		throw new JWSDK_Exception_MethodNotImplemented();
 	}
 	
 	public static function registerMode(

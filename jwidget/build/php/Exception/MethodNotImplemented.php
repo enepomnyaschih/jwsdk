@@ -19,23 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter
+class JWSDK_Exception_MethodNotImplemented extends Exception
 {
-	public function getType() // String
+	public function __construct()
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function isConvertion() // Boolean
-	{
-		return true;
-	}
-	
-	public function convertResource( // String, output contents
-		$name,     // String
-		$contents, // String
-		$params)   // Array of String
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
+		parent::__construct('Method is not implemented is base class and must be overridden');
 	}
 }
