@@ -1,0 +1,5 @@
+0.3
+
+1.  Removed "link" and "compress" build modes
+2.  Improved logging
+3.  Ignore packages that are not attached to any page
