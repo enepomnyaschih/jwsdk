@@ -19,26 +19,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Runtime
-class JWSDK_Exception_CanNotReadFile extends JWSDK_Exception
+class JWSDK_Exception_ResourceConvertionError extends JWSDK_Exception
 {
-	private $path;
-	private $tip;
+	private $name;
 	
-	public function __construct($path, $tip)
+	public function __construct($name, $cause)
 	{
-		parent::__construct("Can't find $tip '$path'");
-		$this->path = $path;
-		$this->tip = $tip;
+		parent::__construct("Error occured while converting resource '$name'\n" . $cause->getMessage(), $cause);
+		$this->name = $name;
 	}
 	
-	public function getPath()
+	public function getName()
 	{
-		return $this->path;
-	}
-	
-	public function getTip()
-	{
-		return $this->tip;
+		return $this->name;
 	}
 }

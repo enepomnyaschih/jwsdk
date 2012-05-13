@@ -64,21 +64,28 @@ class JWSDK_Resource_Manager
 	{
 		$name = $resource->getName();
 		
-		$converter = $this->getConverter($resource->getType());
-		if (!$converter->isConvertion())
-			return $resource;
-		
-		JWSDK_Log::logTo('build.log', "Converting resource $name");
-		
-		$sourceContents = $this->getResourceContents($resource);
-		$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
-		
-		$buildName = $this->getResourceBuildName($name);
-		$buildPath = $this->getResourceBuildPath($name);
-		
-		JWSDK_Util_File::write($buildPath, $buildContents);
-		
-		return new JWSDK_Resource($buildName, 'js');
+		try
+		{
+			$converter = $this->getConverter($resource->getType());
+			if (!$converter->isConvertion())
+				return $resource;
+			
+			JWSDK_Log::logTo('build.log', "Converting resource $name");
+			
+			$sourceContents = $this->getResourceContents($resource);
+			$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
+			
+			$buildName = $this->getResourceBuildName($name);
+			$buildPath = $this->getResourceBuildPath($name);
+			
+			JWSDK_Util_File::write($buildPath, $buildContents);
+			
+			return new JWSDK_Resource($buildName, 'js');
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_ResourceConvertion($name, $e);
+		}
 	}
 	
 	public function getResourceContents( // String
@@ -86,21 +93,14 @@ class JWSDK_Resource_Manager
 	{
 		$name = $resource->getName();
 		$sourcePath = $this->getResourceSourcePath($name);
-		$contents = JWSDK_Util_File::file_get_contents($sourcePath);
-		if ($contents === false)
-			throw new Exception("Can't open resource file (name: $name)");
-		
-		return $contents;
+		return JWSDK_Util_File::read($sourcePath, 'resource file');
 	}
 	
 	public function getResourceInclusionUrl( // String
 		$name) // String
 	{
 		$sourcePath = $this->getResourceSourcePath($name);
-		if (!file_exists($sourcePath))
-			throw new Exception("Can't find resource (name: $name)");
-		
-		return $this->globalConfig->getUrlPrefix() . "$name?timestamp=" . filemtime($sourcePath);
+		return $this->globalConfig->getUrlPrefix() . "$name?timestamp=" . JWSDK_Util_File::mtime($sourcePath, 'resource file');
 	}
 	
 	private function getResourceSourcePath( // String

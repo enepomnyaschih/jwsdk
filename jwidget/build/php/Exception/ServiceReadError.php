@@ -19,18 +19,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception_CanNotOpenGlobalConfig extends JWSDK_Exception
+class JWSDK_Exception_ServiceReadError extends JWSDK_Exception
 {
-	private $path;
+	private $name;
 	
-	public function __construct($path)
+	public function __construct($name, $cause)
 	{
-		parent::__construct("Can't open main config '$path'");
-		$this->path = $path;
+		parent::__construct("Error occured while reading service config '$name'\n" . $cause->getMessage(), $cause);
+		$this->name = $name;
 	}
 	
-	public function getPath()
+	public function getName()
 	{
-		return $this->path;
+		return $this->name;
 	}
 }

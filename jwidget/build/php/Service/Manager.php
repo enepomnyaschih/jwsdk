@@ -37,15 +37,19 @@ class JWSDK_Service_Manager
 		if ($service)
 			return $service;
 		
-		$path = $this->getServicePath($name);
-		$contents = JWSDK_Util_File::file_get_contents($path);
-		if ($contents === false)
-			throw new Exception("Service doesn't exist (name: $name)");
-		
-		$service = new JWSDK_Service($name, $contents);
-		$this->registerService($service);
-		
-		return $service;
+		try
+		{
+			$path = $this->getServicePath($name);
+			$contents = JWSDK_Util_File::read($path, 'service config');
+			$service = new JWSDK_Service($name, $contents);
+			$this->registerService($service);
+			
+			return $service;
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_ServiceReadError($name, $e);
+		}
 	}
 	
 	private function getServicePath( // String

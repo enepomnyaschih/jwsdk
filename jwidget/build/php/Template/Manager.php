@@ -37,15 +37,19 @@ class JWSDK_Template_Manager
 		if ($template)
 			return $template;
 		
-		$path = $this->getTemplatePath($name);
-		$contents = JWSDK_Util_File::file_get_contents($path);
-		if ($contents === false)
-			throw new Exception("Template doesn't exist (name: $name)");
-		
-		$template = new JWSDK_Template($name, $contents);
-		$this->registerTemplate($template);
-		
-		return $template;
+		try
+		{
+			$path = $this->getTemplatePath($name);
+			$contents = JWSDK_Util_File::read($path, 'page template');
+			$template = new JWSDK_Template($name, $contents);
+			$this->registerTemplate($template);
+			
+			return $template;
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_TemplateReadError($name, $e);
+		}
 	}
 	
 	private function getTemplatePath( // String

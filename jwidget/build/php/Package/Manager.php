@@ -44,10 +44,7 @@ class JWSDK_Package_Manager
 		{
 			$path = $this->getPackagePath($name);
 			
-			$contents = JWSDK_Util_File::file_get_contents($path);
-			if ($contents === false)
-				throw new JWSDK_Exception_PackageDoesNotExist($name);
-			
+			$contents = JWSDK_Util_File::read($path, 'package config');
 			$contents = JWSDK_Util_String::removeComments($contents);
 			
 			$scripts = explode("\n", JWSDK_Util_String::smoothCrlf($contents));

@@ -26,10 +26,7 @@ class JWSDK_GlobalConfig
 	public function __construct(
 		$path = 'config.json') // String
 	{
-		$contents = JWSDK_Util_File::file_get_contents($path);
-		if ($contents === false)
-			throw new JWSDK_Exception_CanNotOpenGlobalConfig($path);
-		
+		$contents = JWSDK_Util_File::read($path, 'global config');
 		$this->json = json_decode($contents, true);
 	}
 	

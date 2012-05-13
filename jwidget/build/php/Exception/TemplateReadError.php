@@ -19,10 +19,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception_PackageDoesNotExist extends JWSDK_Exception
+class JWSDK_Exception_TemplateReadError extends JWSDK_Exception
 {
-	public function __construct()
+	private $name;
+	
+	public function __construct($name, $cause)
 	{
-		parent::__construct('Package does not exist');
+		parent::__construct("Error occured while reading page template '$name'\n" . $cause->getMessage(), $cause);
+		$this->name = $name;
+	}
+	
+	public function getName()
+	{
+		return $this->name;
 	}
 }

@@ -130,7 +130,7 @@ class JWSDK_Page_Manager
 		try
 		{
 			$path = $this->getPageConfigPath($name);
-			$contents = JWSDK_Util_File::file_get_contents($path);
+			$contents = JWSDK_Util_File::read($path, 'page config');
 			$data = json_decode($contents, true);
 			$page = new JWSDK_Page($name, $data);
 			

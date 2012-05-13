@@ -74,10 +74,7 @@ class JWSDK_Variables
 	public function applyConfig(
 		$path) // String
 	{
-		$contents = JWSDK_Util_File::file_get_contents($path);
-		if ($contents === false)
-			throw new Exception("Can't open mode config (path: $path)");
-		
+		$contents = JWSDK_Util_File::read($path, 'mode config');
 		$config = json_decode($contents, true);
 		$this->apply($config);
 	}

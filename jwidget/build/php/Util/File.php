@@ -21,14 +21,25 @@
 
 class JWSDK_Util_File
 {
-	public static function file_get_contents( // String or false
-		$path) // String
+	public static function read( // String or false
+		$path,         // String
+		$tip = 'file') // String
 	{
 		$result = @file_get_contents($path);
 		if ($result === false)
-			throw new JWSDK_Exception_CanNotReadFile($path);
+			throw new JWSDK_Exception_CanNotReadFile($path, $tip);
 		
 		return $result;
+	}
+	
+	public static function mtime( // Integer
+		$path,         // String
+		$tip = 'file') // String
+	{
+		if (!file_exists($path))
+			throw new JWSDK_Exception_CanNotReadFile($path, $tip);
+		
+		return filemtime($path);
 	}
 	
 	public static function fopen_recursive( // File or false
