@@ -32,7 +32,7 @@ class JWSDK_Resource_Converter_Html extends JWSDK_Resource_Converter
 		$params)   // Array of String
 	{
 		if (count($params) < 1)
-			throw new Exception("Html resource requires variable name in first parameter (name: $name)");
+			throw new JWSDK_Exception_InvalidResourceParameter('Html', 'first', 'variable name');
 		
 		$varName  = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
 		$contents = JWSDK_Resource_Converter_Util::smoothHtml($contents);

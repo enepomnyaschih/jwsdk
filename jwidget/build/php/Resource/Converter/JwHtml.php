@@ -32,7 +32,7 @@ class JWSDK_Resource_Converter_JwHtml extends JWSDK_Resource_Converter
 		$params)   // Array of String
 	{
 		if (count($params) < 1)
-			throw new Exception("JwHtml resource requires class name in first parameter (name: $name)");
+			throw new JWSDK_Exception_InvalidResourceParameter('JwHtml', 'first', 'class name');
 		
 		$className    = $params[0];
 		$templateName = (count($params) < 2) ? 'main' : $params[1];

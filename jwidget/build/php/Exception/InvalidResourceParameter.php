@@ -19,23 +19,32 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Json extends JWSDK_Resource_Converter
+class JWSDK_Exception_InvalidResourceParameter extends JWSDK_Exception
 {
-	public function getType() // String
+	private $type;
+	private $index;
+	private $format;
+	
+	public function __construct($type, $index, $format)
 	{
-		return 'json';
+		parent::__construct("$type resource requires $format in $index parameter\n");
+		$this->type = $type;
+		$this->index = $index;
+		$this->format = $format;
 	}
 	
-	public function convertResource( // String, output contents
-		$name,     // String
-		$contents, // String
-		$params)   // Array of String
+	public function getType()
 	{
-		if (count($params) < 1)
-			throw new JWSDK_Exception_InvalidResourceParameter('Json', 'first', 'variable name');
-		
-		$varName = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
-		
-		return "$varName = $contents;\n";
+		return $this->type;
+	}
+	
+	public function getIndex()
+	{
+		return $this->index;
+	}
+	
+	public function getFormat()
+	{
+		return $this->format;
 	}
 }

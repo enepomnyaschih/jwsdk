@@ -84,7 +84,7 @@ class JWSDK_Resource_Manager
 		}
 		catch (JWSDK_Exception $e)
 		{
-			throw new JWSDK_Exception_ResourceConvertion($name, $e);
+			throw new JWSDK_Exception_ResourceConvertionError($name, $e);
 		}
 	}
 	
