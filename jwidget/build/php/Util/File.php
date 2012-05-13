@@ -24,7 +24,11 @@ class JWSDK_Util_File
 	public static function file_get_contents( // String or false
 		$path) // String
 	{
-		return @file_get_contents($path);
+		$result = @file_get_contents($path);
+		if ($result === false)
+			throw new JWSDK_Exception_CanNotReadFile($path);
+		
+		return $result;
 	}
 	
 	public static function fopen_recursive( // File or false
@@ -33,7 +37,12 @@ class JWSDK_Util_File
 		$chmod = 0755) // Integer
 	{
 		self::mkdir_recursive($path, $chmod);
-		return @fopen($path, $mode);
+		
+		$file = @fopen($path, $mode);
+		if ($file === false)
+			throw new JWSDK_Exception_CanNotWriteFile($path);
+		
+		return $file;
 	}
 	
 	public static function mkdir_recursive(
@@ -54,9 +63,6 @@ class JWSDK_Util_File
 		$contents) // String
 	{
 		$file = self::fopen_recursive($path, 'w');
-		if ($file === false)
-			throw new JWSDK_Exception_CanNotWriteFile($path);
-		
 		fwrite($file, $contents);
 		fclose($file);
 	}

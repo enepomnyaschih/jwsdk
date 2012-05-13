@@ -127,24 +127,28 @@ class JWSDK_Page_Manager
 		if ($page)
 			return $page;
 		
-		$path = $this->getPageConfigPath($name);
-		$contents = JWSDK_Util_File::file_get_contents($path);
-		if ($contents === false)
-			throw new Exception("Can't open page config file (name: $name, path: $path)");
-		
-		$data = json_decode($contents, true);
-		$page = new JWSDK_Page($name, $data);
-		
-		if (isset($data['base']))
+		try
 		{
-			$baseName = $data['base'];
-			$base = $this->readPage($baseName);
-			$page->applyBase($base);
+			$path = $this->getPageConfigPath($name);
+			$contents = JWSDK_Util_File::file_get_contents($path);
+			$data = json_decode($contents, true);
+			$page = new JWSDK_Page($name, $data);
+			
+			if (isset($data['base']))
+			{
+				$baseName = $data['base'];
+				$base = $this->readPage($baseName);
+				$page->applyBase($base);
+			}
+			
+			$this->addPage($page);
+			
+			return $page;
 		}
-		
-		$this->addPage($page);
-		
-		return $page;
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_PageReadError($name, $e);
+		}
 	}
 	
 	private function applyTemplate( // String
