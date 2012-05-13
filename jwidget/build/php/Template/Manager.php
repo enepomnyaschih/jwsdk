@@ -37,7 +37,7 @@ class JWSDK_Template_Manager
 		if ($template)
 			return $template;
 		
-		$path = $this->globalConfig->getTemplatePath($name);
+		$path = $this->getTemplatePath($name);
 		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Template doesn't exist (name: $name)");
@@ -46,6 +46,12 @@ class JWSDK_Template_Manager
 		$this->registerTemplate($template);
 		
 		return $template;
+	}
+	
+	private function getTemplatePath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getTemplatesPath() . "/$name.html";
 	}
 	
 	private function registerTemplate(

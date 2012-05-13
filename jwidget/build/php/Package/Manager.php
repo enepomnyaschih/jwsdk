@@ -40,7 +40,7 @@ class JWSDK_Package_Manager
 		if ($package)
 			return $package;
 		
-		$path = $this->globalConfig->getPackagePath($name);
+		$path = $this->getPackagePath($name);
 		
 		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
@@ -76,8 +76,8 @@ class JWSDK_Package_Manager
 		
 		JWSDK_Log::logTo('build.log', "Compressing package $name");
 		
-		$mergePath = $this->globalConfig->getPackageMergePath($name);
-		$buildPath = $this->globalConfig->getPackageBuildPath($name);
+		$mergePath = $this->getPackageMergePath($name);
+		$buildPath = $this->getPackageBuildPath($name);
 		
 		if (!JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package)))
 			throw new Exception("Can't create merged js file (name: $name)");
@@ -88,7 +88,7 @@ class JWSDK_Package_Manager
 		if (!JWSDK_Util_File::compress($mergePath, $buildPath))
 			throw new Exception("Error while running YUI Compressor (name: $name, input: $mergePath, output: $buildPath). See signin/build/yui.log for details");
 		
-		$compressedResource = new JWSDK_Resource($this->globalConfig->getPackageBuildUrl($name), 'js');
+		$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name), 'js');
 		$package->setCompressedResource($compressedResource);
 		
 		return $compressedResource;
@@ -114,6 +114,35 @@ class JWSDK_Package_Manager
 		$name) // String
 	{
 		return JWSDK_Util_Array::get($this->packages, $name);
+	}
+	
+	private function getBuildPath() // String
+	{
+		return $this->globalConfig->getPublicPath() . '/' . $this->globalConfig->getBuildUrl();
+	}
+	
+	private function getPackagePath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getPackagesPath() . "/$name.jslist";
+	}
+	
+	private function getPackageMergePath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getMergePath() . "/$name.js";
+	}
+	
+	private function getPackageBuildPath( // String
+		$name) // String
+	{
+		return $this->getBuildPath() . "/$name.min.js";
+	}
+	
+	private function getPackageBuildUrl( // String
+		$name) // String
+	{
+		return $this->globalConfig->getBuildUrl() . "/$name.min.js";
 	}
 	
 	private static function removeEmptyStrings($source)

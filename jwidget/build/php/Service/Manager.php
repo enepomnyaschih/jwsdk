@@ -37,7 +37,7 @@ class JWSDK_Service_Manager
 		if ($service)
 			return $service;
 		
-		$path = $this->globalConfig->getServicePath($name);
+		$path = $this->getServicePath($name);
 		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Service doesn't exist (name: $name)");
@@ -46,6 +46,12 @@ class JWSDK_Service_Manager
 		$this->registerService($service);
 		
 		return $service;
+	}
+	
+	private function getServicePath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getServicesPath() . "/$name.html";
 	}
 	
 	private function registerService(

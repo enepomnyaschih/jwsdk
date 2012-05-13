@@ -46,7 +46,7 @@ class JWSDK_Builder
 		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig);
 		$this->serviceManager = new JWSDK_Service_Manager($this->globalConfig);
 		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode, $this->variables,
-			$this->packageManager, $this->templateManager, $this->serviceManager);
+			$this->packageManager, $this->templateManager, $this->serviceManager, $this->resourceManager);
 	}
 	
 	public function buildPages()

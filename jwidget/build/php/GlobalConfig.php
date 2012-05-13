@@ -33,19 +33,30 @@ class JWSDK_GlobalConfig
 		$this->json = json_decode($contents, true);
 	}
 	
-	// ##### Common #####
-	
 	public function getConfigPath() // String
 	{
 		return $this->json['configPath'];
 	}
 	
-	public function getPublicPath() // String
+	public function getPackagesPath() // String
 	{
-		return $this->json['publicPath'];
+		return $this->json['jslistsPath'];
 	}
 	
-	// ##### Modes #####
+	public function getServicesPath() // String
+	{
+		return $this->json['servicesPath'];
+	}
+	
+	public function getTemplatesPath() // String
+	{
+		return $this->json['templatesPath'];
+	}
+	
+	public function getPagesFolder() // String
+	{
+		return $this->json['pagesFolder'];
+	}
 	
 	public function getModeConfigPath( // String
 		$name) // String
@@ -53,120 +64,28 @@ class JWSDK_GlobalConfig
 		return $this->json['modesPath'] . "/$name.json";
 	}
 	
-	// ##### Packages #####
+	public function getPublicPath() // String
+	{
+		return $this->json['publicPath'];
+	}
 	
 	public function getBuildUrl() // String
 	{
 		return $this->json['buildUrl'];
 	}
 	
-	public function getBuildPath() // String
+	public function getPagesUrl() // String
 	{
-		return $this->getPublicPath() . '/' . $this->getBuildUrl();
+		return $this->json['pagesUrl'];
 	}
 	
-	public function getPackageConfigsPath() // String
+	public function getMergePath() // String
 	{
-		return $this->json['jslistsPath'];
+		return $this->json['tempPath'];
 	}
 	
-	public function getPackagePath( // String
-		$name) // String
+	public function getUrlPrefix() // String
 	{
-		return $this->json['jslistsPath'] . "/$name.jslist";
-	}
-	
-	public function getPackageMergePath( // String
-		$name) // String
-	{
-		return $this->json['tempPath'] . "/$name.js";
-	}
-	
-	public function getPackageBuildPath( // String
-		$name) // String
-	{
-		return $this->getBuildPath() . "/$name.min.js";
-	}
-	
-	public function getPackageBuildUrl( // String
-		$name) // String
-	{
-		return $this->getBuildUrl() . "/$name.min.js";
-	}
-	
-	// ##### Pages #####
-	
-	public function getPagesBuildPath() // String
-	{
-		return $this->getPublicPath() . '/' . $this->json['pagesUrl'];
-	}
-	
-	public function getPageBuildPath( // String
-		$name) // String
-	{
-		return $this->getPagesBuildPath() . "/$name.html";
-	}
-	
-	public function getPageConfigsPath() // String
-	{
-		return $this->getConfigPath() . '/' . $this->json['pagesFolder'];
-	}
-	
-	public function getPageConfigName( // String
-		$pageName) // String
-	{
-		return $this->json['pagesFolder'] . "/$pageName";
-	}
-	
-	public function getPageConfigPath( // String
-		$name) // String
-	{
-		return $this->getConfigPath() . "/$name.json";
-	}
-	
-	// ##### Services #####
-	
-	public function getServicePath( // String
-		$name) // String
-	{
-		return $this->json['servicesPath'] . "/$name.html";
-	}
-	
-	// ##### Templates #####
-	
-	public function getTemplatePath( // String
-		$name) // String
-	{
-		return $this->json['templatesPath'] . "/$name.html";
-	}
-	
-	// ##### Resources #####
-	
-	public function getResourceSourcePath( // String
-		$name) // String
-	{
-		return $this->getPublicPath() . "/$name";
-	}
-	
-	public function getResourceBuildName( // String
-		$name) // String
-	{
-		return $this->getBuildUrl() . "/$name.js";
-	}
-	
-	public function getResourceBuildPath( // String
-		$name) // String
-	{
-		return $this->getPublicPath() . "/" . $this->getResourceBuildName($name);
-	}
-	
-	public function getResourceInclusionUrl( // String
-		$name) // String
-	{
-		$sourcePath = $this->getResourceSourcePath($name);
-		if (!file_exists($sourcePath))
-			throw new Exception("Can't find resource (name: $name)");
-		
-		return $this->json['urlPrefix'] . "$name?timestamp=" . filemtime($sourcePath);
+		return $this->json['urlPrefix'];
 	}
 }

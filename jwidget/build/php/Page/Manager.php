@@ -27,6 +27,7 @@ class JWSDK_Page_Manager
 	private $packageManager;  // JWSDK_Package_Manager
 	private $templateManager; // JWSDK_Template_Manager
 	private $serviceManager;  // JWSDK_Service_Manager
+	private $resourceManager; // JWSDK_Resource_Manager
 	private $pages = array(); // Map from name:String to JWSDK_Page
 	
 	// TODO: Move to JWSDK_Resource after merging CSS and JS together
@@ -38,7 +39,8 @@ class JWSDK_Page_Manager
 		$variables,       // JWSDK_Variables
 		$packageManager,  // JWSDK_Package_Manager
 		$templateManager, // JWSDK_Template_Manager
-		$serviceManager)  // JWSDK_Service_Manager
+		$serviceManager,  // JWSDK_Service_Manager
+		$resourceManager) // JWSDK_Resource_Manager
 	{
 		$this->globalConfig = $globalConfig;
 		$this->mode = $mode;
@@ -46,6 +48,7 @@ class JWSDK_Page_Manager
 		$this->packageManager = $packageManager;
 		$this->templateManager = $templateManager;
 		$this->serviceManager = $serviceManager;
+		$this->resourceManager = $resourceManager;
 	}
 	
 	public function buildPages()
@@ -56,7 +59,7 @@ class JWSDK_Page_Manager
 	private function buildDir(
 		$path) // String
 	{
-		$fullPath = $this->globalConfig->getPageConfigsPath() . $path;
+		$fullPath = $this->getPageConfigsPath() . $path;
 		
 		if (is_file($fullPath))
 		{
@@ -105,7 +108,7 @@ class JWSDK_Page_Manager
 		$template = $this->templateManager->readTemplate($templateName);
 		$contents = $this->applyTemplate($template, $page);
 		
-		if (!JWSDK_Util_File::write($this->globalConfig->getPageBuildPath($name), $contents))
+		if (!JWSDK_Util_File::write($this->getPageBuildPath($name), $contents))
 			throw new Exception("Can't create linked page file (name: $name)");
 		
 		return $page;
@@ -118,7 +121,7 @@ class JWSDK_Page_Manager
 		if ($page)
 			return $page;
 		
-		$path = $this->globalConfig->getPageConfigPath($name);
+		$path = $this->getPageConfigPath($name);
 		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
 			throw new Exception("Can't open page config file (name: $name, path: $path)");
@@ -185,7 +188,7 @@ class JWSDK_Page_Manager
 		if (isset($this->inclusions[$path]))
 			return $this->inclusions[$path];
 		
-		$inclusion = $this->globalConfig->getResourceInclusionUrl($path);
+		$inclusion = $this->resourceManager->getResourceInclusionUrl($path);
 		$inclusion = htmlspecialchars($inclusion);
 		$inclusion = JWSDK_Util_String::tabulize(str_replace('%path%', $inclusion, $template), 2);
 		$this->inclusions[$path] = $inclusion;
@@ -245,6 +248,28 @@ class JWSDK_Page_Manager
 		}
 		
 		return implode("\n", $buf);
+	}
+	
+	private function getPageConfigsPath() // String
+	{
+		return $this->globalConfig->getConfigPath() . '/' . $this->globalConfig->getPagesFolder();
+	}
+	
+	private function getPageConfigPath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getConfigPath() . "/$name.json";
+	}
+	
+	private function getPagesBuildPath() // String
+	{
+		return $this->globalConfig->getPublicPath() . '/' . $this->globalConfig->getPagesUrl();
+	}
+	
+	private function getPageBuildPath( // String
+		$name) // String
+	{
+		return $this->getPagesBuildPath() . "/$name.html";
 	}
 	
 	private function addPage(

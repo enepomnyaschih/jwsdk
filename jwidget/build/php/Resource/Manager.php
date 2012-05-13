@@ -73,8 +73,8 @@ class JWSDK_Resource_Manager
 		$sourceContents = $this->getResourceContents($resource);
 		$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
 		
-		$buildName = $this->globalConfig->getResourceBuildName($name);
-		$buildPath = $this->globalConfig->getResourceBuildPath($name);
+		$buildName = $this->getResourceBuildName($name);
+		$buildPath = $this->getResourceBuildPath($name);
 		
 		$buildFile = JWSDK_Util_File::fopen_recursive($buildPath, 'w');
 		if ($buildFile === false)
@@ -90,12 +90,40 @@ class JWSDK_Resource_Manager
 		$resource) // JWSDK_Resource
 	{
 		$name = $resource->getName();
-		$sourcePath = $this->globalConfig->getResourceSourcePath($name);
+		$sourcePath = $this->getResourceSourcePath($name);
 		$contents = JWSDK_Util_File::file_get_contents($sourcePath);
 		if ($contents === false)
 			throw new Exception("Can't open resource file (name: $name)");
 		
 		return $contents;
+	}
+	
+	public function getResourceInclusionUrl( // String
+		$name) // String
+	{
+		$sourcePath = $this->getResourceSourcePath($name);
+		if (!file_exists($sourcePath))
+			throw new Exception("Can't find resource (name: $name)");
+		
+		return $this->globalConfig->getUrlPrefix() . "$name?timestamp=" . filemtime($sourcePath);
+	}
+	
+	private function getResourceSourcePath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getPublicPath() . "/$name";
+	}
+	
+	private function getResourceBuildName( // String
+		$name) // String
+	{
+		return $this->globalConfig->getBuildUrl() . "/$name.js";
+	}
+	
+	private function getResourceBuildPath( // String
+		$name) // String
+	{
+		return $this->globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($name);
 	}
 	
 	private function registerConverter(
