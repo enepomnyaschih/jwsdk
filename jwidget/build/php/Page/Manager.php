@@ -29,6 +29,9 @@ class JWSDK_Page_Manager
 	private $serviceManager;  // JWSDK_Service_Manager
 	private $pages = array(); // Map from name:String to JWSDK_Page
 	
+	// TODO: Move to JWSDK_Resource after merging CSS and JS together
+	private $inclusions = array();
+	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
 		$mode,            // JWSDK_Mode
@@ -179,9 +182,14 @@ class JWSDK_Page_Manager
 		$path,     // String
 		$template) // String
 	{
-		$path = $this->globalConfig->getResourceInclusionUrl($path);
-		$path = htmlspecialchars($path);
-		return JWSDK_Util_String::tabulize(str_replace('%path%', $path, $template), 2);
+		if (isset($this->inclusions[$path]))
+			return $this->inclusions[$path];
+		
+		$inclusion = $this->globalConfig->getResourceInclusionUrl($path);
+		$inclusion = htmlspecialchars($inclusion);
+		$inclusion = JWSDK_Util_String::tabulize(str_replace('%path%', $inclusion, $template), 2);
+		$this->inclusions[$path] = $inclusion;
+		return $inclusion;
 	}
 	
 	private function buildSourceCss( // String, inclusion HTML fragment
