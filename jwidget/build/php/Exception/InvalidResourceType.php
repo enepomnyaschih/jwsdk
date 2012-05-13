@@ -19,32 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception_InvalidResourceParameter extends JWSDK_Exception
+class JWSDK_Exception_InvalidResourceType extends JWSDK_Exception
 {
-	private $type;
-	private $index;
-	private $format;
-	
-	public function __construct($type, $index, $format)
+	public function __construct()
 	{
-		parent::__construct("$type resource requires $format in $index parameter");
-		$this->type = $type;
-		$this->index = $index;
-		$this->format = $format;
-	}
-	
-	public function getType()
-	{
-		return $this->type;
-	}
-	
-	public function getIndex()
-	{
-		return $this->index;
-	}
-	
-	public function getFormat()
-	{
-		return $this->format;
+		parent::__construct("Resource of this type (file extension) is not supported");
 	}
 }

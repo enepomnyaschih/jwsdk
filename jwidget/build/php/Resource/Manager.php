@@ -41,22 +41,30 @@ class JWSDK_Resource_Manager
 	{
 		$tokens = explode(":", $str);
 		$name = trim($tokens[0]);
-		$converter = $this->getConverterByResourceName($name);
-		if (!$converter)
-			throw new Exception("Unknown resource type (name: $name)");
 		
-		if (count($tokens) == 1)
+		try
 		{
-			$params = array();
+			$converter = $this->getConverterByResourceName($name);
+			if (!$converter)
+				throw new JWSDK_Exception_InvalidResourceType();
+			
+			if (count($tokens) == 1)
+			{
+				$params = array();
+			}
+			else
+			{
+				$params = explode(",", $tokens[1]);
+				for ($i = 0; $i < count($params); $i++)
+					$params[$i] = trim($params[$i]);
+			}
+			
+			return new JWSDK_Resource($name, $converter->getType(), $params);
 		}
-		else
+		catch (JWSDK_Exception $e)
 		{
-			$params = explode(",", $tokens[1]);
-			for ($i = 0; $i < count($params); $i++)
-				$params[$i] = trim($params[$i]);
+			throw new JWSDK_Exception_ResourceReadError($name, $e);
 		}
-		
-		return new JWSDK_Resource($name, $converter->getType(), $params);
 	}
 	
 	public function convertResource( // JWSDK_Resource

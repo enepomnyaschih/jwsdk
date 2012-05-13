@@ -19,32 +19,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception_InvalidResourceParameter extends JWSDK_Exception
+class JWSDK_Exception_ResourceReadError extends JWSDK_Exception
 {
-	private $type;
-	private $index;
-	private $format;
+	private $name;
 	
-	public function __construct($type, $index, $format)
+	public function __construct($name, $cause)
 	{
-		parent::__construct("$type resource requires $format in $index parameter");
-		$this->type = $type;
-		$this->index = $index;
-		$this->format = $format;
+		parent::__construct("Error occured while reading resource '$name'\n" . $cause->getMessage(), $cause);
+		$this->name = $name;
 	}
 	
-	public function getType()
+	public function getName()
 	{
-		return $this->type;
-	}
-	
-	public function getIndex()
-	{
-		return $this->index;
-	}
-	
-	public function getFormat()
-	{
-		return $this->format;
+		return $this->name;
 	}
 }
