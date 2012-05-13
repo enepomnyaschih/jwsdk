@@ -21,10 +21,4 @@ class JWSDK_Exception extends Exception
 		return "JWSDK_Exception:\n" . parent::__toString() .
 			(isset($cause) ? ("\nCaused By:\n" . $cause->__toString()) : '');
 	}
-	
-	public static function incl(
-		$name) // String
-	{
-		include_once "Exception/$name.php";
-	}
 }

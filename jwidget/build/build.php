@@ -40,6 +40,8 @@ include_once 'php/Log.php';
 
 include_once 'php/Builder.php';
 include_once 'php/Exception.php';
+include_once 'php/Exception/CanNotOpenGlobalConfig.php';
+include_once 'php/Exception/PageTemplateIsUndefined.php';
 include_once 'php/GlobalConfig.php';
 include_once 'php/Package.php';
 include_once 'php/Package/Manager.php';

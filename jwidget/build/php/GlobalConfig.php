@@ -29,10 +29,7 @@ class JWSDK_GlobalConfig
 	{
 		$contents = JWSDK_Util_File::file_get_contents($path);
 		if ($contents === false)
-		{
-			JWSDK_Exception::incl('CanNotOpenGlobalConfig');
 			throw new JWSDK_Exception_CanNotOpenGlobalConfig($path);
-		}
 		
 		$this->json = json_decode($contents, true);
 	}
