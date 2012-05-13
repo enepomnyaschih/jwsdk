@@ -95,7 +95,7 @@ class JWSDK_Package_Manager
 	private function getPackageMergedContents( // String
 		$package) // JWSDK_Package
 	{
-		$buf = array()
+		$buf = array();
 		foreach ($package->getResources() as $resource)
 			$buf[] = $this->resourceManager->getResourceContents($resource);
 		

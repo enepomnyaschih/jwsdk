@@ -49,8 +49,7 @@ class JWSDK_Builder
 			$this->packageManager, $this->templateManager, $this->serviceManager);
 	}
 	
-	public function buildPages(
-		$modeName) // String
+	public function buildPages()
 	{
 		$this->pageManager->buildPages();
 	}

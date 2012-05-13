@@ -66,7 +66,7 @@ JWSDK_Log::logTo('build.log', 'Building frontend...');
 try
 {
     $builder = new JWSDK_Builder($argv[1]);
-    $builder->build();
+    $builder->buildPages();
 }
 catch (Exception $e)
 {
