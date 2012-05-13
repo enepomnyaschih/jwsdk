@@ -186,7 +186,7 @@ class JWSDK_Page_Manager
 		
 		$jspathsUnique = array_unique($jspaths);
 		if (count($jspaths) != count($jspathsUnique))
-			throw new Exception("Duplicated resource detected while building page $name");
+			throw new JWSDK_Exception_DuplicatedResourceError();
 		
 		return implode("\n", $buf);
 	}
