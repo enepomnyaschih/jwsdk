@@ -130,7 +130,7 @@ class JWSDK_Package_Manager
 	private function getPackagePath( // String
 		$name) // String
 	{
-		return $this->globalConfig->getPackagesPath() . "/$name.jslist";
+		return $this->globalConfig->getPackagesPath() . "/$name.json";
 	}
 	
 	private function getPackageMergePath( // String

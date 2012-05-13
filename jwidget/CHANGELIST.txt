@@ -1,5 +1,7 @@
 0.3
 
 1.  Removed "link" and "compress" build modes
-2.  Improved logging
-3.  Ignore packages that are not attached to any page
+2.  Renamed "jslists" config folder to "packages"
+3.  Package is json file now instead of plain text (see documentation)
+4.  Improved logging
+5.  Ignore packages that are not attached to any page

@@ -36,7 +36,7 @@ class JWSDK_GlobalConfig
 	
 	public function getPackagesPath() // String
 	{
-		return $this->json['jslistsPath'];
+		return $this->json['packagesPath'];
 	}
 	
 	public function getServicesPath() // String
