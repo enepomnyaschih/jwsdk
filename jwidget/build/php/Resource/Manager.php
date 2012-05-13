@@ -76,12 +76,7 @@ class JWSDK_Resource_Manager
 		$buildName = $this->getResourceBuildName($name);
 		$buildPath = $this->getResourceBuildPath($name);
 		
-		$buildFile = JWSDK_Util_File::fopen_recursive($buildPath, 'w');
-		if ($buildFile === false)
-			throw new Exception("Can't create resource target file (name: $name, target: $buildName)");
-		
-		fwrite($buildFile, $buildContents);
-		fclose($buildFile);
+		JWSDK_Util_File::write($buildPath, $buildContents);
 		
 		return new JWSDK_Resource($buildName, 'js');
 	}

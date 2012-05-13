@@ -21,24 +21,22 @@
 
 class JWSDK_Util_File
 {
-	public static function file_get_contents( // String
+	public static function file_get_contents( // String or false
 		$path) // String
 	{
 		return @file_get_contents($path);
 	}
 	
-	public static function fopen_recursive( // File
+	public static function fopen_recursive( // File or false
 		$path,         // String
 		$mode,         // String
 		$chmod = 0755) // Integer
 	{
-		if (!self::mkdir_recursive($path, $chmod))
-			return false;
-		
+		self::mkdir_recursive($path, $chmod);
 		return @fopen($path, $mode);
 	}
 	
-	public static function mkdir_recursive( // Boolean
+	public static function mkdir_recursive(
 		$path,         // String
 		$chmod = 0755) // Integer
 	{
@@ -47,27 +45,23 @@ class JWSDK_Util_File
 		{
 			$directory = substr($path, 0, $i);
 			if (!is_dir($directory) && !mkdir($directory, $chmod, 1))
-				return false;
+				throw new JWSDK_Exception_CanNotMakeDirectory($directory);
 		}
-		
-		return true;
 	}
 	
-	public static function write( // Boolean
+	public static function write(
 		$path,     // String
 		$contents) // String
 	{
 		$file = self::fopen_recursive($path, 'w');
 		if ($file === false)
-			return false;
+			throw new JWSDK_Exception_CanNotWriteFile($path);
 		
 		fwrite($file, $contents);
 		fclose($file);
-		
-		return true;
 	}
 	
-	public static function compress( // Boolean
+	public static function compress(
 		$source, // String
 		$target) // String
 	{
@@ -77,6 +71,7 @@ class JWSDK_Util_File
 		$command = "java -jar yuicompressor.jar $source -o $target --charset utf-8 --line-break 8000 2>> yui.log";
 		exec($command, $yuiOutput, $yuiStatus);
 		
-		return $yuiStatus == 0;
+		if ($yuiStatus != 0)
+			throw new JWSDK_Exception_CompressorError($source, $target);
 	}
 }

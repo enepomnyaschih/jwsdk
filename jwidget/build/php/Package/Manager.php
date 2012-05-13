@@ -79,14 +79,9 @@ class JWSDK_Package_Manager
 		$mergePath = $this->getPackageMergePath($name);
 		$buildPath = $this->getPackageBuildPath($name);
 		
-		if (!JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package)))
-			throw new Exception("Can't create merged js file (name: $name)");
-		
-		if (!JWSDK_Util_File::mkdir_recursive($buildPath))
-			throw new Exception("Can't create directory for output js file (name: $name)");
-		
-		if (!JWSDK_Util_File::compress($mergePath, $buildPath))
-			throw new Exception("Error while running YUI Compressor (name: $name, input: $mergePath, output: $buildPath). See signin/build/yui.log for details");
+		JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package));
+		JWSDK_Util_File::mkdir_recursive($buildPath);
+		JWSDK_Util_File::compress($mergePath, $buildPath);
 		
 		$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name), 'js');
 		$package->setCompressedResource($compressedResource);

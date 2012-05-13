@@ -112,8 +112,7 @@ class JWSDK_Page_Manager
 		$template = $this->templateManager->readTemplate($templateName);
 		$contents = $this->applyTemplate($template, $page);
 		
-		if (!JWSDK_Util_File::write($this->getPageBuildPath($name), $contents))
-			throw new Exception("Can't create linked page file (name: $name)");
+		JWSDK_Util_File::write($this->getPageBuildPath($name), $contents);
 		
 		return $page;
 	}
