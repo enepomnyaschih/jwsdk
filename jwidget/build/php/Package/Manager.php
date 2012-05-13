@@ -86,7 +86,7 @@ class JWSDK_Package_Manager
 			$buildPath = $this->getPackageBuildPath($name);
 			
 			JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package));
-			JWSDK_Util_File::mkdir_recursive($buildPath);
+			JWSDK_Util_File::mkdir($buildPath);
 			JWSDK_Util_File::compress($mergePath, $buildPath);
 			
 			$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name), 'js');
