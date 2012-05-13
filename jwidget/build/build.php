@@ -45,6 +45,7 @@ include_once 'php/Exception/CanNotReadFile.php';
 include_once 'php/Exception/CanNotWriteFile.php';
 include_once 'php/Exception/CompressorError.php';
 include_once 'php/Exception/DuplicatedResourceError.php';
+include_once 'php/Exception/InvalidFileFormat.php';
 include_once 'php/Exception/InvalidResourceParameter.php';
 include_once 'php/Exception/InvalidResourceType.php';
 include_once 'php/Exception/MethodNotImplemented.php';

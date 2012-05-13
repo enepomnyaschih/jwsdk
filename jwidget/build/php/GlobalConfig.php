@@ -26,8 +26,7 @@ class JWSDK_GlobalConfig
 	public function __construct(
 		$path = 'config.json') // String
 	{
-		$contents = JWSDK_Util_File::read($path, 'global config');
-		$this->json = json_decode($contents, true);
+		$this->json = JWSDK_Util_File::readJson($path, 'global config');
 	}
 	
 	public function getConfigPath() // String

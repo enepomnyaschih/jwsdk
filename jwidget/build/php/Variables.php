@@ -74,8 +74,7 @@ class JWSDK_Variables
 	public function applyConfig(
 		$path) // String
 	{
-		$contents = JWSDK_Util_File::read($path, 'mode config');
-		$config = json_decode($contents, true);
+		$config = JWSDK_Util_File::readJson($path, 'mode config');
 		$this->apply($config);
 	}
 	

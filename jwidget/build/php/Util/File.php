@@ -21,13 +21,25 @@
 
 class JWSDK_Util_File
 {
-	public static function read( // String or false
+	public static function read( // String
 		$path,         // String
 		$tip = 'file') // String
 	{
 		$result = @file_get_contents($path);
 		if ($result === false)
 			throw new JWSDK_Exception_CanNotReadFile($path, $tip);
+		
+		return $result;
+	}
+	
+	public static function readJson( // Object
+		$path,         // String
+		$tip = 'file') // String
+	{
+		$contents = self::read($path, $tip);
+		$result = json_decode($contents, true);
+		if (!$result)
+			throw new JWSDK_Exception_InvalidFileFormat($path, $tip, 'json');
 		
 		return $result;
 	}
