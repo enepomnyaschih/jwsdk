@@ -19,35 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter
+class JWSDK_Exception_InvalidResourceFormat extends JWSDK_Exception
 {
-	public function getType() // String
+	public function __construct()
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function isConvertion() // Boolean
-	{
-		return true;
-	}
-	
-	public function convertResource( // String, output contents
-		$name,     // String
-		$contents, // String
-		$params)   // Object
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function getParamsByArray( // Array
-		$arr) // Array
-	{
-		return array();
-	}
-	
-	public function getParamsByJson( // Array
-		$json) // Object
-	{
-		return $json;
+		parent::__construct("Invalid resource definition format: string or object { path: String, type: String, ... params } expected");
 	}
 }

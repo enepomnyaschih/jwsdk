@@ -22,15 +22,22 @@
 class JWSDK_Exception_ResourceConvertionError extends JWSDK_Exception
 {
 	private $name;
+	private $type;
 	
-	public function __construct($name, $cause)
+	public function __construct($name, $type, $cause)
 	{
-		parent::__construct("Error occured while converting resource '$name'\n" . $cause->getMessage(), $cause);
+		parent::__construct("Error occured while converting $type resource '$name'\n" . $cause->getMessage(), $cause);
 		$this->name = $name;
+		$this->type = $type;
 	}
 	
 	public function getName()
 	{
 		return $this->name;
+	}
+	
+	public function getType()
+	{
+		return $this->type;
 	}
 }

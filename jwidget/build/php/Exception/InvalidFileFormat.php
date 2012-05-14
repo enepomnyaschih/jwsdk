@@ -23,25 +23,24 @@
 class JWSDK_Exception_InvalidFileFormat extends JWSDK_Exception
 {
 	private $path;
-	private $tip;
 	private $format;
 	
-	public function __construct($path, $tip, $format)
+	public function __construct($path, $format, $cause = null)
 	{
-		parent::__construct("Can't parse $tip '$path' as $format");
+		if (!$cause)
+			parent::__construct("Can't parse $format '$path'");
+		else if (is_string($cause))
+			parent::__construct("Can't parse $format '$path':\n" . $cause);
+		else
+			parent::__construct("Can't parse $format '$path':\n" . $cause->getMessage(), $cause);
+		
 		$this->path = $path;
-		$this->tip = $tip;
 		$this->format = $format;
 	}
 	
 	public function getPath()
 	{
 		return $this->path;
-	}
-	
-	public function getTip()
-	{
-		return $this->tip;
 	}
 	
 	public function getFormat()

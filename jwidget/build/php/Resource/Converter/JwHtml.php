@@ -31,13 +31,32 @@ class JWSDK_Resource_Converter_JwHtml extends JWSDK_Resource_Converter
 		$contents, // String
 		$params)   // Array of String
 	{
-		if (count($params) < 1)
-			throw new JWSDK_Exception_InvalidResourceParameter('JwHtml', 'first', 'class name');
+		if (!isset($params['class']) || !is_string($params['class']))
+			throw new JWSDK_Exception_InvalidResourceParameter("'class' (first)", 'String');
 		
-		$className    = $params[0];
-		$templateName = (count($params) < 2) ? 'main' : $params[1];
+		if (isset($params['template']) && !is_string($params['template']))
+			throw new JWSDK_Exception_InvalidResourceParameter("'template' (second)", 'String');
+		
+		$className    = $params['class'];
+		$templateName = JWSDK_Util_Array::get($params, 'template', 'main');
 		$contents     = JWSDK_Resource_Converter_Util::smoothHtml($contents);
 		
 		return "JW.UI.template($className, { $templateName: '$contents' });\n";
+	}
+	
+	public function getParamsByArray( // Array
+		$arr) // Array
+	{
+		if (count($params) < 1)
+			throw new JWSDK_Exception_InvalidResourceParameter("'class' (first)", 'String');
+		
+		$result = array(
+			'class' => $params[0]
+		);
+		
+		if (count($params) >= 2)
+			$result['template'] = $params[1];
+		
+		return $result;
 	}
 }

@@ -39,7 +39,7 @@ class JWSDK_Util_File
 		$contents = self::read($path, $tip);
 		$result = json_decode($contents, true);
 		if (!$result)
-			throw new JWSDK_Exception_InvalidFileFormat($path, $tip, 'json');
+			throw new JWSDK_Exception_InvalidFileFormat($path, $tip, "Can't parse JSON");
 		
 		return $result;
 	}

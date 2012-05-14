@@ -42,23 +42,8 @@ class JWSDK_Package_Manager
 		
 		try
 		{
-			$path = $this->getPackagePath($name);
-			
-			$contents = JWSDK_Util_File::read($path, 'package config');
-			$contents = JWSDK_Util_String::removeComments($contents);
-			
-			$scripts = explode("\n", JWSDK_Util_String::smoothCrlf($contents));
-			$scripts = self::removeEmptyStrings($scripts);
-			
-			$package = new JWSDK_Package($name);
-			for ($i = 0; $i < count($scripts); ++$i)
-			{
-				$resource = $this->resourceManager->getResourceByDefinition($scripts[$i]);
-				$resource = $this->resourceManager->convertResource($resource);
-				
-				$package->addResource($resource);
-			}
-			
+			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
+			$package = $this->getPackageByJson($name, $json);
 			$this->addPackage($package);
 			
 			return $package;
@@ -97,6 +82,35 @@ class JWSDK_Package_Manager
 		catch (JWSDK_Exception $e)
 		{
 			throw new JWSDK_Exception_PackageCompressError($name, $e);
+		}
+	}
+	
+	private function getPackageByJson( // JWSDK_Package
+		$name, // String
+		$json) // Object
+	{
+		$package = new JWSDK_Package($name);
+		
+		try
+		{
+			$resources = JWSDK_Util_Array::get($json, 'resources', array());
+			foreach ($resources as $resourceDefinition)
+			{
+				$resource = $this->resourceManager->getResourceByDefinition($resourceDefinition);
+				$resource = $this->resourceManager->convertResource($resource);
+				
+				$package->addResource($resource);
+			}
+			
+			return $package;
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw $e;
+		}
+		catch (Exception $e)
+		{
+			throw new JWSDK_Exception_InvalidFileFormat($name, 'package config', $e);
 		}
 	}
 	

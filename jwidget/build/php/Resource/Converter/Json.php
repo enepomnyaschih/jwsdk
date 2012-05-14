@@ -29,13 +29,24 @@ class JWSDK_Resource_Converter_Json extends JWSDK_Resource_Converter
 	public function convertResource( // String, output contents
 		$name,     // String
 		$contents, // String
-		$params)   // Array of String
+		$params)   // Object
 	{
-		if (count($params) < 1)
-			throw new JWSDK_Exception_InvalidResourceParameter('Json', 'first', 'variable name');
+		if (!isset($params['var']) || !is_string($params['var']))
+			throw new JWSDK_Exception_InvalidResourceParameter("'var' (first)", 'String');
 		
-		$varName = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
+		$varName = JWSDK_Resource_Converter_Util::defineJsVar($params['var']);
 		
 		return "$varName = $contents;\n";
+	}
+	
+	public function getParamsByArray( // Array
+		$arr) // Array
+	{
+		if (count($params) < 1)
+			throw new JWSDK_Exception_InvalidResourceParameter("'var' (first)", 'String');
+		
+		return array(
+			'var' => $params[0]
+		);
 	}
 }

@@ -37,33 +37,21 @@ class JWSDK_Resource_Manager
 	}
 	
 	public function getResourceByDefinition( // JWSDK_Resource
-		$str) // String
+		$definition) // *
 	{
-		$tokens = explode(":", $str);
-		$name = trim($tokens[0]);
-		
 		try
 		{
-			$converter = $this->getConverterByResourceName($name);
-			if (!$converter)
-				throw new JWSDK_Exception_InvalidResourceType();
+			if (is_string($definition))
+				return $this->getResourceByString($definition);
 			
-			if (count($tokens) == 1)
-			{
-				$params = array();
-			}
-			else
-			{
-				$params = explode(",", $tokens[1]);
-				for ($i = 0; $i < count($params); $i++)
-					$params[$i] = trim($params[$i]);
-			}
+			if (is_array($definition))
+				return $this->getResourceByJson($definition);
 			
-			return new JWSDK_Resource($name, $converter->getType(), $params);
+			throw new JWSDK_Exception_InvalidResourceFormat();
 		}
 		catch (JWSDK_Exception $e)
 		{
-			throw new JWSDK_Exception_ResourceReadError($name, $e);
+			throw new JWSDK_Exception_ResourceReadError(json_encode($definition), $e);
 		}
 	}
 	
@@ -71,10 +59,11 @@ class JWSDK_Resource_Manager
 		$resource) // JWSDK_Resource
 	{
 		$name = $resource->getName();
+		$type = $resource->getType();
 		
 		try
 		{
-			$converter = $this->getConverter($resource->getType());
+			$converter = $this->getConverter($type);
 			if (!$converter->isConvertion())
 				return $resource;
 			
@@ -92,7 +81,7 @@ class JWSDK_Resource_Manager
 		}
 		catch (JWSDK_Exception $e)
 		{
-			throw new JWSDK_Exception_ResourceConvertionError($name, $e);
+			throw new JWSDK_Exception_ResourceConvertionError($name, $type, $e);
 		}
 	}
 	
@@ -109,6 +98,48 @@ class JWSDK_Resource_Manager
 	{
 		$sourcePath = $this->getResourceSourcePath($name);
 		return $this->globalConfig->getUrlPrefix() . "$name?timestamp=" . JWSDK_Util_File::mtime($sourcePath, 'resource file');
+	}
+	
+	private function getResourceByString( // JWSDK_Resource
+		$str) // String
+	{
+		$tokens = explode(":", $str);
+		$name = trim($tokens[0]);
+		
+		$converter = $this->getConverterByResourceName($name);
+		if (!$converter)
+			throw new JWSDK_Exception_InvalidResourceType();
+		
+		if (count($tokens) == 1)
+		{
+			$params = array();
+		}
+		else
+		{
+			$params = explode(",", $tokens[1]);
+			for ($i = 0; $i < count($params); $i++)
+				$params[$i] = trim($params[$i]);
+		}
+		
+		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByArray($params));
+	}
+	
+	private function getResourceByJson( // JWSDK_Resource
+		$json) // Object
+	{
+		if (!isset($json['path']) || !is_string($json['path']))
+			throw new JWSDK_Exception_InvalidResourceFormat();
+		
+		$name = $json['path'];
+		if (isset($json['type']) && is_string($json['type']))
+			$converter = $this->getConverter($json['type']);
+		else
+			$converter = $this->getConverterByResourceName($name);
+		
+		if (!$converter)
+			throw new JWSDK_Exception_InvalidResourceType();
+		
+		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByJson($json));
 	}
 	
 	private function getResourceSourcePath( // String

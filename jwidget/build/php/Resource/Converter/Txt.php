@@ -31,12 +31,23 @@ class JWSDK_Resource_Converter_Txt extends JWSDK_Resource_Converter
 		$contents, // String
 		$params)   // Array of String
 	{
-		if (count($params) < 1)
-			throw new JWSDK_Exception_InvalidResourceParameter('Txt', 'first', 'variable name');
+		if (!isset($params['var']) || !is_string($params['var']))
+			throw new JWSDK_Exception_InvalidResourceParameter("'var' (first)", 'String');
 		
-		$varName  = JWSDK_Resource_Converter_Util::defineJsVar($params[0]);
+		$varName  = JWSDK_Resource_Converter_Util::defineJsVar($params['var']);
 		$contents = JWSDK_Resource_Converter_Util::smoothText($contents);
 		
 		return "$varName = '$contents';\n";
+	}
+	
+	public function getParamsByArray( // Array
+		$arr) // Array
+	{
+		if (count($params) < 1)
+			throw new JWSDK_Exception_InvalidResourceParameter("'var' (first)", 'String');
+		
+		return array(
+			'var' => $params[0]
+		);
 	}
 }

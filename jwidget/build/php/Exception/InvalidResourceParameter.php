@@ -21,26 +21,19 @@
 
 class JWSDK_Exception_InvalidResourceParameter extends JWSDK_Exception
 {
-	private $type;
-	private $index;
+	private $name;
 	private $format;
 	
-	public function __construct($type, $index, $format)
+	public function __construct($name, $format)
 	{
-		parent::__construct("$type resource requires $format in $index parameter");
-		$this->type = $type;
-		$this->index = $index;
+		parent::__construct("Resource requires $format in $name parameter");
+		$this->name = $name;
 		$this->format = $format;
 	}
 	
-	public function getType()
+	public function getName()
 	{
-		return $this->type;
-	}
-	
-	public function getIndex()
-	{
-		return $this->index;
+		return $this->name;
 	}
 	
 	public function getFormat()
