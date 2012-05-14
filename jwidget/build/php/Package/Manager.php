@@ -164,19 +164,4 @@ class JWSDK_Package_Manager
 	{
 		return $this->globalConfig->getBuildUrl() . "/$name.min.js";
 	}
-	
-	private static function removeEmptyStrings($source)
-	{
-		$result = array();
-		foreach ($source as $value)
-		{
-			$row = trim($value);
-			if (empty($row))
-				continue;
-			
-			$result[] = $row;
-		}
-		
-		return $result;
-	}
 }
