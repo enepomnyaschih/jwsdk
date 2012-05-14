@@ -41,7 +41,7 @@ class JWSDK_Resource_Converter_Txt extends JWSDK_Resource_Converter
 	}
 	
 	public function getParamsByArray( // Array
-		$arr) // Array
+		$params) // Array
 	{
 		if (count($params) < 1)
 			throw new JWSDK_Exception_InvalidResourceParameter("'var' (first)", 'String');

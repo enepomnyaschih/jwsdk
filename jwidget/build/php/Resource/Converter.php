@@ -40,7 +40,7 @@ class JWSDK_Resource_Converter
 	}
 	
 	public function getParamsByArray( // Array
-		$arr) // Array
+		$params) // Array
 	{
 		return array();
 	}
