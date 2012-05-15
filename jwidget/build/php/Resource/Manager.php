@@ -29,6 +29,7 @@ class JWSDK_Resource_Manager
 	{
 		$this->globalConfig = $globalConfig;
 		
+		$this->registerConverter(new JWSDK_Resource_Converter_Css());
 		$this->registerConverter(new JWSDK_Resource_Converter_JwHtml());
 		$this->registerConverter(new JWSDK_Resource_Converter_Txt());
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());

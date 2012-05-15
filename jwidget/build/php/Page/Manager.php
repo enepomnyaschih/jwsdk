@@ -32,7 +32,7 @@ class JWSDK_Page_Manager
 	private $pages = array();     // Map from name:String to JWSDK_Page
 	
 	// TODO: Move to JWSDK_Resource after merging CSS and JS together
-	private $inclusions = array();
+	private $resourceAttachUrls = array();
 	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
@@ -145,7 +145,7 @@ class JWSDK_Page_Manager
 			}
 			
 			$rootPackage = new JWSDK_Package_Config("$name:root");
-			foreach ($page->getJs() as $value)
+			foreach ($page->getPackages() as $value)
 				$rootPackage->addRequire($value);
 			
 			$page->setRootPackage($rootPackage);
@@ -181,16 +181,12 @@ class JWSDK_Page_Manager
 		return str_replace($replaceKeys, $replaceValues, $template->getContents());
 	}
 	
-	private function buildSources( // String, inclusion HTML fragment
+	private function buildSources( // String, attachment HTML fragment
 		$page) // JWSDK_Page
 	{
 		$name = $page->getName();
-		
 		$buf = array();
-		foreach ($page->getCss() as $value)
-			$buf[] = $this->buildSourceCss($value);
-		
-		$jspaths = array();
+		$resourceMap = array();
 		$packages = $this->packageManager->readPackageWithDependencies($page->getRootPackage()->getName());
 		foreach ($packages as $package)
 		{
@@ -204,41 +200,30 @@ class JWSDK_Page_Manager
 			foreach ($resources as $resource)
 			{
 				$resourceName = $resource->getName();
-				if (isset($jspaths[$resourceName]))
+				if (isset($resourceMap[$resourceName]))
 					throw new JWSDK_Exception_DuplicatedResourceError($resourceName);
 				
-				$jspaths[$resourceName] = true;
-				$buf[] = $this->buildSourceJs($resourceName);
+				$resourceMap[$resourceName] = $resource;
+				$attacher = $this->getAttacher($resource->getAttacher());
+				$url = $this->getResourceAttachUrl($resourceName);
+				$attachStr = $attacher->format($url);
+				$buf[] = JWSDK_Util_String::tabulize($attachStr, 2);
 			}
 		}
 		
 		return implode("\n", $buf);
 	}
 	
-	private function buildSource( // String, inclusion HTML fragment
-		$path,     // String
-		$template) // String
+	private function getResourceAttachUrl( // String
+		$name) // String
 	{
-		if (isset($this->inclusions[$path]))
-			return $this->inclusions[$path];
+		if (isset($this->resourceAttachUrls[$name]))
+			return $this->resourceAttachUrls[$name];
 		
-		$inclusion = $this->resourceManager->getResourceInclusionUrl($path);
-		$inclusion = htmlspecialchars($inclusion);
-		$inclusion = JWSDK_Util_String::tabulize(str_replace('%path%', $inclusion, $template), 2);
-		$this->inclusions[$path] = $inclusion;
-		return $inclusion;
-	}
-	
-	private function buildSourceCss( // String, inclusion HTML fragment
-		$path) // String
-	{
-		return $this->buildSource($path, '<link rel="stylesheet" type="text/css" href="%path%" />');
-	}
-	
-	private function buildSourceJs( // String, inclusion HTML fragment
-		$path) // String
-	{
-		return $this->buildSource($path, '<script type="text/javascript" charset="utf-8" src="%path%"></script>');
+		$url = $this->resourceManager->getResourceInclusionUrl($name);
+		$this->resourceAttachUrls[$name] = $url;
+		
+		return $url;
 	}
 	
 	private function buildServices($services)

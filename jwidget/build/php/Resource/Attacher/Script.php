@@ -29,6 +29,6 @@ class JWSDK_Resource_Attacher_Script extends JWSDK_Resource_Attacher
 	public function format( // String
 		$url) // String
 	{
-		return '<script type="text/javascript" charset="utf-8" src="' . $url . '"></script>';
+		return '<script type="text/javascript" charset="utf-8" src="' . htmlspecialchars($url) . '"></script>';
 	}
 }

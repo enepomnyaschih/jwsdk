@@ -29,6 +29,6 @@ class JWSDK_Resource_Attacher_Link extends JWSDK_Resource_Attacher
 	public function format( // String
 		$url) // String
 	{
-		return '<link rel="stylesheet" type="text/css" href="' . $url . '" />';
+		return '<link rel="stylesheet" type="text/css" href="' . htmlspecialchars($url) . '" />';
 	}
 }

@@ -25,8 +25,7 @@ class JWSDK_Page
 	private $base;               // String
 	private $template;           // String
 	private $title = '';         // String
-	private $css = array();      // Array of String
-	private $js = array();       // Array of String
+	private $packages = array(); // Array of String
 	private $services = array(); // Map from String to Boolean
 	private $custom = array();   // Map from String to String
 	private $rootPackage;        // JWSDK_Package_Config, auto-generated
@@ -40,11 +39,8 @@ class JWSDK_Page
 		$this->template = JWSDK_Util_Array::get($json, 'template');
 		$this->title    = JWSDK_Util_Array::get($json, 'title');
 		
-		if (isset($json['css']))
-			$this->css = array_merge($this->css, $json['css']);
-		
-		if (isset($json['js']))
-			$this->js = array_merge($this->js, $json['js']);
+		if (isset($json['packages']))
+			$this->packages = array_merge($this->packages, $json['packages']);
 		
 		if (isset($json['services']))
 			$this->services = array_merge($this->services, $json['services']);
@@ -73,14 +69,9 @@ class JWSDK_Page
 		return $this->title;
 	}
 	
-	public function getCss() // Array of String
+	public function getPackages() // Array of String
 	{
-		return $this->css;
-	}
-	
-	public function getJs() // Array of String
-	{
-		return $this->js;
+		return $this->packages;
 	}
 	
 	public function getServices() // Map from String to Boolean
@@ -113,8 +104,7 @@ class JWSDK_Page
 		if (!$this->getTitle())
 			$this->title = $base->getTitle();
 		
-		$this->css      = array_merge($base->getCss(),      $this->getCss());
-		$this->js       = array_merge($base->getJs(),       $this->getJs());
+		$this->packages = array_merge($base->getPackages(), $this->getPackages());
 		$this->services = array_merge($base->getServices(), $this->getServices());
 		$this->custom   = array_merge($base->getCustom(),   $this->getCustom());
 	}
