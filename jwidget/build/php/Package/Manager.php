@@ -53,12 +53,12 @@ class JWSDK_Package_Manager
 		return $result;
 	}
 	
-	public function compressPackage( // JWSDK_Resource, compressed file
+	public function compressPackage( // Map from attacherType:String to JWSDK_Resource, compressed files
 		$package) // JWSDK_Package
 	{
-		$compressedResource = $package->getCompressedResource();
-		if ($compressedResource)
-			return $compressedResource;
+		$compressedResources = $package->getCompressedResources();
+		if ($compressedResources)
+			return $compressedResources;
 		
 		try
 		{
@@ -66,17 +66,34 @@ class JWSDK_Package_Manager
 			
 			JWSDK_Log::logTo('build.log', "Compressing package $name");
 			
-			$mergePath = $this->getPackageMergePath($name);
-			$buildPath = $this->getPackageBuildPath($name);
+			$compressedResources = array();
+			foreach ($this->resourceManager->getAttachers() as $type => $attacher)
+			{
+				$contents = array();
+				foreach ($package->getSourceResources() as $resource)
+				{
+					if ($resource->getAttacher() == $type)
+						$contents[] = $this->resourceManager->getResourceContents($resource);
+				}
+				
+				if (count($contents) == 0)
+					continue;
+				
+				$contents = implode("\n", $contents);
+				
+				$mergePath = $this->getPackageMergePath($name, $type);
+				$buildPath = $this->getPackageBuildPath($name, $type);
+				
+				JWSDK_Util_File::write($mergePath, $contents);
+				JWSDK_Util_File::mkdir($buildPath);
+				JWSDK_Util_File::compress($mergePath, $buildPath);
+				
+				$compressedResources[] = new JWSDK_Resource($this->getPackageBuildUrl($name, $type), $type, $type);
+			}
 			
-			JWSDK_Util_File::write($mergePath, $this->getPackageMergedContents($package));
-			JWSDK_Util_File::mkdir($buildPath);
-			JWSDK_Util_File::compress($mergePath, $buildPath);
+			$package->setCompressedResources($compressedResources);
 			
-			$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name));
-			$package->setCompressedResource($compressedResource);
-			
-			return $compressedResource;
+			return $compressedResources;
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -127,10 +144,10 @@ class JWSDK_Package_Manager
 	private function buildPackage( // JWSDK_Package
 		$name) // String
 	{
-		if (preg_match('/\.js$/', $name))
+		if (preg_match('/\.(js|css)$/', $name))
 			return new JWSDK_Package_Simple($name);
 		
-		if (preg_match('/\|auto$/', $name))
+		if (preg_match('/\.(js|css)|auto$/', $name))
 			return new JWSDK_Package_Auto(substr($name, 0, strrpos($name, '|')));
 		
 		try
@@ -182,16 +199,6 @@ class JWSDK_Package_Manager
 		}
 	}
 	
-	private function getPackageMergedContents( // String
-		$package) // JWSDK_Package
-	{
-		$buf = array();
-		foreach ($package->getSourceResources() as $resource)
-			$buf[] = $this->resourceManager->getResourceContents($resource);
-		
-		return implode("\n", $buf);
-	}
-	
 	private function getBuildPath() // String
 	{
 		return $this->globalConfig->getPublicPath() . '/' . $this->globalConfig->getBuildUrl();
@@ -204,20 +211,23 @@ class JWSDK_Package_Manager
 	}
 	
 	private function getPackageMergePath( // String
-		$name) // String
+		$name, // String
+		$type) // String
 	{
-		return $this->globalConfig->getMergePath() . "/$name.js";
+		return $this->globalConfig->getMergePath() . "/$name.$type";
 	}
 	
 	private function getPackageBuildPath( // String
-		$name) // String
+		$name, // String
+		$type) // String
 	{
-		return $this->getBuildPath() . "/$name.min.js";
+		return $this->getBuildPath() . "/$name.min.$type";
 	}
 	
 	private function getPackageBuildUrl( // String
-		$name) // String
+		$name, // String
+		$type) // String
 	{
-		return $this->globalConfig->getBuildUrl() . "/$name.min.js";
+		return $this->globalConfig->getBuildUrl() . "/$name.min.$type";
 	}
 }

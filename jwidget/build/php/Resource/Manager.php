@@ -22,6 +22,7 @@
 class JWSDK_Resource_Manager
 {
 	private $globalConfig;         // JWSDK_GlobalConfig
+	private $attachers = array();  // Map from type:String to JWSDK_Resource_Attacher
 	private $converters = array(); // Map from type:String to JWSDK_Resource_Converter
 	
 	public function __construct(
@@ -29,12 +30,26 @@ class JWSDK_Resource_Manager
 	{
 		$this->globalConfig = $globalConfig;
 		
+		$this->registerAttacher(new JWSDK_Resource_Attacher_Css());
+		$this->registerAttacher(new JWSDK_Resource_Attacher_Js());
+		
 		$this->registerConverter(new JWSDK_Resource_Converter_Css());
 		$this->registerConverter(new JWSDK_Resource_Converter_JwHtml());
 		$this->registerConverter(new JWSDK_Resource_Converter_Txt());
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());
 		$this->registerConverter(new JWSDK_Resource_Converter_Json());
 		$this->registerConverter(new JWSDK_Resource_Converter_Js());
+	}
+	
+	public function getAttacher( // JWSDK_Resource_Attacher
+		$type) // String
+	{
+		return JWSDK_Util_Array::get($this->attachers, $type);
+	}
+	
+	public function getAttachers() // Map from type:String to JWSDK_Resource_Attacher
+	{
+		return $this->attachers;
 	}
 	
 	public function getResourceByDefinition( // JWSDK_Resource
@@ -159,6 +174,12 @@ class JWSDK_Resource_Manager
 		$name) // String
 	{
 		return $this->globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($name);
+	}
+	
+	private function registerAttacher(
+		$attacher) // JWSDK_Resource_Attacher
+	{
+		$this->attachers[$attacher->getType()] = $attacher;
 	}
 	
 	private function registerConverter(

@@ -28,7 +28,6 @@ class JWSDK_Page_Manager
 	private $templateManager;     // JWSDK_Template_Manager
 	private $serviceManager;      // JWSDK_Service_Manager
 	private $resourceManager;     // JWSDK_Resource_Manager
-	private $attachers = array(); // Map from type:String to JWSDK_Resource_Attacher
 	private $pages = array();     // Map from name:String to JWSDK_Page
 	
 	// TODO: Move to JWSDK_Resource after merging CSS and JS together
@@ -50,9 +49,6 @@ class JWSDK_Page_Manager
 		$this->templateManager = $templateManager;
 		$this->serviceManager = $serviceManager;
 		$this->resourceManager = $resourceManager;
-		
-		$this->registerAttacher(new JWSDK_Resource_Attacher_Css());
-		$this->registerAttacher(new JWSDK_Resource_Attacher_Js());
 	}
 	
 	public function buildPages()
@@ -187,8 +183,8 @@ class JWSDK_Page_Manager
 		$name = $page->getName();
 		
 		$attaches = array(); // Map from attacherType:String to Array of String
-		foreach ($this->attachers as $attacher)
-			$attaches[$attacher->getType()] = array();
+		foreach ($this->resourceManager->getAttachers() as $type => $attacher)
+			$attaches[$type] = array();
 		
 		$resourceMap = array();
 		
@@ -199,7 +195,7 @@ class JWSDK_Page_Manager
 				continue;
 			
 			$resources = $this->mode->isCompress() ?
-				array($this->packageManager->compressPackage($package)) :
+				$this->packageManager->compressPackage($package) :
 				$package->getSourceResources();
 			
 			foreach ($resources as $resource)
@@ -209,7 +205,7 @@ class JWSDK_Page_Manager
 					throw new JWSDK_Exception_DuplicatedResourceError($resourceName);
 				
 				$resourceMap[$resourceName] = $resource;
-				$attacher = $this->getAttacher($resource->getAttacher());
+				$attacher = $this->resourceManager->getAttacher($resource->getAttacher());
 				$url = $this->getResourceAttachUrl($resourceName);
 				$attachStr = $attacher->format($url);
 				array_push($attaches[$resource->getAttacher()], JWSDK_Util_String::tabulize($attachStr, 2));
@@ -270,18 +266,6 @@ class JWSDK_Page_Manager
 		$name) // String
 	{
 		return $this->getPagesBuildPath() . "/$name.html";
-	}
-	
-	private function registerAttacher(
-		$attacher) // JWSDK_Resource_Attacher
-	{
-		$this->attachers[$attacher->getType()] = $attacher;
-	}
-	
-	private function getAttacher( // JWSDK_Resource_Attacher
-		$type) // String
-	{
-		return JWSDK_Util_Array::get($this->attachers, $type);
 	}
 	
 	private function addPage(

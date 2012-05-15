@@ -21,7 +21,7 @@
 
 class JWSDK_Package
 {
-	private $compressedResource;  // JWSDK_Resource
+	private $compressedResources; // Array of JWSDK_Resource
 	
 	public function getName() // String
 	{
@@ -33,15 +33,15 @@ class JWSDK_Package
 		throw new JWSDK_Exception_MethodNotImplemented();
 	}
 	
-	public function getCompressedResource() // JWSDK_Resource
+	public function getCompressedResources() // Array of JWSDK_Resource
 	{
-		return $this->compressedResource;
+		return $this->compressedResources;
 	}
 	
-	public function setCompressedResource(
-		$value) // JWSDK_Resource
+	public function setCompressedResources(
+		$value) // Array of JWSDK_Resource
 	{
-		$this->compressedResource = $value;
+		$this->compressedResources = $value;
 	}
 	
 	public function getRequires() // Array of String, package names

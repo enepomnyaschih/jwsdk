@@ -22,14 +22,16 @@
 class JWSDK_Package_Simple extends JWSDK_Package
 {
 	private $name;      // String
+	private $type;      // String
 	private $_resource; // JWSDK_Resource
 	
 	public function __construct(
 		$name) // String
 	{
 		$this->name = $name;
-		$this->_resource = new JWSDK_Resource($name);
-		$this->setCompressedResource($this->_resource);
+		$this->type = $this->getResourceType();
+		$this->_resource = new JWSDK_Resource($name, $this->type, $this->type);
+		$this->setCompressedResources(array($this->_resource));
 	}
 	
 	public function getName() // String
@@ -40,5 +42,10 @@ class JWSDK_Package_Simple extends JWSDK_Package
 	public function getSourceResources() // Array of JWSDK_Resource
 	{
 		return array($this->_resource);
+	}
+	
+	private function getResourceType() // String
+	{
+		return substr($this->name, strrpos($this->name, '.') + 1);
 	}
 }

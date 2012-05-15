@@ -21,15 +21,17 @@
 
 class JWSDK_Package_Auto extends JWSDK_Package
 {
-	private $name;               // String
-	private $sourceResource;     // JWSDK_Resource
+	private $name;           // String
+	private $type;           // String
+	private $sourceResource; // JWSDK_Resource
 	
 	public function __construct(
 		$name) // String
 	{
 		$this->name = $name;
-		$this->sourceResource = new JWSDK_Resource($name);
-		$this->setCompressedResource(new JWSDK_Resource($this->getCompressedName()));
+		$this->type = $this->getResourceType();
+		$this->sourceResource = new JWSDK_Resource($name, $this->type, $this->type);
+		$this->setCompressedResources(array(new JWSDK_Resource($this->getCompressedName(), $this->type, $this->type)));
 	}
 	
 	public function getName() // String
@@ -42,8 +44,13 @@ class JWSDK_Package_Auto extends JWSDK_Package
 		return array($this->sourceResource);
 	}
 	
+	private function getResourceType() // String
+	{
+		return substr($this->name, strrpos($this->name, '.') + 1);
+	}
+	
 	private function getCompressedName() // String
 	{
-		return substr($this->name, 0, strrpos($this->name, '.')) . '.min.js';
+		return substr($this->name, 0, strrpos($this->name, '.')) . '.min.' . $this->type;
 	}
 }
