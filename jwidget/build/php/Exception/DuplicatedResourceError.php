@@ -21,8 +21,16 @@
 
 class JWSDK_Exception_DuplicatedResourceError extends JWSDK_Exception
 {
-	public function __construct()
+	private $name;
+	
+	public function __construct($name)
 	{
-		parent::__construct("Duplicated resource detected on the page");
+		parent::__construct("'$name' resource is attached twice to the page");
+		$this->name = $name;
+	}
+	
+	public function getName()
+	{
+		return $this->name;
 	}
 }

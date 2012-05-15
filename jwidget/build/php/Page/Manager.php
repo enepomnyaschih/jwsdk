@@ -201,7 +201,7 @@ class JWSDK_Page_Manager
 			{
 				$resourceName = $resource->getName();
 				if (isset($jspaths[$resourceName]))
-					throw new JWSDK_Exception_DuplicatedResourceError();
+					throw new JWSDK_Exception_DuplicatedResourceError($resourceName);
 				
 				$jspaths[$resourceName] = true;
 				$buf[] = $this->buildSourceJs($resourceName);

@@ -99,7 +99,7 @@ class JWSDK_Package_Manager
 	private function readPackageWithDependenciesRecursion(
 		$name) // String
 	{
-		if (isset($this->_readerPackages[$name]))
+		if (isset($this->_readerPackageMap[$name]))
 			return;
 		
 		$package = $this->readPackage($name);
