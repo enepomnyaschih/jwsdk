@@ -51,8 +51,8 @@ class JWSDK_Page_Manager
 		$this->serviceManager = $serviceManager;
 		$this->resourceManager = $resourceManager;
 		
-		$this->registerAttacher(new JWSDK_Resource_Attacher_Link());
-		$this->registerAttacher(new JWSDK_Resource_Attacher_Script());
+		$this->registerAttacher(new JWSDK_Resource_Attacher_Css());
+		$this->registerAttacher(new JWSDK_Resource_Attacher_Js());
 	}
 	
 	public function buildPages()

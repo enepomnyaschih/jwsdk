@@ -33,6 +33,6 @@ class JWSDK_Resource_Converter_Css extends JWSDK_Resource_Converter
 	
 	public function getAttacher() // String
 	{
-		return 'link';
+		return 'css';
 	}
 }

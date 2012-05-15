@@ -33,7 +33,7 @@ class JWSDK_Resource_Converter
 	
 	public function getAttacher() // String
 	{
-		return 'script';
+		return 'js';
 	}
 	
 	public function convertResource( // String, output contents

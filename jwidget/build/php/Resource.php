@@ -27,10 +27,10 @@ class JWSDK_Resource
 	private $params;   // Array of String
 	
 	public function __construct(
-		$name,                // String
-		$type = 'js',         // String
-		$attacher = 'script', // String
-		$params = array())    // Array of String
+		$name,             // String
+		$type = 'js',      // String
+		$attacher = 'js',  // String
+		$params = array()) // Array of String
 	{
 		$this->name = $name;
 		$this->type = $type;
