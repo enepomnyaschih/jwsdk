@@ -185,8 +185,13 @@ class JWSDK_Page_Manager
 		$page) // JWSDK_Page
 	{
 		$name = $page->getName();
-		$buf = array();
+		
+		$attaches = array(); // Map from attacherType:String to Array of String
+		foreach ($this->attachers as $attacher)
+			$attaches[$attacher->getType()] = array();
+		
 		$resourceMap = array();
+		
 		$packages = $this->packageManager->readPackageWithDependencies($page->getRootPackage()->getName());
 		foreach ($packages as $package)
 		{
@@ -207,8 +212,15 @@ class JWSDK_Page_Manager
 				$attacher = $this->getAttacher($resource->getAttacher());
 				$url = $this->getResourceAttachUrl($resourceName);
 				$attachStr = $attacher->format($url);
-				$buf[] = JWSDK_Util_String::tabulize($attachStr, 2);
+				array_push($attaches[$resource->getAttacher()], JWSDK_Util_String::tabulize($attachStr, 2));
 			}
+		}
+		
+		$buf = array();
+		foreach ($attaches as $lines)
+		{
+			foreach ($lines as $line)
+				$buf[] = $line;
 		}
 		
 		return implode("\n", $buf);
