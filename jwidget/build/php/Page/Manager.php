@@ -140,6 +140,13 @@ class JWSDK_Page_Manager
 				$page->applyBase($base);
 			}
 			
+			$rootPackage = new JWSDK_Package_Config("$name:root");
+			foreach ($page->getJs() as $value)
+				$rootPackage->addRequire($value);
+			
+			$page->setRootPackage($rootPackage);
+			$this->packageManager->addPackage($rootPackage);
+			
 			$this->addPage($page);
 			
 			return $page;
@@ -180,12 +187,26 @@ class JWSDK_Page_Manager
 			$buf[] = $this->buildSourceCss($value);
 		
 		$jspaths = array();
-		foreach ($page->getJs() as $value)
-			$buf[] = $this->buildSourcePackage($value, $jspaths);
-		
-		$jspathsUnique = array_unique($jspaths);
-		if (count($jspaths) != count($jspathsUnique))
-			throw new JWSDK_Exception_DuplicatedResourceError();
+		$packages = $this->packageManager->readPackageWithDependencies($page->getRootPackage()->getName());
+		foreach ($packages as $package)
+		{
+			if (preg_match('/:root$/', $package->getName()))
+				continue;
+			
+			$resources = $this->mode->isCompress() ?
+				array($this->packageManager->compressPackage($package)) :
+				$package->getSourceResources();
+			
+			foreach ($resources as $resource)
+			{
+				$resourceName = $resource->getName();
+				if (isset($jspaths[$resourceName]))
+					throw new JWSDK_Exception_DuplicatedResourceError();
+				
+				$jspaths[$resourceName] = true;
+				$buf[] = $this->buildSourceJs($resourceName);
+			}
+		}
 		
 		return implode("\n", $buf);
 	}
@@ -214,28 +235,6 @@ class JWSDK_Page_Manager
 		$path) // String
 	{
 		return $this->buildSource($path, '<script type="text/javascript" charset="utf-8" src="%path%"></script>');
-	}
-	
-	private function buildSourcePackage( // String, inclusion HTML fragment
-		$name,     // String
-		&$jspaths) // Array of name:String for resource duplications detection
-	{
-		$package = $this->packageManager->readPackage($name);
-		if ($this->mode->isCompress())
-		{
-			$compressResource = $this->packageManager->compressPackage($package);
-			return $this->buildSourceJs($compressResource->getName());
-		}
-		
-		$buf = array();
-		foreach ($package->getSourceResources() as $resource)
-		{
-			$name = $resource->getName();
-			$jspaths[] = $name;
-			$buf[] = $this->buildSourceJs($name);
-		}
-		
-		return implode("\n", $buf);
 	}
 	
 	private function buildServices($services)

@@ -29,6 +29,7 @@ class JWSDK_Page
 	private $js = array();       // Array of String
 	private $services = array(); // Map from String to Boolean
 	private $custom = array();   // Map from String to String
+	private $rootPackage;        // JWSDK_Package_Config, auto-generated
 	
 	public function __construct(
 		$name, // String
@@ -90,6 +91,17 @@ class JWSDK_Page
 	public function getCustom() // Map from String to String
 	{
 		return $this->custom;
+	}
+	
+	public function setRootPackage(
+		$package) // JWSDK_Package_Config
+	{
+		$this->rootPackage = $package;
+	}
+	
+	public function getRootPackage() // JWSDK_Package_Config
+	{
+		return $this->rootPackage;
 	}
 	
 	public function applyBase(

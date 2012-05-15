@@ -23,6 +23,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 {
 	private $name;                // String
 	private $resources = array(); // Array of JWSDK_Resource
+	private $requires = array();  // Array of String
 	
 	public function __construct(
 		$name) // String
@@ -44,5 +45,16 @@ class JWSDK_Package_Config extends JWSDK_Package
 	public function getSourceResources() // Array of JWSDK_Resource
 	{
 		return $this->resources;
+	}
+	
+	public function addRequire(
+		$name) // String
+	{
+		$this->requires[] = $name;
+	}
+	
+	public function getRequires() // Array of String
+	{
+		return $this->requires;
 	}
 }

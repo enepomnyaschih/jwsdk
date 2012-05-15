@@ -25,6 +25,10 @@ class JWSDK_Package_Manager
 	private $resourceManager;    // JWSDK_Resource_Manager
 	private $packages = array(); // Map from name:String to JWSDK_Package
 	
+	// temporary variables for "readPackageWithDependencies" method
+	private $_readerPackages;    // Array of JWSDK_Package
+	private $_readerPackageMap;  // Map from name:String to JWSDK_Package
+	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
 		$resourceManager) // JWSDK_Resource_Manager
@@ -33,17 +37,20 @@ class JWSDK_Package_Manager
 		$this->resourceManager = $resourceManager;
 	}
 	
-	public function readPackage( // JWSDK_Package
+	public function readPackageWithDependencies( // Array of JWSDK_Package
 		$name) // String
 	{
-		$package = $this->getPackage($name);
-		if ($package)
-			return $package;
+		$this->_readerPackages = array();
+		$this->_readerPackageMap = array();
 		
-		$package = $this->buildPackage($name);
-		$this->addPackage($package);
+		$this->readPackageWithDependenciesRecursion($name);
 		
-		return $package;
+		$result = $this->_readerPackages;
+		
+		$this->_readerPackages = null;
+		$this->_readerPackageMap = null;
+		
+		return $result;
 	}
 	
 	public function compressPackage( // JWSDK_Resource, compressed file
@@ -75,6 +82,46 @@ class JWSDK_Package_Manager
 		{
 			throw new JWSDK_Exception_PackageCompressError($name, $e);
 		}
+	}
+	
+	public function addPackage(
+		$package) // JWSDK_Package
+	{
+		$this->packages[$package->getName()] = $package;
+	}
+	
+	public function getPackage( // JWSDK_Package
+		$name) // String
+	{
+		return JWSDK_Util_Array::get($this->packages, $name);
+	}
+	
+	private function readPackageWithDependenciesRecursion(
+		$name) // String
+	{
+		if (isset($this->_readerPackages[$name]))
+			return;
+		
+		$package = $this->readPackage($name);
+		$this->_readerPackageMap[$name] = $package;
+		
+		foreach ($package->getRequires() as $require)
+			$this->readPackageWithDependenciesRecursion($require);
+		
+		$this->_readerPackages[] = $package;
+	}
+	
+	private function readPackage( // JWSDK_Package
+		$name) // String
+	{
+		$package = $this->getPackage($name);
+		if ($package)
+			return $package;
+		
+		$package = $this->buildPackage($name);
+		$this->addPackage($package);
+		
+		return $package;
 	}
 	
 	private function buildPackage( // JWSDK_Package
@@ -114,6 +161,15 @@ class JWSDK_Package_Manager
 				$package->addResource($resource);
 			}
 			
+			$requires = JWSDK_Util_Array::get($json, 'requires', array());
+			foreach ($requires as $require)
+			{
+				if (!is_string($require))
+					throw new JWSDK_Exception_InvalidFileFormat($name, 'package config', $e);
+				
+				$package->addRequire($require);
+			}
+			
 			return $package;
 		}
 		catch (JWSDK_Exception $e)
@@ -134,18 +190,6 @@ class JWSDK_Package_Manager
 			$buf[] = $this->resourceManager->getResourceContents($resource);
 		
 		return implode("\n", $buf);
-	}
-	
-	private function addPackage(
-		$package) // JWSDK_Package
-	{
-		$this->packages[$package->getName()] = $package;
-	}
-	
-	private function getPackage( // JWSDK_Package
-		$name) // String
-	{
-		return JWSDK_Util_Array::get($this->packages, $name);
 	}
 	
 	private function getBuildPath() // String

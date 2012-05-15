@@ -43,4 +43,9 @@ class JWSDK_Package
 	{
 		$this->compressedResource = $value;
 	}
+	
+	public function getRequires() // Array of String, package names
+	{
+		return array();
+	}
 }

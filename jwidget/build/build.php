@@ -90,12 +90,12 @@ try
 {
     $builder = new JWSDK_Builder($argv[1]);
     $builder->buildPages();
-}/*
+}
 catch (JWSDK_Exception $e)
 {
     JWSDK_Log::logTo('build.log', "\nERROR\n" . $e->getMessage());
     exit(1);
-}*/
+}
 catch (Exception $e)
 {
     JWSDK_Log::logTo('build.log', "\nUNEXPECTED ERROR\nPlease report to https://github.com/enepomnyaschih/jwsdk/issues/new\n\n" . $e);
