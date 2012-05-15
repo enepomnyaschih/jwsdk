@@ -220,15 +220,6 @@ class JWSDK_Page_Manager
 		$name,     // String
 		&$jspaths) // Array of name:String for resource duplications detection
 	{
-		if (preg_match('/\|auto$/', $name))
-			$name = substr($name, 0, strrpos($name, '.')) . ($this->mode->isCompress() ?  '.min.js' : '.js');
-		
-		if (preg_match('/\.js$/', $name))
-		{
-			$jspaths[] = $name;
-			return $this->buildSourceJs($name);
-		}
-		
 		$package = $this->packageManager->readPackage($name);
 		if ($this->mode->isCompress())
 		{
@@ -237,7 +228,7 @@ class JWSDK_Page_Manager
 		}
 		
 		$buf = array();
-		foreach ($package->getResources() as $resource)
+		foreach ($package->getSourceResources() as $resource)
 		{
 			$name = $resource->getName();
 			$jspaths[] = $name;

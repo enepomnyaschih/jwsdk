@@ -61,7 +61,10 @@ include_once 'php/Exception/ServiceReadError.php';
 include_once 'php/Exception/TemplateReadError.php';
 include_once 'php/GlobalConfig.php';
 include_once 'php/Package.php';
+include_once 'php/Package/Auto.php';
+include_once 'php/Package/Config.php';
 include_once 'php/Package/Manager.php';
+include_once 'php/Package/Simple.php';
 include_once 'php/Page.php';
 include_once 'php/Page/Manager.php';
 include_once 'php/Resource.php';
@@ -87,12 +90,12 @@ try
 {
     $builder = new JWSDK_Builder($argv[1]);
     $builder->buildPages();
-}
+}/*
 catch (JWSDK_Exception $e)
 {
     JWSDK_Log::logTo('build.log', "\nERROR\n" . $e->getMessage());
     exit(1);
-}
+}*/
 catch (Exception $e)
 {
     JWSDK_Log::logTo('build.log', "\nUNEXPECTED ERROR\nPlease report to https://github.com/enepomnyaschih/jwsdk/issues/new\n\n" . $e);

@@ -19,28 +19,30 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Package
+class JWSDK_Package_Config extends JWSDK_Package
 {
-	private $compressedResource;  // JWSDK_Resource
+	private $name;                // String
+	private $resources = array(); // Array of JWSDK_Resource
+	
+	public function __construct(
+		$name) // String
+	{
+		$this->name = $name;
+	}
 	
 	public function getName() // String
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
+		return $this->name;
+	}
+	
+	public function addResource(
+		$resource) // JWSDK_Resource
+	{
+		$this->resources[] = $resource;
 	}
 	
 	public function getSourceResources() // Array of JWSDK_Resource
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function getCompressedResource() // JWSDK_Resource
-	{
-		return $this->compressedResource;
-	}
-	
-	public function setCompressedResource(
-		$value) // JWSDK_Resource
-	{
-		$this->compressedResource = $value;
+		return $this->resources;
 	}
 }

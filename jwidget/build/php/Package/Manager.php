@@ -40,18 +40,10 @@ class JWSDK_Package_Manager
 		if ($package)
 			return $package;
 		
-		try
-		{
-			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
-			$package = $this->getPackageByJson($name, $json);
-			$this->addPackage($package);
-			
-			return $package;
-		}
-		catch (JWSDK_Exception $e)
-		{
-			throw new JWSDK_Exception_PackageReadError($name, $e);
-		}
+		$package = $this->buildPackage($name);
+		$this->addPackage($package);
+		
+		return $package;
 	}
 	
 	public function compressPackage( // JWSDK_Resource, compressed file
@@ -85,11 +77,31 @@ class JWSDK_Package_Manager
 		}
 	}
 	
-	private function getPackageByJson( // JWSDK_Package
+	private function buildPackage( // JWSDK_Package
+		$name) // String
+	{
+		if (preg_match('/\.js$/', $name))
+			return new JWSDK_Package_Simple($name);
+		
+		if (preg_match('/\|auto$/', $name))
+			return new JWSDK_Package_Auto(substr($name, 0, strrpos($name, '|')));
+		
+		try
+		{
+			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
+			return $this->getPackageByJson($name, $json);
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_PackageReadError($name, $e);
+		}
+	}
+	
+	private function getPackageByJson( // JWSDK_Package_Config
 		$name, // String
 		$json) // Object
 	{
-		$package = new JWSDK_Package($name);
+		$package = new JWSDK_Package_Config($name);
 		
 		try
 		{
@@ -118,7 +130,7 @@ class JWSDK_Package_Manager
 		$package) // JWSDK_Package
 	{
 		$buf = array();
-		foreach ($package->getResources() as $resource)
+		foreach ($package->getSourceResources() as $resource)
 			$buf[] = $this->resourceManager->getResourceContents($resource);
 		
 		return implode("\n", $buf);
