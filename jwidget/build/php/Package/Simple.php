@@ -28,7 +28,7 @@ class JWSDK_Package_Simple extends JWSDK_Package
 		$name) // String
 	{
 		$this->name = $name;
-		$this->_resource = new JWSDK_Resource($name, 'js');
+		$this->_resource = new JWSDK_Resource($name);
 		$this->setCompressedResource($this->_resource);
 	}
 	

@@ -73,7 +73,7 @@ class JWSDK_Package_Manager
 			JWSDK_Util_File::mkdir($buildPath);
 			JWSDK_Util_File::compress($mergePath, $buildPath);
 			
-			$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name), 'js');
+			$compressedResource = new JWSDK_Resource($this->getPackageBuildUrl($name));
 			$package->setCompressedResource($compressedResource);
 			
 			return $compressedResource;

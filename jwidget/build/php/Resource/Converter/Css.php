@@ -19,40 +19,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_Css extends JWSDK_Resource_Converter
 {
 	public function getType() // String
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
+		return 'css';
 	}
 	
 	public function isConvertion() // Boolean
 	{
-		return true;
+		return false;
 	}
 	
 	public function getAttacher() // String
 	{
-		return 'script';
-	}
-	
-	public function convertResource( // String, output contents
-		$name,     // String
-		$contents, // String
-		$params)   // Object
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function getParamsByArray( // Array
-		$params) // Array
-	{
-		return array();
-	}
-	
-	public function getParamsByJson( // Array
-		$json) // Object
-	{
-		return $json;
+		return 'link';
 	}
 }

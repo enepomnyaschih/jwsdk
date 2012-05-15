@@ -21,17 +21,20 @@
 
 class JWSDK_Resource
 {
-	private $name;   // String
-	private $type;   // String
-	private $params; // Array of String
+	private $name;     // String
+	private $type;     // String
+	private $attacher; // String
+	private $params;   // Array of String
 	
 	public function __construct(
-		$name,             // String
-		$type,             // String
-		$params = array()) // Array of String
+		$name,                // String
+		$type = 'js',         // String
+		$attacher = 'script', // String
+		$params = array())    // Array of String
 	{
-		$this->name   = $name;
-		$this->type   = $type;
+		$this->name = $name;
+		$this->type = $type;
+		$this->attacher = $attacher;
 		$this->params = $params;
 	}
 	
@@ -43,6 +46,11 @@ class JWSDK_Resource
 	public function getType() // String
 	{
 		return $this->type;
+	}
+	
+	public function getAttacher() // String
+	{
+		return $this->attacher;
 	}
 	
 	public function getParams() // Array of String

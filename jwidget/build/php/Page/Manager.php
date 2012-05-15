@@ -21,14 +21,15 @@
 
 class JWSDK_Page_Manager
 {
-	private $globalConfig;    // JWSDK_GlobalConfig
-	private $mode;            // JWSDK_Mode
-	private $variables;       // JWSDK_Variables
-	private $packageManager;  // JWSDK_Package_Manager
-	private $templateManager; // JWSDK_Template_Manager
-	private $serviceManager;  // JWSDK_Service_Manager
-	private $resourceManager; // JWSDK_Resource_Manager
-	private $pages = array(); // Map from name:String to JWSDK_Page
+	private $globalConfig;        // JWSDK_GlobalConfig
+	private $mode;                // JWSDK_Mode
+	private $variables;           // JWSDK_Variables
+	private $packageManager;      // JWSDK_Package_Manager
+	private $templateManager;     // JWSDK_Template_Manager
+	private $serviceManager;      // JWSDK_Service_Manager
+	private $resourceManager;     // JWSDK_Resource_Manager
+	private $attachers = array(); // Map from type:String to JWSDK_Resource_Attacher
+	private $pages = array();     // Map from name:String to JWSDK_Page
 	
 	// TODO: Move to JWSDK_Resource after merging CSS and JS together
 	private $inclusions = array();
@@ -49,6 +50,9 @@ class JWSDK_Page_Manager
 		$this->templateManager = $templateManager;
 		$this->serviceManager = $serviceManager;
 		$this->resourceManager = $resourceManager;
+		
+		$this->registerAttacher(new JWSDK_Resource_Attacher_Link());
+		$this->registerAttacher(new JWSDK_Resource_Attacher_Script());
 	}
 	
 	public function buildPages()
@@ -269,6 +273,18 @@ class JWSDK_Page_Manager
 		$name) // String
 	{
 		return $this->getPagesBuildPath() . "/$name.html";
+	}
+	
+	private function registerAttacher(
+		$attacher) // JWSDK_Resource_Attacher
+	{
+		$this->attachers[$attacher->getType()] = $attacher;
+	}
+	
+	private function getAttacher( // JWSDK_Resource_Attacher
+		$type) // String
+	{
+		return JWSDK_Util_Array::get($this->attachers, $type);
 	}
 	
 	private function addPage(

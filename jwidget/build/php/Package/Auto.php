@@ -28,8 +28,8 @@ class JWSDK_Package_Auto extends JWSDK_Package
 		$name) // String
 	{
 		$this->name = $name;
-		$this->sourceResource = new JWSDK_Resource($name, 'js');
-		$this->setCompressedResource(new JWSDK_Resource($this->getCompressedName(), 'js'));
+		$this->sourceResource = new JWSDK_Resource($name);
+		$this->setCompressedResource(new JWSDK_Resource($this->getCompressedName()));
 	}
 	
 	public function getName() // String

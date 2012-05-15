@@ -77,7 +77,7 @@ class JWSDK_Resource_Manager
 			
 			JWSDK_Util_File::write($buildPath, $buildContents);
 			
-			return new JWSDK_Resource($buildName, 'js');
+			return new JWSDK_Resource($buildName);
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -121,7 +121,7 @@ class JWSDK_Resource_Manager
 				$params[$i] = trim($params[$i]);
 		}
 		
-		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByArray($params));
+		return new JWSDK_Resource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByArray($params));
 	}
 	
 	private function getResourceByJson( // JWSDK_Resource
@@ -139,7 +139,7 @@ class JWSDK_Resource_Manager
 		if (!$converter)
 			throw new JWSDK_Exception_InvalidResourceType();
 		
-		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByJson($json));
+		return new JWSDK_Resource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByJson($json));
 	}
 	
 	private function getResourceSourcePath( // String
