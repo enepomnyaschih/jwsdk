@@ -7,5 +7,8 @@
 5.  All resources (including JS, CSS, TXT and other) should be listed in
     common "resources" array in the package configuration (#34)
 6.  Added CSS compression (#8)
-7.  Improved logging (#28, #33)
-8.  Ignore packages that are not attached to any page (#28)
+7.  Eliminated page inheritance: use package dependencies instead (#37)
+8.  Only one package per page is allowed: other must be attached via package
+    dependencies (#37)
+9.  Improved logging (#28, #33)
+10. Ignore packages that are not attached to any page (#28)
