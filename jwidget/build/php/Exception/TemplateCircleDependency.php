@@ -19,18 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception_ServiceReadError extends JWSDK_Exception
+class JWSDK_Exception_TemplateCircleDependency extends JWSDK_Exception
 {
-	private $name;
-	
-	public function __construct($name, $cause)
+	public function __construct()
 	{
-		parent::__construct("Error occured while reading service config '$name'\n" . $cause->getMessage(), $cause);
-		$this->name = $name;
-	}
-	
-	public function getName()
-	{
-		return $this->name;
+		parent::__construct("Circle dependency detected while reading page templates");
 	}
 }

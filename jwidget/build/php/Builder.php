@@ -28,7 +28,6 @@ class JWSDK_Builder
 	private $resourceManager; // JWSDK_Resource_Manager
 	private $packageManager;  // JWSDK_Package_Manager
 	private $templateManager; // JWSDK_Template_Manager
-	private $serviceManager;  // JWSDK_Service_Manager
 	private $pageManager;     // JWSDK_Page_Manager
 	
 	public function __construct(
@@ -43,10 +42,9 @@ class JWSDK_Builder
 		
 		$this->resourceManager = new JWSDK_Resource_Manager($this->globalConfig);
 		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->resourceManager);
-		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig);
-		$this->serviceManager = new JWSDK_Service_Manager($this->globalConfig);
+		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig, $this->mode);
 		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode, $this->variables,
-			$this->packageManager, $this->templateManager, $this->serviceManager, $this->resourceManager);
+			$this->packageManager, $this->templateManager, $this->resourceManager);
 	}
 	
 	public function buildPages()

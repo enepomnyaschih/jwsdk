@@ -26,7 +26,6 @@ class JWSDK_Page_Manager
 	private $variables;           // JWSDK_Variables
 	private $packageManager;      // JWSDK_Package_Manager
 	private $templateManager;     // JWSDK_Template_Manager
-	private $serviceManager;      // JWSDK_Service_Manager
 	private $resourceManager;     // JWSDK_Resource_Manager
 	private $pages = array();     // Map from name:String to JWSDK_Page
 	
@@ -39,7 +38,6 @@ class JWSDK_Page_Manager
 		$variables,       // JWSDK_Variables
 		$packageManager,  // JWSDK_Package_Manager
 		$templateManager, // JWSDK_Template_Manager
-		$serviceManager,  // JWSDK_Service_Manager
 		$resourceManager) // JWSDK_Resource_Manager
 	{
 		$this->globalConfig = $globalConfig;
@@ -47,7 +45,6 @@ class JWSDK_Page_Manager
 		$this->variables = $variables;
 		$this->packageManager = $packageManager;
 		$this->templateManager = $templateManager;
-		$this->serviceManager = $serviceManager;
 		$this->resourceManager = $resourceManager;
 	}
 	
@@ -152,8 +149,7 @@ class JWSDK_Page_Manager
 		$variables = new JWSDK_Variables($this->variables, $page->getVariables());
 		
 		$replaces = $variables->getCustom();
-		$replaces['sources']  = $this->buildSources($page);
-		$replaces['services'] = $this->buildServices($variables->getServices());
+		$replaces['sources'] = $this->buildSources($page);
 		
 		$replaceKeys   = array_keys  ($replaces);
 		$replaceValues = array_values($replaces);
@@ -192,7 +188,7 @@ class JWSDK_Page_Manager
 				$attacher = $this->resourceManager->getAttacher($resource->getAttacher());
 				$url = $this->getResourceAttachUrl($resourceName);
 				$attachStr = $attacher->format($url);
-				array_push($attaches[$resource->getAttacher()], JWSDK_Util_String::tabulize($attachStr, 2));
+				array_push($attaches[$resource->getAttacher()], JWSDK_Util_String::tabulize($attachStr, 2, "\t"));
 			}
 		}
 		
@@ -216,18 +212,6 @@ class JWSDK_Page_Manager
 		$this->resourceAttachUrls[$name] = $url;
 		
 		return $url;
-	}
-	
-	private function buildServices($services)
-	{
-		$buf = array();
-		foreach ($services as $name)
-		{
-			$service = $this->serviceManager->readService($name);
-			$buf[] = $service->getContents();
-		}
-		
-		return implode("\n", $buf);
 	}
 	
 	private function getPageConfigsPath() // String

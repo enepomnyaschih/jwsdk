@@ -38,8 +38,7 @@ class JWSDK_Mode_Debug extends JWSDK_Mode
 	
 	public function getDescription() // String
 	{
-		return "Link html pages in debug mode\n" .
-		       "(no compression, external services are filtered).";
+		return "Link html pages in debug mode (no compression).";
 	}
 }
 

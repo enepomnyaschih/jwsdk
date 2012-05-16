@@ -28,8 +28,7 @@ class JWSDK_Variables
 		$vars = null) // Map from String to Map from String to *
 	{
 		$this->vars = array(
-			'services' => array(),
-			'custom'   => array()
+			'custom' => array()
 		);
 		
 		if ($base !== null)
@@ -43,19 +42,6 @@ class JWSDK_Variables
 		return $this->vars;
 	}
 	
-	public function getServices() // Array of String
-	{
-		$result = array();
-		$services = $this->vars['services'];
-		foreach ($services as $key => $value)
-		{
-			if ($value)
-				$result[] = $key;
-		}
-		
-		return $result;
-	}
-	
 	public function getCustom() // Map from String to String
 	{
 		return $this->vars['custom'];
@@ -67,7 +53,6 @@ class JWSDK_Variables
 		if ($vars === null)
 			return;
 		
-		$this->applyVar($vars, 'services');
 		$this->applyVar($vars, 'custom');
 	}
 	

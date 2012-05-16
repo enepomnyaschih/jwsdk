@@ -24,7 +24,6 @@ class JWSDK_Page
 	private $name;               // String
 	private $template;           // String
 	private $package;            // String
-	private $services = array(); // Map from String to Boolean
 	private $custom = array();   // Map from String to String
 	
 	public function __construct(
@@ -38,9 +37,6 @@ class JWSDK_Page
 		
 		if (isset($json['package']) && is_string($json['package']))
 			$this->package = $json['package'];
-		
-		if (isset($json['services']))
-			$this->services = array_merge($this->services, $json['services']);
 		
 		if (isset($json['custom']))
 			$this->custom = array_merge($this->custom, $json['custom']);
@@ -64,11 +60,6 @@ class JWSDK_Page
 		return $this->package;
 	}
 	
-	public function getServices() // Map from String to Boolean
-	{
-		return $this->services;
-	}
-	
 	public function getCustom() // Map from String to String
 	{
 		return $this->custom;
@@ -77,8 +68,7 @@ class JWSDK_Page
 	public function getVariables() // Map from String to Map from String to *
 	{
 		return array(
-			'services' => $this->getServices(),
-			'custom'   => $this->getCustom()
+			'custom' => $this->getCustom()
 		);
 	}
 }

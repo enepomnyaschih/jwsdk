@@ -33,12 +33,13 @@ class JWSDK_Util_String
 	}
 	
 	public static function tabulize( // String
-		$str, // String
-		$num) // Integer
+		$str,          // String
+		$num,          // Integer
+		$tab = '    ') // String
 	{
 		$lines = explode("\n", $str);
 		for ($i = 0; $i < count($lines); $i++)
-			$lines[$i] = JWSDK_Util_String::repeat("    ", $num) . $lines[$i];
+			$lines[$i] = JWSDK_Util_String::repeat($tab, $num) . $lines[$i];
 		
 		return implode("\n", $lines);
 	}

@@ -2,7 +2,6 @@
     "configPath"    : "config",
     "packagesPath"  : "config/packages",
     "modesPath"     : "config/modes",
-    "servicesPath"  : "config/services",
     "templatesPath" : "config/templates",
     
     "pagesFolder"   : "pages",
