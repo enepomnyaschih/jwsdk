@@ -29,24 +29,19 @@ class JWSDK_GlobalConfig
 		$this->json = JWSDK_Util_File::readJson($path, 'global config');
 	}
 	
-	public function getConfigPath() // String
-	{
-		return $this->json['configPath'];
-	}
-	
 	public function getPackagesPath() // String
 	{
 		return $this->json['packagesPath'];
 	}
 	
+	public function getPagesPath() // String
+	{
+		return $this->json['pagesPath'];
+	}
+	
 	public function getTemplatesPath() // String
 	{
 		return $this->json['templatesPath'];
-	}
-	
-	public function getPagesFolder() // String
-	{
-		return $this->json['pagesFolder'];
 	}
 	
 	public function getPublicPath() // String

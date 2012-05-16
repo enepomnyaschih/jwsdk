@@ -53,7 +53,7 @@ class JWSDK_Page_Manager
 	private function buildDir(
 		$path) // String
 	{
-		$fullPath = $this->getPageConfigsPath() . $path;
+		$fullPath = $this->globalConfig->getPagesPath() . $path;
 		
 		if (is_file($fullPath))
 		{
@@ -95,7 +95,7 @@ class JWSDK_Page_Manager
 		
 		try
 		{
-			$page = $this->readPage("pages/$name");
+			$page = $this->readPage($name);
 			
 			$templateName = $page->getTemplate();
 			if (!$templateName)
@@ -209,15 +209,10 @@ class JWSDK_Page_Manager
 		return $url;
 	}
 	
-	private function getPageConfigsPath() // String
-	{
-		return $this->globalConfig->getConfigPath() . '/' . $this->globalConfig->getPagesFolder();
-	}
-	
 	private function getPageConfigPath( // String
 		$name) // String
 	{
-		return $this->globalConfig->getConfigPath() . "/$name.json";
+		return $this->globalConfig->getPagesPath() . "/$name.json";
 	}
 	
 	private function getPagesBuildPath() // String

@@ -1,15 +1,13 @@
 {
-    "configPath"    : "config",
-    "packagesPath"  : "config/packages",
-    "templatesPath" : "config/templates",
-    
-    "pagesFolder"   : "pages",
-    
-    "publicPath"    : "../public",
-    "buildUrl"      : "build",
-    "pagesUrl"      : "pages",
-    
-    "tempPath"      : "temp",
-    
-    "urlPrefix"     : "/"
+	"packagesPath"  : "config/packages",
+	"pagesPath"     : "config/pages",
+	"templatesPath" : "config/templates",
+	
+	"publicPath"    : "../public",
+	"buildUrl"      : "build",
+	"pagesUrl"      : "pages",
+	
+	"tempPath"      : "temp",
+	
+	"urlPrefix"     : "/"
 }
