@@ -49,12 +49,6 @@ class JWSDK_GlobalConfig
 		return $this->json['pagesFolder'];
 	}
 	
-	public function getModeConfigPath( // String
-		$name) // String
-	{
-		return $this->json['modesPath'] . "/$name.json";
-	}
-	
 	public function getPublicPath() // String
 	{
 		return $this->json['publicPath'];

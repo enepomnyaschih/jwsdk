@@ -10,9 +10,11 @@
 7.  Eliminated page inheritance: use package dependencies instead (#37)
 8.  Only one package per page is allowed: other must be attached via package
     dependencies (#37)
-9.  Eliminated external services. Instead, improved templates engine:
-    introduced ${+...} tags for another template inclusion,
-    ${?release} ... ${?end} and ${?debug} ... ${?end} for mode selective
-    compilation (#30)
-10. Improved logging (#28, #33)
-11. Ignore packages that are not attached to any page (#28)
+9.  Eliminated external services and modes configurations.
+    Instead, improved templates engine: introduced ${+...} tag for another
+    template inclusion, ${?release} ... ${?end} and ${?debug} ... ${?end} for
+    mode selective compilation (#30)
+10. Template variables are taken from page config root instead of "custom"
+    dictionary (#40)
+11. Improved logging (#28, #33)
+12. Ignore packages that are not attached to any page (#28)

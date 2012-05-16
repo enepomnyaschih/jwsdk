@@ -21,10 +21,10 @@
 
 class JWSDK_Page
 {
-	private $name;               // String
-	private $template;           // String
-	private $package;            // String
-	private $custom = array();   // Map from String to String
+	private $name;     // String
+	private $template; // String
+	private $package;  // String
+	private $params;   // Map from String to String
 	
 	public function __construct(
 		$name, // String
@@ -38,11 +38,7 @@ class JWSDK_Page
 		if (isset($json['package']) && is_string($json['package']))
 			$this->package = $json['package'];
 		
-		if (isset($json['custom']))
-			$this->custom = array_merge($this->custom, $json['custom']);
-		
-		if (isset($json['title']) && is_string($json['title']))
-			$this->custom['title'] = $json['title'];
+		$this->params = $this->filterParams($json);
 	}
 	
 	public function getName() // String
@@ -60,15 +56,21 @@ class JWSDK_Page
 		return $this->package;
 	}
 	
-	public function getCustom() // Map from String to String
+	public function getParams() // Map from String to String
 	{
-		return $this->custom;
+		return $this->params;
 	}
 	
-	public function getVariables() // Map from String to Map from String to *
+	private function filterParams( // Map from String to String
+		$json) // Map from String to *
 	{
-		return array(
-			'custom' => $this->getCustom()
-		);
+		$result = array();
+		foreach ($json as $key => $value)
+		{
+			if (is_string($value))
+				$result[$key] = $value;
+		}
+		
+		return $result;
 	}
 }

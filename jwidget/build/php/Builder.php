@@ -23,7 +23,6 @@ class JWSDK_Builder
 {
 	private $globalConfig;    // JWSDK_GlobalConfig
 	private $mode;            // JWSDK_Mode
-	private $variables;       // JWSDK_Variables
 	
 	private $resourceManager; // JWSDK_Resource_Manager
 	private $packageManager;  // JWSDK_Package_Manager
@@ -36,14 +35,10 @@ class JWSDK_Builder
 		$this->globalConfig = new JWSDK_GlobalConfig();
 		$this->mode = JWSDK_Mode::getMode($modeName);
 		
-		$this->variables = new JWSDK_Variables();
-		$this->variables->applyConfig($this->globalConfig->getModeConfigPath('common'));
-		$this->variables->applyConfig($this->globalConfig->getModeConfigPath($this->mode->getConfigId()));
-		
 		$this->resourceManager = new JWSDK_Resource_Manager($this->globalConfig);
 		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->resourceManager);
 		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig, $this->mode);
-		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode, $this->variables,
+		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode,
 			$this->packageManager, $this->templateManager, $this->resourceManager);
 	}
 	

@@ -81,7 +81,6 @@ include_once 'php/Resource/Converter/Util.php';
 include_once 'php/Resource/Manager.php';
 include_once 'php/Template.php';
 include_once 'php/Template/Manager.php';
-include_once 'php/Variables.php';
 
 $date = date('Y-m-d H:i:s');
 JWSDK_Log::logTo('build.log', "\n\n[$date]");

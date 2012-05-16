@@ -1,7 +1,6 @@
 {
     "configPath"    : "config",
     "packagesPath"  : "config/packages",
-    "modesPath"     : "config/modes",
     "templatesPath" : "config/templates",
     
     "pagesFolder"   : "pages",

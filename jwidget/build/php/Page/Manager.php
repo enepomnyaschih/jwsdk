@@ -23,7 +23,6 @@ class JWSDK_Page_Manager
 {
 	private $globalConfig;        // JWSDK_GlobalConfig
 	private $mode;                // JWSDK_Mode
-	private $variables;           // JWSDK_Variables
 	private $packageManager;      // JWSDK_Package_Manager
 	private $templateManager;     // JWSDK_Template_Manager
 	private $resourceManager;     // JWSDK_Resource_Manager
@@ -35,14 +34,12 @@ class JWSDK_Page_Manager
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
 		$mode,            // JWSDK_Mode
-		$variables,       // JWSDK_Variables
 		$packageManager,  // JWSDK_Package_Manager
 		$templateManager, // JWSDK_Template_Manager
 		$resourceManager) // JWSDK_Resource_Manager
 	{
 		$this->globalConfig = $globalConfig;
 		$this->mode = $mode;
-		$this->variables = $variables;
 		$this->packageManager = $packageManager;
 		$this->templateManager = $templateManager;
 		$this->resourceManager = $resourceManager;
@@ -146,9 +143,7 @@ class JWSDK_Page_Manager
 		$template, // JWSDK_Template
 		$page)     // JWSDK_Page
 	{
-		$variables = new JWSDK_Variables($this->variables, $page->getVariables());
-		
-		$replaces = $variables->getCustom();
+		$replaces = $page->getParams();
 		$replaces['sources'] = $this->buildSources($page);
 		
 		$replaceKeys   = array_keys  ($replaces);
