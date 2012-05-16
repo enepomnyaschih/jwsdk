@@ -54,7 +54,6 @@ include_once 'php/Exception/PackageCompressError.php';
 include_once 'php/Exception/PackageReadError.php';
 include_once 'php/Exception/PageBuildError.php';
 include_once 'php/Exception/PageReadError.php';
-include_once 'php/Exception/PageTemplateIsUndefined.php';
 include_once 'php/Exception/ResourceConvertionError.php';
 include_once 'php/Exception/ResourceReadError.php';
 include_once 'php/Exception/ServiceReadError.php';

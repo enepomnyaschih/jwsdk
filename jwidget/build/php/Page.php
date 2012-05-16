@@ -22,31 +22,31 @@
 class JWSDK_Page
 {
 	private $name;               // String
-	private $base;               // String
 	private $template;           // String
-	private $title = '';         // String
-	private $packages = array(); // Array of String
+	private $package;            // String
 	private $services = array(); // Map from String to Boolean
 	private $custom = array();   // Map from String to String
-	private $rootPackage;        // JWSDK_Package_Config, auto-generated
 	
 	public function __construct(
 		$name, // String
 		$json) // Object
 	{
-		$this->name     = $name;
-		$this->base     = JWSDK_Util_Array::get($json, 'base');
-		$this->template = JWSDK_Util_Array::get($json, 'template');
-		$this->title    = JWSDK_Util_Array::get($json, 'title');
+		$this->name = $name;
 		
-		if (isset($json['packages']))
-			$this->packages = array_merge($this->packages, $json['packages']);
+		if (isset($json['template']) && is_string($json['template']))
+			$this->template = $json['template'];
+		
+		if (isset($json['package']) && is_string($json['package']))
+			$this->package = $json['package'];
 		
 		if (isset($json['services']))
 			$this->services = array_merge($this->services, $json['services']);
 		
 		if (isset($json['custom']))
 			$this->custom = array_merge($this->custom, $json['custom']);
+		
+		if (isset($json['title']) && is_string($json['title']))
+			$this->custom['title'] = $json['title'];
 	}
 	
 	public function getName() // String
@@ -54,24 +54,14 @@ class JWSDK_Page
 		return $this->name;
 	}
 	
-	public function getBase() // String
-	{
-		return $this->base;
-	}
-	
 	public function getTemplate() // String
 	{
 		return $this->template;
 	}
 	
-	public function getTitle() // String
+	public function getPackage() // String
 	{
-		return $this->title;
-	}
-	
-	public function getPackages() // Array of String
-	{
-		return $this->packages;
+		return $this->package;
 	}
 	
 	public function getServices() // Map from String to Boolean
@@ -82,31 +72,6 @@ class JWSDK_Page
 	public function getCustom() // Map from String to String
 	{
 		return $this->custom;
-	}
-	
-	public function setRootPackage(
-		$package) // JWSDK_Package_Config
-	{
-		$this->rootPackage = $package;
-	}
-	
-	public function getRootPackage() // JWSDK_Package_Config
-	{
-		return $this->rootPackage;
-	}
-	
-	public function applyBase(
-		$base) // JWSDK_Page
-	{
-		if (!$this->getTemplate())
-			$this->template = $base->getTemplate();
-		
-		if (!$this->getTitle())
-			$this->title = $base->getTitle();
-		
-		$this->packages = array_merge($base->getPackages(), $this->getPackages());
-		$this->services = array_merge($base->getServices(), $this->getServices());
-		$this->custom   = array_merge($base->getCustom(),   $this->getCustom());
 	}
 	
 	public function getVariables() // Map from String to Map from String to *

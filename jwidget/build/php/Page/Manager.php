@@ -105,7 +105,10 @@ class JWSDK_Page_Manager
 			
 			$templateName = $page->getTemplate();
 			if (!$templateName)
-				throw new JWSDK_Exception_PageTemplateIsUndefined();
+			{
+				$this->buildSources($page);
+				return;
+			}
 			
 			$template = $this->templateManager->readTemplate($templateName);
 			$contents = $this->applyTemplate($template, $page);
@@ -132,21 +135,6 @@ class JWSDK_Page_Manager
 			$path = $this->getPageConfigPath($name);
 			$data = JWSDK_Util_File::readJson($path, 'page config');
 			$page = new JWSDK_Page($name, $data);
-			
-			if (isset($data['base']))
-			{
-				$baseName = $data['base'];
-				$base = $this->readPage($baseName);
-				$page->applyBase($base);
-			}
-			
-			$rootPackage = new JWSDK_Package_Config("$name:root");
-			foreach ($page->getPackages() as $value)
-				$rootPackage->addRequire($value);
-			
-			$page->setRootPackage($rootPackage);
-			$this->packageManager->addPackage($rootPackage);
-			
 			$this->addPage($page);
 			
 			return $page;
@@ -166,7 +154,6 @@ class JWSDK_Page_Manager
 		$replaces = $variables->getCustom();
 		$replaces['sources']  = $this->buildSources($page);
 		$replaces['services'] = $this->buildServices($variables->getServices());
-		$replaces['title']    = $page->getTitle();
 		
 		$replaceKeys   = array_keys  ($replaces);
 		$replaceValues = array_values($replaces);
@@ -188,12 +175,9 @@ class JWSDK_Page_Manager
 		
 		$resourceMap = array();
 		
-		$packages = $this->packageManager->readPackageWithDependencies($page->getRootPackage()->getName());
+		$packages = $this->packageManager->readPackageWithDependencies($page->getPackage());
 		foreach ($packages as $package)
 		{
-			if (preg_match('/:root$/', $package->getName()))
-				continue;
-			
 			$resources = $this->mode->isCompress() ?
 				$this->packageManager->compressPackage($package) :
 				$package->getSourceResources();
