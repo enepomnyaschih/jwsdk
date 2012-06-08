@@ -108,7 +108,7 @@ class JWSDK_Package_Manager
 		try
 		{
 			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
-			return new JWSDK_Package_Config($name, $json, $this->resourceManager, $this->fileManager);
+			return new JWSDK_Package_Config($name, $json, $this->globalConfig, $this->resourceManager, $this->fileManager);
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -116,35 +116,9 @@ class JWSDK_Package_Manager
 		}
 	}
 	
-	private function getBuildPath() // String
-	{
-		return $this->globalConfig->getPublicPath() . '/' . $this->globalConfig->getBuildUrl();
-	}
-	
 	private function getPackagePath( // String
 		$name) // String
 	{
 		return $this->globalConfig->getPackagesPath() . "/$name.json";
-	}
-	
-	private function getPackageMergePath( // String
-		$name, // String
-		$type) // String
-	{
-		return $this->globalConfig->getMergePath() . "/$name.$type";
-	}
-	
-	private function getPackageBuildPath( // String
-		$name, // String
-		$type) // String
-	{
-		return $this->getBuildPath() . "/$name.min.$type";
-	}
-	
-	private function getPackageBuildUrl( // String
-		$name, // String
-		$type) // String
-	{
-		return $this->globalConfig->getBuildUrl() . "/$name.min.$type";
 	}
 }

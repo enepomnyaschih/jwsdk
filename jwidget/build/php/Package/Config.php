@@ -21,6 +21,7 @@
 
 class JWSDK_Package_Config extends JWSDK_Package
 {
+	private $globalConfig;        // JWSDK_GlobalConfig
 	private $resourceManager;     // JWSDK_Resource_Manager
 	private $fileManager;         // JWSDK_File_Manager
 	
@@ -30,11 +31,13 @@ class JWSDK_Package_Config extends JWSDK_Package
 	public function __construct(
 		$name,            // String
 		$json,            // Object
+		$globalConfig,    // JWSDK_GlobalConfig
 		$resourceManager, // JWSDK_Resource_Manager
 		$fileManager)     // JWSDK_File_Manager
 	{
 		parent::__construct($name);
 		
+		$this->globalConfig = $globalConfig;
 		$this->resourceManager = $resourceManager;
 		$this->fileManager = $fileManager;
 		
@@ -90,7 +93,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			JWSDK_Log::logTo('build.log', "Compressing package $name");
 			
 			$result = array();
-			foreach ($this->resourceManager->getAttachers() as $type => $attacher)
+			foreach ($this->fileManager->getAttachers() as $type => $attacher)
 			{
 				$contents = array();
 				foreach ($this->getSourceFiles() as $file)
@@ -111,7 +114,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 				JWSDK_Util_File::mkdir($buildPath);
 				JWSDK_Util_File::compress($mergePath, $buildPath);
 				
-				$result[] = $this->fileManager->getFile($this->getBuildUrl($type), $type);
+				$result[] = $this->fileManager->getFile($this->getBuildName($type), $type);
 			}
 			
 			return $result;
@@ -120,5 +123,23 @@ class JWSDK_Package_Config extends JWSDK_Package
 		{
 			throw new JWSDK_Exception_PackageCompressError($name, $e);
 		}
+	}
+	
+	private function getMergePath( // String
+		$type) // String
+	{
+		return $this->globalConfig->getMergePath() . '/' . $this->getName() . ".$type";
+	}
+	
+	private function getBuildName( // String
+		$type) // String
+	{
+		return $this->globalConfig->getBuildUrl() . '/' . $this->getName() . ".min.$type";
+	}
+	
+	private function getBuildPath( // String
+		$type) // String
+	{
+		return $this->globalConfig->getPublicPath() . '/' . $this->getBuildName($type);
 	}
 }
