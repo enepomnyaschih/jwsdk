@@ -58,8 +58,12 @@ class JWSDK_File_Manager
 			return $file;
 		}
 		
-		$mtime = JWSDK_Util_File::mtime();
+		$path = $this->getFilePath($name);
+		$mtime = JWSDK_Util_File::mtime($path);
 		$file = new JWSDK_File($name, $attacher, $mtime);
+		$this->files[$name] = $file;
+		
+		return $file;
 	}
 	
 	public function getFileContents( // String

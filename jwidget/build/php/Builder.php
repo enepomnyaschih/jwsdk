@@ -37,7 +37,7 @@ class JWSDK_Builder
 		$this->mode = JWSDK_Mode::getMode($modeName);
 		
 		$this->fileManager = new JWSDK_File_Manager($this->globalConfig);
-		$this->resourceManager = new JWSDK_Resource_Manager($this->globalConfig);
+		$this->resourceManager = new JWSDK_Resource_Manager($this->globalConfig, $this->fileManager);
 		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->resourceManager, $this->fileManager);
 		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig, $this->mode);
 		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode,

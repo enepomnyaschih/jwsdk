@@ -34,7 +34,7 @@ class JWSDK_Package
 	
 	public function getName() // String
 	{
-		return $name;
+		return $this->name;
 	}
 	
 	public function getSourceFiles() // Array of JWSDK_File

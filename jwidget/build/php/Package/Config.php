@@ -83,10 +83,10 @@ class JWSDK_Package_Config extends JWSDK_Package
 	
 	protected function initCompressedFiles() // Array of JWSDK_File
 	{
+		$name = $this->getName();
+		
 		try
 		{
-			$name = $this->getName();
-			
 			JWSDK_Log::logTo('build.log', "Compressing package $name");
 			
 			$result = array();

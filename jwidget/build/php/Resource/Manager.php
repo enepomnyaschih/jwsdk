@@ -22,17 +22,18 @@
 class JWSDK_Resource_Manager
 {
 	private $globalConfig;         // JWSDK_GlobalConfig
+	private $fileManager;          // JWSDK_FileManager
+	
 	private $attachers = array();  // Map from type:String to JWSDK_Resource_Attacher
 	private $converters = array(); // Map from type:String to JWSDK_Resource_Converter
 	private $resources = array();  // Map from name:String to JWSDK_Resource
 	
 	public function __construct(
-		$globalConfig) // JWSDK_GlobalConfig
+		$globalConfig, // JWSDK_GlobalConfig
+		$fileManager)  // JWSDK_FileManager
 	{
 		$this->globalConfig = $globalConfig;
-		
-		$this->registerAttacher(new JWSDK_Resource_Attacher_Css());
-		$this->registerAttacher(new JWSDK_Resource_Attacher_Js());
+		$this->fileManager = $fileManager;
 		
 		$this->registerConverter(new JWSDK_Resource_Converter_Css());
 		$this->registerConverter(new JWSDK_Resource_Converter_JwHtml());
@@ -40,17 +41,6 @@ class JWSDK_Resource_Manager
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());
 		$this->registerConverter(new JWSDK_Resource_Converter_Json());
 		$this->registerConverter(new JWSDK_Resource_Converter_Js());
-	}
-	
-	public function getAttacher( // JWSDK_Resource_Attacher
-		$type) // String
-	{
-		return JWSDK_Util_Array::get($this->attachers, $type);
-	}
-	
-	public function getAttachers() // Map from type:String to JWSDK_Resource_Attacher
-	{
-		return $this->attachers;
 	}
 	
 	public function getResourceByDefinition( // JWSDK_Resource
@@ -154,7 +144,7 @@ class JWSDK_Resource_Manager
 		{
 			$converter = $this->getConverter($type);
 			if (!$converter->isConvertion())
-				return $this->getFile($resource->getName(), $converter->getAttacher());
+				return $this->fileManager->getFile($resource->getName(), $converter->getAttacher());
 			
 			JWSDK_Log::logTo('build.log', "Converting resource $name");
 			
@@ -166,7 +156,7 @@ class JWSDK_Resource_Manager
 			
 			JWSDK_Util_File::write($buildPath, $buildContents);
 			
-			return $this->getFile($buildName, $converter->getAttacher());
+			return $this->fileManager->getFile($buildName, $converter->getAttacher());
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -190,12 +180,6 @@ class JWSDK_Resource_Manager
 		$name) // String
 	{
 		return $this->globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($name);
-	}
-	
-	private function registerAttacher(
-		$attacher) // JWSDK_Resource_Attacher
-	{
-		$this->attachers[$attacher->getType()] = $attacher;
 	}
 	
 	private function registerConverter(
