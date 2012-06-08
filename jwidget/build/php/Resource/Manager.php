@@ -24,6 +24,7 @@ class JWSDK_Resource_Manager
 	private $globalConfig;         // JWSDK_GlobalConfig
 	private $attachers = array();  // Map from type:String to JWSDK_Resource_Attacher
 	private $converters = array(); // Map from type:String to JWSDK_Resource_Converter
+	private $resources = array();  // Map from name:String to JWSDK_Resource
 	
 	public function __construct(
 		$globalConfig) // JWSDK_GlobalConfig
@@ -71,34 +72,17 @@ class JWSDK_Resource_Manager
 		}
 	}
 	
-	public function convertResource( // JWSDK_Resource
+	public function convertResource( // JWSDK_File
 		$resource) // JWSDK_Resource
 	{
-		$name = $resource->getName();
-		$type = $resource->getType();
+		$file = $resource->getFile();
+		if ($file)
+			return $file;
 		
-		try
-		{
-			$converter = $this->getConverter($type);
-			if (!$converter->isConvertion())
-				return $resource;
-			
-			JWSDK_Log::logTo('build.log', "Converting resource $name");
-			
-			$sourceContents = $this->getResourceContents($resource);
-			$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
-			
-			$buildName = $this->getResourceBuildName($name);
-			$buildPath = $this->getResourceBuildPath($name);
-			
-			JWSDK_Util_File::write($buildPath, $buildContents);
-			
-			return new JWSDK_Resource($buildName);
-		}
-		catch (JWSDK_Exception $e)
-		{
-			throw new JWSDK_Exception_ResourceConvertionError($name, $type, $e);
-		}
+		$file = $this->getFileByResource($resource);
+		$resource->setFile($file);
+		
+		return $file;
 	}
 	
 	public function getResourceContents( // String
@@ -109,18 +93,15 @@ class JWSDK_Resource_Manager
 		return JWSDK_Util_File::read($sourcePath, 'resource file');
 	}
 	
-	public function getResourceInclusionUrl( // String
-		$name) // String
-	{
-		$sourcePath = $this->getResourceSourcePath($name);
-		return $this->globalConfig->getUrlPrefix() . "$name?timestamp=" . JWSDK_Util_File::mtime($sourcePath, 'resource file');
-	}
-	
 	private function getResourceByString( // JWSDK_Resource
 		$str) // String
 	{
 		$tokens = explode(":", $str);
 		$name = trim($tokens[0]);
+		
+		$resource = $this->getResource($name);
+		if ($resource)
+			throw new JWSDK_Exception_DuplicatedResourceError($name);
 		
 		$converter = $this->getConverterByResourceName($name);
 		if (!$converter)
@@ -147,6 +128,11 @@ class JWSDK_Resource_Manager
 			throw new JWSDK_Exception_InvalidResourceFormat();
 		
 		$name = $json['path'];
+		
+		$resource = $this->getResource($name);
+		if ($resource)
+			throw new JWSDK_Exception_DuplicatedResourceError($name);
+		
 		if (isset($json['type']) && is_string($json['type']))
 			$converter = $this->getConverter($json['type']);
 		else
@@ -156,6 +142,36 @@ class JWSDK_Resource_Manager
 			throw new JWSDK_Exception_InvalidResourceType();
 		
 		return new JWSDK_Resource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByJson($json));
+	}
+	
+	private function getFileByResource( // JWSDK_File
+		$resource) // JWSDK_Resource
+	{
+		$name = $resource->getName();
+		$type = $resource->getType();
+		
+		try
+		{
+			$converter = $this->getConverter($type);
+			if (!$converter->isConvertion())
+				return $this->getFile($resource->getName(), $converter->getAttacher());
+			
+			JWSDK_Log::logTo('build.log', "Converting resource $name");
+			
+			$sourceContents = $this->getResourceContents($resource);
+			$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
+			
+			$buildName = $this->getResourceBuildName($name);
+			$buildPath = $this->getResourceBuildPath($name);
+			
+			JWSDK_Util_File::write($buildPath, $buildContents);
+			
+			return $this->getFile($buildName, $converter->getAttacher());
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_ResourceConvertionError($name, $type, $e);
+		}
 	}
 	
 	private function getResourceSourcePath( // String
@@ -204,5 +220,17 @@ class JWSDK_Resource_Manager
 		}
 		
 		return null;
+	}
+	
+	private function registerResource(
+		$resource) // JWSDK_Resource
+	{
+		$this->resources[$resource->getName()] = $resource;
+	}
+	
+	private function getResource( // JWSDK_Resource
+		$name) // String
+	{
+		return JWSDK_Util_Array::get($this->resources, $name);
 	}
 }

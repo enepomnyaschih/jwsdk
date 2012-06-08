@@ -21,27 +21,32 @@
 
 class JWSDK_Package_Auto extends JWSDK_Package
 {
-	private $name;           // String
-	private $type;           // String
-	private $sourceResource; // JWSDK_Resource
+	private $fileManager;    // JWSDK_File_Manager
+	
+	private $sourceFile;     // JWSDK_File
+	private $compressedFile; // JWSDK_File
 	
 	public function __construct(
-		$name) // String
+		$name,        // String
+		$fileManager) // JWSDK_File_Manager
 	{
-		$this->name = $name;
-		$this->type = $this->getResourceType();
-		$this->sourceResource = new JWSDK_Resource($name, $this->type, $this->type);
-		$this->setCompressedResources(array(new JWSDK_Resource($this->getCompressedName(), $this->type, $this->type)));
+		parent::__construct($name . '|auto');
+		
+		$this->fileManager = $fileManager;
+		
+		$type = $this->getResourceType();
+		$this->sourceFile = $this->fileManager->getFile($name, $type);
+		$this->compressedFile = $this->fileManager->getFile($this->getCompressedName($type), $type);
 	}
 	
-	public function getName() // String
+	protected function initSourceFiles() // Array of JWSDK_File
 	{
-		return $this->name . '|auto';
+		return array($this->sourceFile);
 	}
 	
-	public function getSourceResources() // Array of JWSDK_Resource
+	protected function initCompressedFiles() // Array of JWSDK_File
 	{
-		return array($this->sourceResource);
+		return array($this->compressedFile);
 	}
 	
 	private function getResourceType() // String
@@ -49,8 +54,9 @@ class JWSDK_Package_Auto extends JWSDK_Package
 		return substr($this->name, strrpos($this->name, '.') + 1);
 	}
 	
-	private function getCompressedName() // String
+	private function getCompressedName( // String
+		$type) // String
 	{
-		return substr($this->name, 0, strrpos($this->name, '.')) . '.min.' . $this->type;
+		return substr($this->name, 0, strrpos($this->name, '.')) . '.min.' . $type;
 	}
 }

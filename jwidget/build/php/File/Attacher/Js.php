@@ -19,35 +19,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Package_Simple extends JWSDK_Package
+class JWSDK_File_Attacher_Js extends JWSDK_Resource_Attacher
 {
-	private $fileManager; // JWSDK_File_Manager
-	
-	private $file;        // JWSDK_File
-	
-	public function __construct(
-		$name,        // String
-		$fileManager) // JWSDK_File_Manager
+	public function getType() // String
 	{
-		parent::__construct($name);
-		
-		$this->fileManager = $fileManager;
-		
-		$this->file = $this->fileManager->getFile($name, $this->getResourceType());
+		return 'js';
 	}
 	
-	protected function initSourceFiles() // Array of JWSDK_File
+	public function format( // String
+		$url) // String
 	{
-		return array($this->file);
-	}
-	
-	protected function initCompressedFiles() // Array of JWSDK_File
-	{
-		return array($this->file);
-	}
-	
-	private function getResourceType() // String
-	{
-		return substr($this->getName(), strrpos($this->getName(), '.') + 1);
+		return '<script type="text/javascript" charset="utf-8" src="' . htmlspecialchars($url) . '"></script>';
 	}
 }

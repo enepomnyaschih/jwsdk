@@ -19,16 +19,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Attacher_Js extends JWSDK_Resource_Attacher
+class JWSDK_File_Attacher_Css extends JWSDK_Resource_Attacher
 {
 	public function getType() // String
 	{
-		return 'js';
+		return 'css';
 	}
 	
 	public function format( // String
 		$url) // String
 	{
-		return '<script type="text/javascript" charset="utf-8" src="' . htmlspecialchars($url) . '"></script>';
+		return '<link rel="stylesheet" type="text/css" href="' . htmlspecialchars($url) . '" />';
 	}
 }

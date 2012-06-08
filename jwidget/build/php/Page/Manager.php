@@ -26,6 +26,7 @@ class JWSDK_Page_Manager
 	private $packageManager;      // JWSDK_Package_Manager
 	private $templateManager;     // JWSDK_Template_Manager
 	private $resourceManager;     // JWSDK_Resource_Manager
+	private $fileManager;         // JWSDK_File_Manager
 	private $pages = array();     // Map from name:String to JWSDK_Page
 	
 	// TODO: Move to JWSDK_Resource after merging CSS and JS together
@@ -36,13 +37,13 @@ class JWSDK_Page_Manager
 		$mode,            // JWSDK_Mode
 		$packageManager,  // JWSDK_Package_Manager
 		$templateManager, // JWSDK_Template_Manager
-		$resourceManager) // JWSDK_Resource_Manager
+		$fileManager)     // JWSDK_File_Manager
 	{
 		$this->globalConfig = $globalConfig;
 		$this->mode = $mode;
 		$this->packageManager = $packageManager;
 		$this->templateManager = $templateManager;
-		$this->resourceManager = $resourceManager;
+		$this->fileManager = $fileManager;
 	}
 	
 	public function buildPages()
@@ -161,29 +162,24 @@ class JWSDK_Page_Manager
 		$name = $page->getName();
 		
 		$attaches = array(); // Map from attacherType:String to Array of String
-		foreach ($this->resourceManager->getAttachers() as $type => $attacher)
+		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 			$attaches[$type] = array();
-		
-		$resourceMap = array();
 		
 		$packages = $this->packageManager->readPackageWithDependencies($page->getPackage());
 		foreach ($packages as $package)
 		{
-			$resources = $this->mode->isCompress() ?
-				$this->packageManager->compressPackage($package) :
-				$package->getSourceResources();
+			$files = $this->mode->isCompress() ?
+				$package->getCompressedFiles() :
+				$package->getSourceFiles();
 			
-			foreach ($resources as $resource)
+			foreach ($files as $file)
 			{
-				$resourceName = $resource->getName();
-				if (isset($resourceMap[$resourceName]))
-					throw new JWSDK_Exception_DuplicatedResourceError($resourceName);
+				$attacherId = $file->getAttacher();
 				
-				$resourceMap[$resourceName] = $resource;
-				$attacher = $this->resourceManager->getAttacher($resource->getAttacher());
-				$url = $this->getResourceAttachUrl($resourceName);
-				$attachStr = $attacher->format($url);
-				array_push($attaches[$resource->getAttacher()], JWSDK_Util_String::tabulize($attachStr, 2, "\t"));
+				$url = $this->fileManager->getFileUrl($file);
+				$attachStr = $this->fileManager->getAttacher($attacherId)->format($url);
+				
+				array_push($attaches[$attacherId], JWSDK_Util_String::tabulize($attachStr, 2, "\t"));
 			}
 		}
 		
@@ -195,18 +191,6 @@ class JWSDK_Page_Manager
 		}
 		
 		return implode("\n", $buf);
-	}
-	
-	private function getResourceAttachUrl( // String
-		$name) // String
-	{
-		if (isset($this->resourceAttachUrls[$name]))
-			return $this->resourceAttachUrls[$name];
-		
-		$url = $this->resourceManager->getResourceInclusionUrl($name);
-		$this->resourceAttachUrls[$name] = $url;
-		
-		return $url;
 	}
 	
 	private function getPageConfigPath( // String

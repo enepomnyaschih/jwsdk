@@ -19,16 +19,19 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Attacher_Css extends JWSDK_Resource_Attacher
+class JWSDK_Exception_InsufficientFileType extends JWSDK_Exception
 {
-	public function getType() // String
+	private $name;
+	
+	public function __construct($name)
 	{
-		return 'css';
+		parent::__construct("File $name is attached twice with different types");
+		
+		$this->name = $name;
 	}
 	
-	public function format( // String
-		$url) // String
+	public function getName()
 	{
-		return '<link rel="stylesheet" type="text/css" href="' . htmlspecialchars($url) . '" />';
+		return $this->name;
 	}
 }

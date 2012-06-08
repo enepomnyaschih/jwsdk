@@ -24,6 +24,7 @@ class JWSDK_Builder
 	private $globalConfig;    // JWSDK_GlobalConfig
 	private $mode;            // JWSDK_Mode
 	
+	private $fileManager;     // JWSDK_File_Manager
 	private $resourceManager; // JWSDK_Resource_Manager
 	private $packageManager;  // JWSDK_Package_Manager
 	private $templateManager; // JWSDK_Template_Manager
@@ -35,11 +36,12 @@ class JWSDK_Builder
 		$this->globalConfig = new JWSDK_GlobalConfig();
 		$this->mode = JWSDK_Mode::getMode($modeName);
 		
+		$this->fileManager = new JWSDK_File_Manager($this->globalConfig);
 		$this->resourceManager = new JWSDK_Resource_Manager($this->globalConfig);
-		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->resourceManager);
+		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->resourceManager, $this->fileManager);
 		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig, $this->mode);
 		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode,
-			$this->packageManager, $this->templateManager, $this->resourceManager);
+			$this->packageManager, $this->templateManager, $this->fileManager);
 	}
 	
 	public function buildPages()

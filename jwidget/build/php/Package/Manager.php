@@ -23,6 +23,7 @@ class JWSDK_Package_Manager
 {
 	private $globalConfig;       // JWSDK_GlobalConfig
 	private $resourceManager;    // JWSDK_Resource_Manager
+	private $fileManager;        // JWSDK_File_Manager
 	private $packages = array(); // Map from name:String to JWSDK_Package
 	
 	// temporary variables for "readPackageWithDependencies" method
@@ -31,10 +32,12 @@ class JWSDK_Package_Manager
 	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
-		$resourceManager) // JWSDK_Resource_Manager
+		$resourceManager, // JWSDK_Resource_Manager
+		$fileManager)     // JWSDK_File_Manager
 	{
 		$this->globalConfig = $globalConfig;
 		$this->resourceManager = $resourceManager;
+		$this->fileManager = $fileManager;
 	}
 	
 	public function readPackageWithDependencies( // Array of JWSDK_Package
@@ -51,54 +54,6 @@ class JWSDK_Package_Manager
 		$this->_readerPackageMap = null;
 		
 		return $result;
-	}
-	
-	public function compressPackage( // Map from attacherType:String to JWSDK_Resource, compressed files
-		$package) // JWSDK_Package
-	{
-		$compressedResources = $package->getCompressedResources();
-		if ($compressedResources)
-			return $compressedResources;
-		
-		try
-		{
-			$name = $package->getName();
-			
-			JWSDK_Log::logTo('build.log', "Compressing package $name");
-			
-			$compressedResources = array();
-			foreach ($this->resourceManager->getAttachers() as $type => $attacher)
-			{
-				$contents = array();
-				foreach ($package->getSourceResources() as $resource)
-				{
-					if ($resource->getAttacher() == $type)
-						$contents[] = $this->resourceManager->getResourceContents($resource);
-				}
-				
-				if (count($contents) == 0)
-					continue;
-				
-				$contents = implode("\n", $contents);
-				
-				$mergePath = $this->getPackageMergePath($name, $type);
-				$buildPath = $this->getPackageBuildPath($name, $type);
-				
-				JWSDK_Util_File::write($mergePath, $contents);
-				JWSDK_Util_File::mkdir($buildPath);
-				JWSDK_Util_File::compress($mergePath, $buildPath);
-				
-				$compressedResources[] = new JWSDK_Resource($this->getPackageBuildUrl($name, $type), $type, $type);
-			}
-			
-			$package->setCompressedResources($compressedResources);
-			
-			return $compressedResources;
-		}
-		catch (JWSDK_Exception $e)
-		{
-			throw new JWSDK_Exception_PackageCompressError($name, $e);
-		}
 	}
 	
 	public function addPackage(
@@ -145,57 +100,19 @@ class JWSDK_Package_Manager
 		$name) // String
 	{
 		if (preg_match('/\.(js|css)$/', $name))
-			return new JWSDK_Package_Simple($name);
+			return new JWSDK_Package_Simple($name, $this->fileManager);
 		
 		if (preg_match('/\.(js|css)|auto$/', $name))
-			return new JWSDK_Package_Auto(substr($name, 0, strrpos($name, '|')));
+			return new JWSDK_Package_Auto(substr($name, 0, strrpos($name, '|')), $this->fileManager);
 		
 		try
 		{
 			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
-			return $this->getPackageByJson($name, $json);
+			return new JWSDK_Package_Config($name, $json, $this->resourceManager, $this->fileManager);
 		}
 		catch (JWSDK_Exception $e)
 		{
 			throw new JWSDK_Exception_PackageReadError($name, $e);
-		}
-	}
-	
-	private function getPackageByJson( // JWSDK_Package_Config
-		$name, // String
-		$json) // Object
-	{
-		$package = new JWSDK_Package_Config($name);
-		
-		try
-		{
-			$resources = JWSDK_Util_Array::get($json, 'resources', array());
-			foreach ($resources as $resourceDefinition)
-			{
-				$resource = $this->resourceManager->getResourceByDefinition($resourceDefinition);
-				$resource = $this->resourceManager->convertResource($resource);
-				
-				$package->addResource($resource);
-			}
-			
-			$requires = JWSDK_Util_Array::get($json, 'requires', array());
-			foreach ($requires as $require)
-			{
-				if (!is_string($require))
-					throw new JWSDK_Exception_InvalidFileFormat($name, 'package config', $e);
-				
-				$package->addRequire($require);
-			}
-			
-			return $package;
-		}
-		catch (JWSDK_Exception $e)
-		{
-			throw $e;
-		}
-		catch (Exception $e)
-		{
-			throw new JWSDK_Exception_InvalidFileFormat($name, 'package config', $e);
 		}
 	}
 	

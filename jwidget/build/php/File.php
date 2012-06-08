@@ -19,52 +19,46 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Package
+class JWSDK_File
 {
-	private $name;
-	
-	private $sourceFiles;
-	private $compressedFiles;
+	private $name;     // String
+	private $attacher; // String
+	private $mtime;    // Integer
+	private $contents; // String
 	
 	public function __construct(
-		$name) // String
+		$name,     // String
+		$attacher, // String
+		$mtime)    // Array of String
 	{
 		$this->name = $name;
+		$this->attacher = $attacher;
+		$this->mtime = $mtime;
 	}
 	
 	public function getName() // String
 	{
-		return $name;
+		return $this->name;
 	}
 	
-	public function getSourceFiles() // Array of JWSDK_File
+	public function getAttacher() // String
 	{
-		if (!$this->sourceFiles)
-			$this->sourceFiles = $this->initSourceFiles();
-		
-		return $this->sourceFiles;
+		return $this->attacher;
 	}
 	
-	public function getCompressedFiles() // Array of JWSDK_File
+	public function getMtime() // Integer
 	{
-		if (!$this->compressedFiles)
-			$this->compressedFiles = $this->initCompressedFiles();
-		
-		return $this->compressedFiles;
+		return $this->mtime;
 	}
 	
-	public function getRequires() // Array of String, package names
+	public function getContents() // String
 	{
-		return array();
+		return $this->contents;
 	}
 	
-	protected function initSourceFiles() // Array of JWSDK_File
+	public function setContents(
+		$contents) // String
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	protected function initCompressedFiles() // Array of JWSDK_File
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
+		$this->contents = $contents;
 	}
 }

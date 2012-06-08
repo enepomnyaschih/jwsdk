@@ -25,7 +25,7 @@ class JWSDK_Exception_DuplicatedResourceError extends JWSDK_Exception
 	
 	public function __construct($name)
 	{
-		parent::__construct("'$name' resource is attached twice to the page");
+		parent::__construct("'$name' resource is listed in multiple packages");
 		$this->name = $name;
 	}
 	

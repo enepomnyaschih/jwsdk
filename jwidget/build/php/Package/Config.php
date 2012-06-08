@@ -21,40 +21,104 @@
 
 class JWSDK_Package_Config extends JWSDK_Package
 {
-	private $name;                // String
+	private $resourceManager;     // JWSDK_Resource_Manager
+	private $fileManager;         // JWSDK_File_Manager
+	
 	private $resources = array(); // Array of JWSDK_Resource
 	private $requires = array();  // Array of String
 	
 	public function __construct(
-		$name) // String
+		$name,            // String
+		$json,            // Object
+		$resourceManager, // JWSDK_Resource_Manager
+		$fileManager)     // JWSDK_File_Manager
 	{
-		$this->name = $name;
-	}
-	
-	public function getName() // String
-	{
-		return $this->name;
-	}
-	
-	public function addResource(
-		$resource) // JWSDK_Resource
-	{
-		$this->resources[] = $resource;
-	}
-	
-	public function getSourceResources() // Array of JWSDK_Resource
-	{
-		return $this->resources;
-	}
-	
-	public function addRequire(
-		$name) // String
-	{
-		$this->requires[] = $name;
+		parent::__construct($name);
+		
+		$this->resourceManager = $resourceManager;
+		$this->fileManager = $fileManager;
+		
+		try
+		{
+			$resources = JWSDK_Util_Array::get($json, 'resources', array());
+			foreach ($resources as $resourceDefinition)
+			{
+				$resource = $this->resourceManager->getResourceByDefinition($resourceDefinition);
+				
+				$this->resources[] = $resource;
+			}
+			
+			$requires = JWSDK_Util_Array::get($json, 'requires', array());
+			foreach ($requires as $require)
+			{
+				if (!is_string($require))
+					throw new JWSDK_Exception_InvalidFileFormat($name, 'package config');
+				
+				$this->requires[] = $require;
+			}
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw $e;
+		}
+		catch (Exception $e)
+		{
+			throw new JWSDK_Exception_InvalidFileFormat($name, 'package config', $e);
+		}
 	}
 	
 	public function getRequires() // Array of String
 	{
 		return $this->requires;
+	}
+	
+	protected function initSourceFiles() // Array of JWSDK_File
+	{
+		$result = array();
+		foreach ($this->resources as $resource)
+			$result[] = $this->resourceManager->convertResource($resource);
+		
+		return $result;
+	}
+	
+	protected function initCompressedFiles() // Array of JWSDK_File
+	{
+		try
+		{
+			$name = $this->getName();
+			
+			JWSDK_Log::logTo('build.log', "Compressing package $name");
+			
+			$result = array();
+			foreach ($this->resourceManager->getAttachers() as $type => $attacher)
+			{
+				$contents = array();
+				foreach ($this->getSourceFiles() as $file)
+				{
+					if ($file->getAttacher() == $type)
+						$contents[] = $this->fileManager->getFileContents($file);
+				}
+				
+				if (count($contents) == 0)
+					continue;
+				
+				$contents = implode("\n", $contents);
+				
+				$mergePath = $this->getMergePath($type);
+				$buildPath = $this->getBuildPath($type);
+				
+				JWSDK_Util_File::write($mergePath, $contents);
+				JWSDK_Util_File::mkdir($buildPath);
+				JWSDK_Util_File::compress($mergePath, $buildPath);
+				
+				$result[] = $this->fileManager->getFile($this->getBuildUrl($type), $type);
+			}
+			
+			return $result;
+		}
+		catch (JWSDK_Exception $e)
+		{
+			throw new JWSDK_Exception_PackageCompressError($name, $e);
+		}
 	}
 }
