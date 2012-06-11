@@ -21,6 +21,7 @@
 
 include_once 'php/Util/Array.php';
 include_once 'php/Util/File.php';
+include_once 'php/Util/Json.php';
 include_once 'php/Util/String.php';
 
 include_once 'php/Mode.php';
@@ -38,6 +39,9 @@ if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 
 include_once 'php/Log.php';
 
+include_once 'php/BuildCache.php';
+include_once 'php/BuildCache/Input.php';
+include_once 'php/BuildCache/Output.php';
 include_once 'php/Builder.php';
 include_once 'php/Exception.php';
 include_once 'php/Exception/CanNotMakeDirectory.php';
@@ -93,6 +97,7 @@ try
 {
     $builder = new JWSDK_Builder($argv[1]);
     $builder->buildPages();
+    $builder->saveCache();
 }
 catch (JWSDK_Exception $e)
 {

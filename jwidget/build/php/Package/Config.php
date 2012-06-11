@@ -22,6 +22,7 @@
 class JWSDK_Package_Config extends JWSDK_Package
 {
 	private $globalConfig;        // JWSDK_GlobalConfig
+	private $buildCache;          // JWSDK_BuildCache
 	private $resourceManager;     // JWSDK_Resource_Manager
 	private $fileManager;         // JWSDK_File_Manager
 	
@@ -32,12 +33,14 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$name,            // String
 		$json,            // Object
 		$globalConfig,    // JWSDK_GlobalConfig
+		$buildCache,      // JWSDK_BuildCache
 		$resourceManager, // JWSDK_Resource_Manager
 		$fileManager)     // JWSDK_File_Manager
 	{
 		parent::__construct($name);
 		
 		$this->globalConfig = $globalConfig;
+		$this->buildCache = $buildCache;
 		$this->resourceManager = $resourceManager;
 		$this->fileManager = $fileManager;
 		
@@ -90,34 +93,10 @@ class JWSDK_Package_Config extends JWSDK_Package
 		
 		try
 		{
-			JWSDK_Log::logTo('build.log', "Compressing package $name");
-			
-			$result = array();
-			foreach ($this->fileManager->getAttachers() as $type => $attacher)
-			{
-				$contents = array();
-				foreach ($this->getSourceFiles() as $file)
-				{
-					if ($file->getAttacher() == $type)
-						$contents[] = $this->fileManager->getFileContents($file);
-				}
-				
-				if (count($contents) == 0)
-					continue;
-				
-				$contents = implode("\n", $contents);
-				
-				$mergePath = $this->getMergePath($type);
-				$buildPath = $this->getBuildPath($type);
-				
-				JWSDK_Util_File::write($mergePath, $contents);
-				JWSDK_Util_File::mkdir($buildPath);
-				JWSDK_Util_File::compress($mergePath, $buildPath);
-				
-				$result[] = $this->fileManager->getFile($this->getBuildName($type), $type);
-			}
-			
-			return $result;
+			if ($this->isModified())
+				return $this->initCompressedFilesModified();
+			else
+				return $this->initCompressedFilesUnmodified();
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -125,10 +104,122 @@ class JWSDK_Package_Config extends JWSDK_Package
 		}
 	}
 	
+	private function isModified() // Boolean
+	{
+		foreach ($this->resources as $resource)
+		{
+			$name = $resource->getName();
+			$oldMtime = $this->buildCache->input->getPackageResourceMtime($this->getName(), $name);
+			$newMtime = $resource->getSourceFile()->getMtime();
+			if ($oldMtime != $newMtime)
+			{
+				//echo "-- Resource $name is modified ($oldMtime:$newMtime)\n";
+				return true;
+			}
+		}
+		
+		foreach ($this->fileManager->getAttachers() as $type => $attacher)
+		{
+			if (!$this->hasFilesOfAttacher($type))
+				continue;
+			
+			$name = $this->getBuildName($type);
+			$path = $this->fileManager->getFilePath($name);
+			if (!file_exists($path))
+			{
+				//echo "-- Compressed file of $type type does not exist\n";
+				return true;
+			}
+			
+			$oldMtime = $this->buildCache->input->getPackageCompressionMtime($this->getName(), $type);
+			$newMtime = filemtime($path);
+			if ($oldMtime != $newMtime)
+			{
+				//echo "-- Compressed file of $type type is modified ($oldMtime:$newMtime)\n";
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private function initCompressedFilesModified() // Array of JWSDK_File
+	{
+		$name = $this->getName();
+		
+		JWSDK_Log::logTo('build.log', "Compressing package $name");
+		
+		foreach ($this->resources as $resource)
+		{
+			$this->buildCache->output->setPackageResourceMtime(
+				$this->getName(), $resource->getName(), $resource->getSourceFile()->getMtime());
+		}
+		
+		$result = array();
+		foreach ($this->fileManager->getAttachers() as $type => $attacher)
+		{
+			if (!$this->hasFilesOfAttacher($type))
+				continue;
+			
+			$contents = array();
+			foreach ($this->getSourceFiles() as $file)
+			{
+				if ($file->getAttacher() == $type)
+					$contents[] = $this->fileManager->getFileContents($file);
+			}
+			
+			$contents = implode("\n", $contents);
+			
+			$mergePath = $this->getMergePath($type);
+			$buildPath = $this->getBuildPath($type);
+			
+			JWSDK_Util_File::write($mergePath, $contents);
+			JWSDK_Util_File::mkdir($buildPath);
+			JWSDK_Util_File::compress($mergePath, $buildPath);
+			
+			$compressedFile = $this->fileManager->getFile($this->getBuildName($type), $type);
+			$this->buildCache->output->setPackageCompressionMtime($this->getName(), $type, $compressedFile->getMtime());
+			
+			$result[] = $compressedFile;
+		}
+		
+		return $result;
+	}
+	
+	private function initCompressedFilesUnmodified() // Array of JWSDK_File
+	{
+		$name = $this->getName();
+		
+		JWSDK_Log::logTo('build.log', "Package $name is not modified, skipping...");
+		
+		$result = array();
+		foreach ($this->fileManager->getAttachers() as $type => $attacher)
+		{
+			if (!$this->hasFilesOfAttacher($type))
+				continue;
+			
+			$result[] = $this->fileManager->getFile($this->getBuildName($type), $type);
+		}
+		
+		return $result;
+	}
+	
+	private function hasFilesOfAttacher( // Boolean
+		$type) // String
+	{
+		foreach ($this->getSourceFiles() as $file)
+		{
+			if ($file->getAttacher() == $type)
+				return true;
+		}
+		
+		return false;
+	}
+	
 	private function getMergePath( // String
 		$type) // String
 	{
-		return $this->globalConfig->getMergePath() . '/' . $this->getName() . ".$type";
+		return $this->globalConfig->getTempPath() . '/merge/' . $this->getName() . ".$type";
 	}
 	
 	private function getBuildName( // String

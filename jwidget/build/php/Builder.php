@@ -23,6 +23,7 @@ class JWSDK_Builder
 {
 	private $globalConfig;    // JWSDK_GlobalConfig
 	private $mode;            // JWSDK_Mode
+	private $buildCache;      // JWSDK_BuildCache
 	
 	private $fileManager;     // JWSDK_File_Manager
 	private $resourceManager; // JWSDK_Resource_Manager
@@ -35,10 +36,11 @@ class JWSDK_Builder
 	{
 		$this->globalConfig = new JWSDK_GlobalConfig();
 		$this->mode = JWSDK_Mode::getMode($modeName);
+		$this->buildCache = new JWSDK_BuildCache($this->globalConfig->getTempPath() . '/buildcache.json');
 		
 		$this->fileManager = new JWSDK_File_Manager($this->globalConfig);
 		$this->resourceManager = new JWSDK_Resource_Manager($this->globalConfig, $this->fileManager);
-		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->resourceManager, $this->fileManager);
+		$this->packageManager = new JWSDK_Package_Manager($this->globalConfig, $this->buildCache, $this->resourceManager, $this->fileManager);
 		$this->templateManager = new JWSDK_Template_Manager($this->globalConfig, $this->mode);
 		$this->pageManager = new JWSDK_Page_Manager($this->globalConfig, $this->mode,
 			$this->packageManager, $this->templateManager, $this->fileManager);
@@ -47,5 +49,11 @@ class JWSDK_Builder
 	public function buildPages()
 	{
 		$this->pageManager->buildPages();
+	}
+	
+	public function saveCache()
+	{
+		JWSDK_Log::logTo('build.log', 'Saving build cache...');
+		$this->buildCache->output->save();
 	}
 }

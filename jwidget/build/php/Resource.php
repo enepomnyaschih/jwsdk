@@ -21,19 +21,22 @@
 
 class JWSDK_Resource
 {
-	private $name;   // String
-	private $type;   // String
-	private $params; // Array of String
-	private $file;   // JWSDK_File
+	private $name;       // String
+	private $type;       // String
+	private $params;     // Array of String
+	private $sourceFile; // JWSDK_File
+	private $outputFile; // JWSDK_File
 	
 	public function __construct(
-		$name,             // String
-		$type = 'js',      // String
-		$params = array()) // Array of String
+		$name,       // String
+		$type,       // String
+		$params,     // Array of String
+		$sourceFile) // JWSDK_File
 	{
 		$this->name = $name;
 		$this->type = $type;
 		$this->params = $params;
+		$this->sourceFile = $sourceFile;
 	}
 	
 	public function getName() // String
@@ -51,14 +54,19 @@ class JWSDK_Resource
 		return $this->params;
 	}
 	
-	public function getFile() // JWSDK_File
+	public function getSourceFile() // JWSDK_File
 	{
-		return $this->file;
+		return $this->sourceFile;
 	}
 	
-	public function setFile(
+	public function getOutputFile() // JWSDK_File
+	{
+		return $this->outputFile;
+	}
+	
+	public function setOutputFile(
 		$file) // JWSDK_File
 	{
-		$this->file = $file;
+		$this->outputFile = $file;
 	}
 }

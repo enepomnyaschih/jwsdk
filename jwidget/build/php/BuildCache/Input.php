@@ -19,53 +19,42 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_GlobalConfig
+class JWSDK_BuildCache_Input
 {
+	private $path; // String
 	private $json; // Object
 	
 	public function __construct(
-		$path = 'config.json') // String
+		$path) // String
 	{
-		$this->json = JWSDK_Util_File::readJson($path, 'global config');
+		$this->path = $path;
+		
+		$contents = @file_get_contents($path);
+		if ($contents === false)
+			$this->json = array();
+		else
+			$this->json = json_decode($contents, true);
 	}
 	
-	public function getPackagesPath() // String
+	public function getJson()
 	{
-		return $this->json['packagesPath'];
+		return $this->json;
 	}
 	
-	public function getPagesPath() // String
+	/**
+	 * Compression info.
+	 */
+	public function getPackageResourceMtime( // Timestamp
+		$packageName,  // String
+		$resourceName) // String
 	{
-		return $this->json['pagesPath'];
+		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'resources', $resourceName, 'mtime'));
 	}
 	
-	public function getTemplatesPath() // String
+	public function getPackageCompressionMtime( // Timestamp
+		$packageName,  // String
+		$attacherType) // String
 	{
-		return $this->json['templatesPath'];
-	}
-	
-	public function getPublicPath() // String
-	{
-		return $this->json['publicPath'];
-	}
-	
-	public function getBuildUrl() // String
-	{
-		return $this->json['buildUrl'];
-	}
-	
-	public function getPagesUrl() // String
-	{
-		return $this->json['pagesUrl'];
-	}
-	
-	public function getTempPath() // String
-	{
-		return $this->json['tempPath'];
-	}
-	
-	public function getUrlPrefix() // String
-	{
-		return $this->json['urlPrefix'];
+		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'compressions', $attacherType, 'mtime'));
 	}
 }

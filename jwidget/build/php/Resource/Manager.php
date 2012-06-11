@@ -65,12 +65,12 @@ class JWSDK_Resource_Manager
 	public function convertResource( // JWSDK_File
 		$resource) // JWSDK_Resource
 	{
-		$file = $resource->getFile();
+		$file = $resource->getOutputFile();
 		if ($file)
 			return $file;
 		
 		$file = $this->getFileByResource($resource);
-		$resource->setFile($file);
+		$resource->setOutputFile($file);
 		
 		return $file;
 	}
@@ -108,7 +108,7 @@ class JWSDK_Resource_Manager
 				$params[$i] = trim($params[$i]);
 		}
 		
-		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByArray($params));
+		return $this->createResource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByArray($params));
 	}
 	
 	private function getResourceByJson( // JWSDK_Resource
@@ -131,7 +131,7 @@ class JWSDK_Resource_Manager
 		if (!$converter)
 			throw new JWSDK_Exception_InvalidResourceType();
 		
-		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByJson($json));
+		return $this->createResource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByJson($json));
 	}
 	
 	private function getFileByResource( // JWSDK_File
@@ -204,6 +204,15 @@ class JWSDK_Resource_Manager
 		}
 		
 		return null;
+	}
+	
+	private function createResource( // JWSDK_Resource
+		$name,     // String
+		$type,     // String
+		$attacher, // String
+		$params)   // Array of String
+	{
+		return new JWSDK_Resource($name, $type, $params, $this->fileManager->getFile($name, $attacher));
 	}
 	
 	private function registerResource(

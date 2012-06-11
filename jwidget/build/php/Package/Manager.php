@@ -22,6 +22,7 @@
 class JWSDK_Package_Manager
 {
 	private $globalConfig;       // JWSDK_GlobalConfig
+	private $buildCache;         // JWSDK_BuildCache
 	private $resourceManager;    // JWSDK_Resource_Manager
 	private $fileManager;        // JWSDK_File_Manager
 	private $packages = array(); // Map from name:String to JWSDK_Package
@@ -32,10 +33,12 @@ class JWSDK_Package_Manager
 	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
+		$buildCache,      // JWSDK_BuildCache
 		$resourceManager, // JWSDK_Resource_Manager
 		$fileManager)     // JWSDK_File_Manager
 	{
 		$this->globalConfig = $globalConfig;
+		$this->buildCache = $buildCache;
 		$this->resourceManager = $resourceManager;
 		$this->fileManager = $fileManager;
 	}
@@ -108,7 +111,7 @@ class JWSDK_Package_Manager
 		try
 		{
 			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
-			return new JWSDK_Package_Config($name, $json, $this->globalConfig, $this->resourceManager, $this->fileManager);
+			return new JWSDK_Package_Config($name, $json, $this->globalConfig, $this->buildCache, $this->resourceManager, $this->fileManager);
 		}
 		catch (JWSDK_Exception $e)
 		{

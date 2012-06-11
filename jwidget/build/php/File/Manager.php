@@ -84,7 +84,7 @@ class JWSDK_File_Manager
 		return $this->globalConfig->getUrlPrefix() . $file->getName() . "?timestamp=" . $file->getMtime();
 	}
 	
-	private function getFilePath( // String
+	public function getFilePath( // String
 		$name) // String
 	{
 		return $this->globalConfig->getPublicPath() . "/$name";
