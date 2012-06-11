@@ -108,7 +108,7 @@ class JWSDK_Resource_Manager
 				$params[$i] = trim($params[$i]);
 		}
 		
-		return new JWSDK_Resource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByArray($params));
+		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByArray($params));
 	}
 	
 	private function getResourceByJson( // JWSDK_Resource
@@ -131,7 +131,7 @@ class JWSDK_Resource_Manager
 		if (!$converter)
 			throw new JWSDK_Exception_InvalidResourceType();
 		
-		return new JWSDK_Resource($name, $converter->getType(), $converter->getAttacher(), $converter->getParamsByJson($json));
+		return new JWSDK_Resource($name, $converter->getType(), $converter->getParamsByJson($json));
 	}
 	
 	private function getFileByResource( // JWSDK_File

@@ -159,13 +159,17 @@ class JWSDK_Page_Manager
 	private function buildSources( // String, attachment HTML fragment
 		$page) // JWSDK_Page
 	{
+		$package = $page->getPackage();
+		if (!$package)
+			return '';
+		
 		$name = $page->getName();
 		
 		$attaches = array(); // Map from attacherType:String to Array of String
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 			$attaches[$type] = array();
 		
-		$packages = $this->packageManager->readPackageWithDependencies($page->getPackage());
+		$packages = $this->packageManager->readPackageWithDependencies($package);
 		foreach ($packages as $package)
 		{
 			$files = $this->mode->isCompress() ?
