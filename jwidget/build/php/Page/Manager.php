@@ -159,8 +159,8 @@ class JWSDK_Page_Manager
 	private function buildSources( // String, attachment HTML fragment
 		$page) // JWSDK_Page
 	{
-		$package = $page->getPackage();
-		if (!$package)
+		$rootPackageName = $page->getPackage();
+		if (!$rootPackageName)
 			return '';
 		
 		$name = $page->getName();
@@ -169,7 +169,11 @@ class JWSDK_Page_Manager
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 			$attaches[$type] = array();
 		
-		$packages = $this->packageManager->readPackageWithDependencies($package);
+		$packages = array_merge(
+			array($this->packageManager->getLibraryPackage()),
+			$this->packageManager->readPackagesWithDependencies(array($rootPackageName))
+		);
+		
 		foreach ($packages as $package)
 		{
 			$files = $this->mode->isCompress() ?

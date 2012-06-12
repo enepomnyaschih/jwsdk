@@ -22,39 +22,39 @@
 class JWSDK_Package_Manager
 {
 	private $globalConfig;       // JWSDK_GlobalConfig
+	private $mode;               // JWSDK_Mode
 	private $buildCache;         // JWSDK_BuildCache
 	private $resourceManager;    // JWSDK_Resource_Manager
 	private $fileManager;        // JWSDK_File_Manager
 	private $packages = array(); // Map from name:String to JWSDK_Package
 	
-	// temporary variables for "readPackageWithDependencies" method
-	private $_readerPackages;    // Array of JWSDK_Package
-	private $_readerPackageMap;  // Map from name:String to JWSDK_Package
+	private $dependencyReaders = array(); // Array of JWSDK_Package_DependencyReader
 	
 	public function __construct(
 		$globalConfig,    // JWSDK_GlobalConfig
+		$mode,            // JWSDK_Mode
 		$buildCache,      // JWSDK_BuildCache
 		$resourceManager, // JWSDK_Resource_Manager
 		$fileManager)     // JWSDK_File_Manager
 	{
 		$this->globalConfig = $globalConfig;
+		$this->mode = $mode;
 		$this->buildCache = $buildCache;
 		$this->resourceManager = $resourceManager;
 		$this->fileManager = $fileManager;
 	}
 	
-	public function readPackageWithDependencies( // Array of JWSDK_Package
-		$name) // String
+	public function readPackagesWithDependencies( // Array of JWSDK_Package
+		$packageNames) // Array of String
 	{
-		$this->_readerPackages = array();
-		$this->_readerPackageMap = array();
+		$dependencyReader = new JWSDK_Package_DependencyReader();
+		$this->dependencyReaders[] = $dependencyReader;
 		
-		$this->readPackageWithDependenciesRecursion($name);
+		foreach ($packageNames as $name)
+			$this->readPackageWithDependenciesRecursion($name);
 		
-		$result = $this->_readerPackages;
-		
-		$this->_readerPackages = null;
-		$this->_readerPackageMap = null;
+		$result = $dependencyReader->packages;
+		array_pop($this->dependencyReaders);
 		
 		return $result;
 	}
@@ -71,19 +71,25 @@ class JWSDK_Package_Manager
 		return JWSDK_Util_Array::get($this->packages, $name);
 	}
 	
+	public function getLibraryPackage() // JWSDK_Package
+	{
+		return $this->readPackage('jwsdk.js');
+	}
+	
 	private function readPackageWithDependenciesRecursion(
 		$name) // String
 	{
-		if (isset($this->_readerPackageMap[$name]))
+		$dependencyReader = $this->dependencyReaders[count($this->dependencyReaders) - 1];
+		if (isset($dependencyReader->map[$name]))
 			return;
 		
 		$package = $this->readPackage($name);
-		$this->_readerPackageMap[$name] = $package;
+		$dependencyReader->map[$name] = $package;
 		
 		foreach ($package->getRequires() as $require)
 			$this->readPackageWithDependenciesRecursion($require);
 		
-		$this->_readerPackages[] = $package;
+		$dependencyReader->packages[] = $package;
 	}
 	
 	private function readPackage( // JWSDK_Package
@@ -111,7 +117,7 @@ class JWSDK_Package_Manager
 		try
 		{
 			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
-			return new JWSDK_Package_Config($name, $json, $this->globalConfig, $this->buildCache, $this->resourceManager, $this->fileManager);
+			return new JWSDK_Package_Config($name, $json, $this->globalConfig, $this->mode, $this->buildCache, $this, $this->resourceManager, $this->fileManager);
 		}
 		catch (JWSDK_Exception $e)
 		{

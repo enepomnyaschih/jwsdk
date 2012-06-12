@@ -22,25 +22,32 @@
 class JWSDK_Package_Config extends JWSDK_Package
 {
 	private $globalConfig;        // JWSDK_GlobalConfig
+	private $mode;                // JWSDK_Mode
 	private $buildCache;          // JWSDK_BuildCache
+	private $packageManager;      // JWSDK_Package_Manager
 	private $resourceManager;     // JWSDK_Resource_Manager
 	private $fileManager;         // JWSDK_File_Manager
 	
 	private $resources = array(); // Array of JWSDK_Resource
 	private $requires = array();  // Array of String
+	private $loaders = array();   // Array of String
 	
 	public function __construct(
 		$name,            // String
 		$json,            // Object
 		$globalConfig,    // JWSDK_GlobalConfig
+		$mode,            // JWSDK_Mode
 		$buildCache,      // JWSDK_BuildCache
+		$packageManager,  // JWSDK_Package_Manager
 		$resourceManager, // JWSDK_Resource_Manager
 		$fileManager)     // JWSDK_File_Manager
 	{
 		parent::__construct($name);
 		
 		$this->globalConfig = $globalConfig;
+		$this->mode = $mode;
 		$this->buildCache = $buildCache;
+		$this->packageManager = $packageManager;
 		$this->resourceManager = $resourceManager;
 		$this->fileManager = $fileManager;
 		
@@ -62,6 +69,15 @@ class JWSDK_Package_Config extends JWSDK_Package
 				
 				$this->requires[] = $require;
 			}
+			
+			if (isset($json['loaders']))
+			{
+				$loaders = $json['loaders'];
+				if (is_string($loaders))
+					$this->loaders = array($loaders);
+				else if (is_array($loaders))
+					$this->loaders = $loaders;
+			}
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -81,6 +97,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 	protected function initSourceFiles() // Array of JWSDK_File
 	{
 		$result = array();
+		
+		$result[] = $this->createHeader();
 		foreach ($this->resources as $resource)
 			$result[] = $this->resourceManager->convertResource($resource);
 		
@@ -102,6 +120,59 @@ class JWSDK_Package_Config extends JWSDK_Package
 		{
 			throw new JWSDK_Exception_PackageCompressError($name, $e);
 		}
+	}
+	
+	private function createHeader() // JWSDK_File
+	{
+		$name = $this->getHeaderName();
+		$path = $this->getHeaderPath();
+		
+		$json = $this->getHeaderJson();
+		$jsonStr = json_encode($json);
+		$contents = "JWSDK.packageHeader($jsonStr);";
+		
+		JWSDK_Util_File::write($path, $contents);
+		
+		return $this->fileManager->getFile($name, 'js');
+	}
+	
+	private function getHeaderJson() // Object
+	{
+		$loadersJson = array();
+		$loaderPackages = $this->packageManager->readPackagesWithDependencies($this->loaders);
+		foreach ($loaderPackages as $loaderPackage)
+			$loadersJson[] = $this->getHeaderLoaderJson($loaderPackage);
+		
+		return array(
+			'name'     => $this->getName(),
+			'requires' => $this->getRequires(),
+			'loaders'  => $loadersJson
+		);
+	}
+	
+	private function getHeaderLoaderJson( // Object
+		$package) // JWSDK_Package
+	{
+		$result = array(
+			'name'     => $package->getName(),
+			'requires' => $package->getRequires()
+		);
+		
+		foreach ($this->fileManager->getAttachers() as $type => $attacher)
+			$result[$type] = array();
+		
+		$files = $this->mode->isCompress() ?
+			$package->getCompressedFiles() :
+			$package->getSourceFiles();
+		
+		foreach ($files as $file)
+		{
+			$attacherId = $file->getAttacher();
+			$url = $this->fileManager->getFileUrl($file);
+			array_push($result[$attacherId], $url);
+		}
+		
+		return $result;
 	}
 	
 	private function isModified() // Boolean
@@ -216,6 +287,16 @@ class JWSDK_Package_Config extends JWSDK_Package
 		return false;
 	}
 	
+	private function getHeaderName() // String
+	{
+		return $this->globalConfig->getBuildUrl() . '/packages/' . $this->getName() . ".header.js";
+	}
+	
+	private function getHeaderPath() // String
+	{
+		return $this->globalConfig->getPublicPath() . '/' . $this->getHeaderName();
+	}
+	
 	private function getMergePath( // String
 		$type) // String
 	{
@@ -225,7 +306,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 	private function getBuildName( // String
 		$type) // String
 	{
-		return $this->globalConfig->getBuildUrl() . '/' . $this->getName() . ".min.$type";
+		return $this->globalConfig->getBuildUrl() . '/packages/' . $this->getName() . ".min.$type";
 	}
 	
 	private function getBuildPath( // String

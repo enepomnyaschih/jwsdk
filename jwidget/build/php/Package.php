@@ -21,10 +21,10 @@
 
 class JWSDK_Package
 {
-	private $name;
+	private $name;            // String
 	
-	private $sourceFiles;
-	private $compressedFiles;
+	private $sourceFiles;     // Array of JWSDK_File
+	private $compressedFiles; // Array of JWSDK_File
 	
 	public function __construct(
 		$name) // String

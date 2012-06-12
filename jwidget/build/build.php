@@ -72,6 +72,7 @@ include_once 'php/GlobalConfig.php';
 include_once 'php/Package.php';
 include_once 'php/Package/Auto.php';
 include_once 'php/Package/Config.php';
+include_once 'php/Package/DependencyReader.php';
 include_once 'php/Package/Manager.php';
 include_once 'php/Package/Simple.php';
 include_once 'php/Page.php';
