@@ -73,6 +73,9 @@ class JWSDK_Package_Config extends JWSDK_Package
 			
 			if (isset($json['loaders']))
 			{
+				if (!$this->globalConfig->isDynamicLoader())
+					throw new JWSDK_Exception_DynamicLoaderDisabled();
+				
 				$loaders = $json['loaders'];
 				if (is_string($loaders))
 					$this->loaders = array($loaders);
@@ -99,7 +102,9 @@ class JWSDK_Package_Config extends JWSDK_Package
 	{
 		$result = array();
 		
-		$result[] = $this->createHeader();
+		if ($this->globalConfig->isDynamicLoader())
+			$result[] = $this->createHeader();
+		
 		foreach ($this->resources as $resource)
 			$result[] = $this->resourceManager->convertResource($resource);
 		

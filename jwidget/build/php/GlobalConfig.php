@@ -68,4 +68,9 @@ class JWSDK_GlobalConfig
 	{
 		return $this->json['urlPrefix'];
 	}
+	
+	public function isDynamicLoader() // Boolean
+	{
+		return $this->json['dynamicLoader'];
+	}
 }

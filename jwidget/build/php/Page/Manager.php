@@ -169,10 +169,9 @@ class JWSDK_Page_Manager
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 			$attaches[$type] = array();
 		
-		$packages = array_merge(
-			array($this->packageManager->getLibraryPackage()),
-			$this->packageManager->readPackagesWithDependencies(array($rootPackageName))
-		);
+		$packages = $this->packageManager->readPackagesWithDependencies(array($rootPackageName));
+		if ($this->globalConfig->isDynamicLoader())
+			array_unshift($packages, $this->packageManager->getLibraryPackage());
 		
 		foreach ($packages as $package)
 		{

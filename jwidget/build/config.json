@@ -9,5 +9,6 @@
 	
 	"tempPath"      : "temp",
 	
-	"urlPrefix"     : "/"
+	"urlPrefix"     : "/",
+	"dynamicLoader" : false
 }

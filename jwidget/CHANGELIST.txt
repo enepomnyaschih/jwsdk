@@ -18,3 +18,5 @@
     dictionary (#40)
 11. Improved logging (#28, #33)
 12. Ignore packages that are not attached to any page (#28)
+13. Skip compression of packages that are not modified (#7)
+14. Added dynamic script loader (#23, #24)

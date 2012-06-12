@@ -49,6 +49,7 @@ include_once 'php/Exception/CanNotReadFile.php';
 include_once 'php/Exception/CanNotWriteFile.php';
 include_once 'php/Exception/CompressorError.php';
 include_once 'php/Exception/DuplicatedResourceError.php';
+include_once 'php/Exception/DynamicLoaderDisabled.php';
 include_once 'php/Exception/InsufficientFileType.php';
 include_once 'php/Exception/InvalidFileFormat.php';
 include_once 'php/Exception/InvalidResourceFormat.php';
