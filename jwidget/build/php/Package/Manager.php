@@ -114,20 +114,6 @@ class JWSDK_Package_Manager
 		if (preg_match('/\.(js|css)|auto$/', $name))
 			return new JWSDK_Package_Auto(substr($name, 0, strrpos($name, '|')), $this->fileManager);
 		
-		try
-		{
-			$json = JWSDK_Util_File::readJson($this->getPackagePath($name), 'package config');
-			return new JWSDK_Package_Config($name, $json, $this->globalConfig, $this->mode, $this->buildCache, $this, $this->resourceManager, $this->fileManager);
-		}
-		catch (JWSDK_Exception $e)
-		{
-			throw new JWSDK_Exception_PackageReadError($name, $e);
-		}
-	}
-	
-	private function getPackagePath( // String
-		$name) // String
-	{
-		return $this->globalConfig->getPackagesPath() . "/$name.json";
+		return new JWSDK_Package_Config($name, $this->globalConfig, $this->mode, $this->buildCache, $this, $this->resourceManager, $this->fileManager);
 	}
 }

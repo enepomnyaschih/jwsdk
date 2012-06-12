@@ -44,6 +44,12 @@ class JWSDK_BuildCache_Input
 	/**
 	 * Compression info.
 	 */
+	public function getPackageConfigMtime( // Timestamp
+		$packageName) // String
+	{
+		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'configMtime'));
+	}
+	
 	public function getPackageResourceMtime( // Timestamp
 		$packageName,  // String
 		$resourceName) // String
