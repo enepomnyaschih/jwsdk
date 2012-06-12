@@ -173,7 +173,7 @@ class JWSDK_Resource_Manager
 	private function getResourceBuildName( // String
 		$name) // String
 	{
-		return $this->globalConfig->getBuildUrl() . "/$name.js";
+		return $this->globalConfig->getBuildUrl() . "/resources/$name.js";
 	}
 	
 	private function getResourceBuildPath( // String

@@ -56,7 +56,6 @@ include_once 'php/Exception/InvalidResourceParameter.php';
 include_once 'php/Exception/InvalidResourceType.php';
 include_once 'php/Exception/MethodNotImplemented.php';
 include_once 'php/Exception/PackageCompressError.php';
-include_once 'php/Exception/PackageReadError.php';
 include_once 'php/Exception/PageBuildError.php';
 include_once 'php/Exception/PageReadError.php';
 include_once 'php/Exception/ResourceConvertionError.php';

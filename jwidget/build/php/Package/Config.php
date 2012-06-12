@@ -31,7 +31,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 	
 	public function __construct(
 		$name,            // String
-		$json,            // Object
 		$globalConfig,    // JWSDK_GlobalConfig
 		$buildCache,      // JWSDK_BuildCache
 		$resourceManager, // JWSDK_Resource_Manager
@@ -46,6 +45,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 		
 		try
 		{
+			$json = JWSDK_Util_File::readJson($this->getConfigPath(), 'package config');
+			
 			$resources = JWSDK_Util_Array::get($json, 'resources', array());
 			foreach ($resources as $resourceDefinition)
 			{
@@ -106,6 +107,14 @@ class JWSDK_Package_Config extends JWSDK_Package
 	
 	private function isModified() // Boolean
 	{
+		$oldMtime = $this->buildCache->input->getPackageConfigMtime($this->getName());
+		$newMtime = JWSDK_Util_File::mtime($this->getConfigPath());
+		if ($oldMtime != $newMtime)
+		{
+			//echo "-- Config is modified ($oldMtime:$newMtime)\n";
+			return true;
+		}
+		
 		foreach ($this->resources as $resource)
 		{
 			$name = $resource->getName();
@@ -148,6 +157,9 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$name = $this->getName();
 		
 		JWSDK_Log::logTo('build.log', "Compressing package $name");
+		
+		$this->buildCache->output->setPackageConfigMtime(
+			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
 		
 		foreach ($this->resources as $resource)
 		{
@@ -216,6 +228,11 @@ class JWSDK_Package_Config extends JWSDK_Package
 		return false;
 	}
 	
+	private function getConfigPath() // String
+	{
+		return $this->globalConfig->getPackagesPath() . '/' . $this->getName() . '.json';
+	}
+	
 	private function getMergePath( // String
 		$type) // String
 	{
@@ -225,7 +242,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 	private function getBuildName( // String
 		$type) // String
 	{
-		return $this->globalConfig->getBuildUrl() . '/' . $this->getName() . ".min.$type";
+		return $this->globalConfig->getBuildUrl() . '/packages/' . $this->getName() . ".min.$type";
 	}
 	
 	private function getBuildPath( // String
