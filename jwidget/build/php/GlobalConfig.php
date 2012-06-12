@@ -21,12 +21,14 @@
 
 class JWSDK_GlobalConfig
 {
-	private $json; // Object
+	private $json;  // Object
+	private $mtime; // Timestamp
 	
 	public function __construct(
 		$path = 'config.json') // String
 	{
 		$this->json = JWSDK_Util_File::readJson($path, 'global config');
+		$this->mtime = JWSDK_Util_File::mtime($path);
 	}
 	
 	public function getPackagesPath() // String
@@ -72,5 +74,10 @@ class JWSDK_GlobalConfig
 	public function isDynamicLoader() // Boolean
 	{
 		return $this->json['dynamicLoader'];
+	}
+	
+	public function getMtime() // Timestamp
+	{
+		return $this->mtime;
 	}
 }

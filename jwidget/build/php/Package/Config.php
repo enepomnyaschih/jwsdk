@@ -183,11 +183,19 @@ class JWSDK_Package_Config extends JWSDK_Package
 	
 	private function isModified() // Boolean
 	{
+		$oldMtime = $this->buildCache->input->getPackageGlobalConfigMtime($this->getName());
+		$newMtime = $this->globalConfig->getMtime();
+		if ($oldMtime != $newMtime)
+		{
+			//echo "-- Global config is modified ($oldMtime:$newMtime)\n";
+			return true;
+		}
+		
 		$oldMtime = $this->buildCache->input->getPackageConfigMtime($this->getName());
 		$newMtime = JWSDK_Util_File::mtime($this->getConfigPath());
 		if ($oldMtime != $newMtime)
 		{
-			//echo "-- Config is modified ($oldMtime:$newMtime)\n";
+			//echo "-- Package config is modified ($oldMtime:$newMtime)\n";
 			return true;
 		}
 		
@@ -212,7 +220,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$path = $this->fileManager->getFilePath($name);
 			if (!file_exists($path))
 			{
-				//echo "-- Compressed file of $type type does not exist\n";
+				//echo "-- Compressed $type file does not exist\n";
 				return true;
 			}
 			
@@ -220,7 +228,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$newMtime = filemtime($path);
 			if ($oldMtime != $newMtime)
 			{
-				//echo "-- Compressed file of $type type is modified ($oldMtime:$newMtime)\n";
+				//echo "-- Compressed $type file is modified ($oldMtime:$newMtime)\n";
 				return true;
 			}
 		}
@@ -233,6 +241,9 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$name = $this->getName();
 		
 		JWSDK_Log::logTo('build.log', "Compressing package $name");
+		
+		$this->buildCache->output->setPackageGlobalConfigMtime(
+			$this->getName(), $this->globalConfig->getMtime());
 		
 		$this->buildCache->output->setPackageConfigMtime(
 			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
