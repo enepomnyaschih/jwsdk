@@ -29,6 +29,26 @@ class JWSDK_GlobalConfig
 	{
 		$this->json = JWSDK_Util_File::readJson($path, 'global config');
 		$this->mtime = JWSDK_Util_File::mtime($path);
+		
+		$stringFields = array(
+			'packagesPath',
+			'pagesPath',
+			'templatesPath',
+			'publicPath',
+			'buildUrl',
+			'pagesUrl',
+			'tempPath',
+			'urlPrefix'
+		);
+		
+		foreach ($stringFields as $field)
+		{
+			if (!isset($this->json[$field]) || !is_string($this->json[$field]))
+				throw new JWSDK_Exception_InvalidFileFormat('config.json', 'global config');
+		}
+		
+		if (!isset($this->json['dynamicLoader']) || !is_bool($this->json['dynamicLoader']))
+			throw new JWSDK_Exception_InvalidFileFormat('config.json', 'global config');
 	}
 	
 	public function getPackagesPath() // String
