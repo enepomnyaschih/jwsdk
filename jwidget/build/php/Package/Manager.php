@@ -73,7 +73,7 @@ class JWSDK_Package_Manager
 	
 	public function getLibraryPackage() // JWSDK_Package
 	{
-		return $this->readPackage('jwsdk.js');
+		return $this->readPackage('jwsdk.js|auto');
 	}
 	
 	private function readPackageWithDependenciesRecursion(
