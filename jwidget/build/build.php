@@ -23,6 +23,7 @@ include_once 'php/Util/Array.php';
 include_once 'php/Util/File.php';
 include_once 'php/Util/Json.php';
 include_once 'php/Util/String.php';
+include_once 'php/Util/Url.php';
 
 include_once 'php/Mode.php';
 include_once 'php/Mode/Debug.php';

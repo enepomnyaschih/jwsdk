@@ -19,6 +19,24 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+$__attacherCssNamePrefix;
+
+function __attacherCssReplacer($match)
+{
+	global $__attacherCssNamePrefix;
+	$path = trim($match[1]);
+	
+	if ((($path[0] == '"') && ($path[strlen($path) - 1] == '"')) ||
+		(($path[0] == "'") && ($path[strlen($path) - 1] == "'")))
+		$path = substr($path, 1, strlen($path) - 2);
+	
+	if (($path[0] == '/') || preg_match('~^\w+://~', $path))
+		return "url(\"$path\")";
+	
+	echo "Found: $path\n";
+	return 'url("' . JWSDK_Util_Url::normalizeRelative($__attacherCssNamePrefix . $path) . '")';
+}
+
 class JWSDK_File_Attacher_Css extends JWSDK_Resource_Attacher
 {
 	public function getType() // String
@@ -30,5 +48,47 @@ class JWSDK_File_Attacher_Css extends JWSDK_Resource_Attacher
 		$url) // String
 	{
 		return '<link rel="stylesheet" type="text/css" href="' . htmlspecialchars($url) . '" />';
+	}
+	
+	public function beforeCompress( // String
+		$contents,   // String
+		$sourceName, // String
+		$targetName) // String
+	{
+		global $__attacherCssNamePrefix;
+		
+		$sourceFolders = explode('/', $sourceName);
+		$targetFolders = explode('/', $targetName);
+		
+		$diffIndex = 0;
+		while (($diffIndex < count($sourceFolders) - 1) &&
+		       ($diffIndex < count($targetFolders) - 1) &&
+		       ($sourceFolders[$diffIndex] == $targetFolders[$diffIndex]))
+		{
+			$diffIndex++;
+		}
+		
+		$__attacherCssNamePrefix = array();
+		for ($i = $diffIndex; $i < count($targetFolders) - 1; $i++)
+			$__attacherCssNamePrefix[] = '..';
+		
+		for ($i = $diffIndex; $i < count($sourceFolders) - 1; $i++)
+			$__attacherCssNamePrefix[] = $sourceFolders[$i];
+		
+		if (count($__attacherCssNamePrefix) == 0)
+		{
+			$__attacherCssNamePrefix = '';
+		}
+		else
+		{
+			$__attacherCssNamePrefix[] = '';
+			$__attacherCssNamePrefix = implode('/', $__attacherCssNamePrefix);
+		}
+		
+		echo "Prefix: $__attacherCssNamePrefix\n";
+		
+		$contents = preg_replace_callback('~url\s*\(([^\)]*)\)~', '__attacherCssReplacer', $contents);
+		
+		return $contents;
 	}
 }

@@ -260,11 +260,16 @@ class JWSDK_Package_Config extends JWSDK_Package
 			if (!$this->hasFilesOfAttacher($type))
 				continue;
 			
+			$buildName = $this->getBuildName($type);
+			
 			$contents = array();
 			foreach ($this->getSourceFiles() as $file)
 			{
 				if ($file->getAttacher() == $type)
-					$contents[] = $this->fileManager->getFileContents($file);
+				{
+					$fileContents = $this->fileManager->getFileContents($file);
+					$contents[] = $attacher->beforeCompress($fileContents, $file->getName(), $buildName);
+				}
 			}
 			
 			$contents = implode("\n", $contents);
@@ -276,7 +281,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			JWSDK_Util_File::mkdir($buildPath);
 			JWSDK_Util_File::compress($mergePath, $buildPath);
 			
-			$compressedFile = $this->fileManager->getFile($this->getBuildName($type), $type);
+			$compressedFile = $this->fileManager->getFile($buildName, $type);
 			$this->buildCache->output->setPackageCompressionMtime($this->getName(), $type, $compressedFile->getMtime());
 			
 			$result[] = $compressedFile;

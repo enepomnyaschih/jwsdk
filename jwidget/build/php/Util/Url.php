@@ -19,24 +19,25 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Attacher
+class JWSDK_Util_Url
 {
-	public function getType() // String
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function format( // String
+	public static function normalizeRelative( // String
 		$url) // String
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function beforeCompress( // String
-		$contents,   // String
-		$sourceName, // String
-		$targetName) // String
-	{
-		return $contents;
+		$tokens = explode('/', $url);
+		$result = array();
+		
+		foreach ($tokens as $token)
+		{
+			if ($token == '.')
+				continue;
+			
+			if (($token == '..') && (count($result) != 0) && ($result[count($result) - 1] != '..'))
+				array_pop($result);
+			else
+				$result[] = $token;
+		}
+		
+		return implode('/', $result);
 	}
 }
