@@ -29,7 +29,7 @@ class JWSDK_Util_File
 		if ($result === false)
 			throw new JWSDK_Exception_CanNotReadFile($path, $tip);
 		
-		return $result;
+		return preg_replace('/^\xEF\xBB\xBF/', '', $result);
 	}
 	
 	public static function readJson( // Object
@@ -37,6 +37,7 @@ class JWSDK_Util_File
 		$tip = 'file') // String
 	{
 		$contents = self::read($path, $tip);
+		$contents = JWSDK_Util_String::removeComments($contents);
 		$result = json_decode($contents, true);
 		if (!$result)
 			throw new JWSDK_Exception_InvalidFileFormat($path, $tip, "Can't parse JSON");
