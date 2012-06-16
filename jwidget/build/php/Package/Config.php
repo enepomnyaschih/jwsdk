@@ -21,16 +21,17 @@
 
 class JWSDK_Package_Config extends JWSDK_Package
 {
-	private $globalConfig;        // JWSDK_GlobalConfig
-	private $mode;                // JWSDK_Mode
-	private $buildCache;          // JWSDK_BuildCache
-	private $packageManager;      // JWSDK_Package_Manager
-	private $resourceManager;     // JWSDK_Resource_Manager
-	private $fileManager;         // JWSDK_File_Manager
+	private $globalConfig;         // JWSDK_GlobalConfig
+	private $mode;                 // JWSDK_Mode
+	private $buildCache;           // JWSDK_BuildCache
+	private $packageManager;       // JWSDK_Package_Manager
+	private $resourceManager;      // JWSDK_Resource_Manager
+	private $fileManager;          // JWSDK_File_Manager
 	
-	private $resources = array(); // Array of JWSDK_Resource
-	private $requires = array();  // Array of String
-	private $loaders = array();   // Array of String
+	private $resources = array();  // Array of JWSDK_Resource
+	private $requires = array();   // Array of String
+	private $loaders = array();    // Array of String
+	private $timestamps = array(); // Array of String
 	
 	public function __construct(
 		$name,            // String
@@ -74,13 +75,25 @@ class JWSDK_Package_Config extends JWSDK_Package
 			if (isset($json['loaders']))
 			{
 				if (!$this->globalConfig->isDynamicLoader())
-					throw new JWSDK_Exception_DynamicLoaderDisabled();
+					throw new JWSDK_Exception_DynamicLoaderDisabled('loaders');
 				
 				$loaders = $json['loaders'];
 				if (is_string($loaders))
 					$this->loaders = array($loaders);
 				else if (is_array($loaders))
 					$this->loaders = $loaders;
+			}
+			
+			$timestamps = JWSDK_Util_Array::get($json, 'timestamps', array());
+			foreach ($timestamps as $timestamp)
+			{
+				if (!$this->globalConfig->isDynamicLoader())
+					throw new JWSDK_Exception_DynamicLoaderDisabled('timestamps');
+				
+				if (!is_string($timestamp))
+					throw new JWSDK_Exception_InvalidFileFormat($name, 'package config');
+				
+				$this->timestamps[] = $timestamp;
 			}
 		}
 		catch (JWSDK_Exception $e)
@@ -149,10 +162,15 @@ class JWSDK_Package_Config extends JWSDK_Package
 		foreach ($loaderPackages as $loaderPackage)
 			$loadersJson[] = $this->getHeaderLoaderJson($loaderPackage);
 		
+		$timestampsJson = array();
+		foreach ($this->timestamps as $timestamp)
+			$timestampsJson[$timestamp] = JWSDK_Util_File::mtime($this->fileManager->getFilePath($timestamp));
+		
 		return array(
-			'name'     => $this->getName(),
-			'requires' => $this->getRequires(),
-			'loaders'  => $loadersJson
+			'name'       => $this->getName(),
+			'requires'   => $this->getRequires(),
+			'loaders'    => $loadersJson,
+			'timestamps' => $timestampsJson
 		);
 	}
 	
@@ -240,6 +258,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 	{
 		$name = $this->getName();
 		
+		$sourceFiles = $this->getSourceFiles();
+		
 		JWSDK_Log::logTo('build.log', "Compressing package $name");
 		
 		$this->buildCache->output->setPackageGlobalConfigMtime(
@@ -263,7 +283,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$buildName = $this->getBuildName($type);
 			
 			$contents = array();
-			foreach ($this->getSourceFiles() as $file)
+			foreach ($sourceFiles as $file)
 			{
 				if ($file->getAttacher() == $type)
 				{

@@ -22,8 +22,8 @@
 // Runtime
 class JWSDK_Exception_DynamicLoaderDisabled extends JWSDK_Exception
 {
-	public function __construct()
+	public function __construct($definition)
 	{
-		parent::__construct('Package contains "loaders" definition, but dynamic loading is disabled. Enable it in config.json.');
+		parent::__construct('Package contains "' . $definition . '" definition, but dynamic loading is disabled. Enable it in config.json.');
 	}
 }

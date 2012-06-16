@@ -1,5 +1,6 @@
 var JWSDK = (function() {
 	var packages = {},
+	    timestamps = {},
 	    STATUS_PENDING   = 0,
 	    STATUS_PREPARING = 1,
 	    STATUS_LOADING   = 2,
@@ -95,6 +96,10 @@ var JWSDK = (function() {
 					css      : loader.css
 				};
 			}
+			
+			var packageTimestamps = config.timestamps || {};
+			for (var i in packageTimestamps)
+				timestamps[i] = packageTimestamps[i];
 		},
 		
 		loadPackage : function(
@@ -167,6 +172,11 @@ var JWSDK = (function() {
 			
 			for (var i = 0, l = js.length; i < l; ++i)
 				attachJs(js[i], onFileLoaded, onFileError);
+		},
+		
+		getTimestamp: function(name)
+		{
+			return timestamps[name];
 		}
 	};
 })();
