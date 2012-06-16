@@ -33,7 +33,6 @@ function __attacherCssReplacer($match)
 	if (($path[0] == '/') || preg_match('~^\w+://~', $path))
 		return "url(\"$path\")";
 	
-	echo "Found: $path\n";
 	return 'url("' . JWSDK_Util_Url::normalizeRelative($__attacherCssNamePrefix . $path) . '")';
 }
 
@@ -84,8 +83,6 @@ class JWSDK_File_Attacher_Css extends JWSDK_Resource_Attacher
 			$__attacherCssNamePrefix[] = '';
 			$__attacherCssNamePrefix = implode('/', $__attacherCssNamePrefix);
 		}
-		
-		echo "Prefix: $__attacherCssNamePrefix\n";
 		
 		$contents = preg_replace_callback('~url\s*\(([^\)]*)\)~', '__attacherCssReplacer', $contents);
 		
