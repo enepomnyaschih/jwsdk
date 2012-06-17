@@ -96,7 +96,7 @@ class JWSDK_Template_Manager
 				if (($argument != 'end') &&
 				    ($argument != $this->mode->getId()))
 				{
-					$endPos = strpos($contents, '${?end}');
+					$endPos = strpos($contents, '${?end}', $pos2);
 					if ($endPos !== false)
 						$pos2 = $endPos + 6;
 				}
