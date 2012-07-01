@@ -31,6 +31,7 @@ class JWSDK_Resource_Converter_Util
 		$contents) // String
 	{
 		$contents = trim($contents);
+		$contents = JWSDK_Util_String::smoothCrlf($contents);
 		$contents = preg_replace('/>\ *\n\s*</', '><', $contents);
 		$contents = preg_replace('/\ *\n\s*/', ' ', $contents);
 		$contents = str_replace ("'", "\\'", $contents);

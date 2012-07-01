@@ -36,6 +36,14 @@ class JWSDK_Resource_Converter_Json extends JWSDK_Resource_Converter
 		
 		$varName = JWSDK_Resource_Converter_Util::defineJsVar($params['var']);
 		
+		$contents = JWSDK_Util_String::removeComments($contents);
+		
+		$json = json_decode($contents, true);
+		if (!$json)
+			throw new JWSDK_Exception_InvalidFileFormat($name, 'JSON resource', "Can't parse JSON");
+		
+		$contents = json_encode($json);
+		
 		return "$varName = $contents;\n";
 	}
 	
