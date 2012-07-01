@@ -1,4 +1,4 @@
-/**
+/*!
     jWidget SDK dynamic loader.
     
     Copyright (C) 2012 Egor Nepomnyaschih
