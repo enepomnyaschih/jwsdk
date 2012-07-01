@@ -20,6 +20,8 @@
 var JWSDK = (function() {
 	var packages = {},
 	    timestamps = {},
+	    loadQueue = [],
+	    queueLoading = false,
 	    STATUS_PENDING   = 0,
 	    STATUS_PREPARING = 1,
 	    STATUS_LOADING   = 2,
@@ -84,6 +86,37 @@ var JWSDK = (function() {
 		el.src = url;
 		
 		attachEl(el, success, error);
+	}
+	
+	function touchQueue()
+	{
+		if (!loadQueue.length || queueLoading)
+			return;
+		
+		var item = loadQueue[0];
+		queueLoading = true;
+		loadQueue.shift();
+		
+		var func    = item[0],
+		    url     = item[1],
+		    success = item[2],
+		    error   = item[3];
+		
+		function onSuccess()
+		{
+			success();
+			queueLoading = false;
+			touchQueue();
+		}
+		
+		function onError()
+		{
+			error();
+			queueLoading = false;
+			touchQueue();
+		}
+		
+		func(url, onSuccess, onError);
 	}
 	
 	return {
@@ -187,10 +220,12 @@ var JWSDK = (function() {
 			}
 			
 			for (var i = 0, l = css.length; i < l; ++i)
-				attachCss(css[i], onFileLoaded, onFileError);
+				loadQueue.push([ attachCss, css[i], onFileLoaded, onFileError ]);
 			
 			for (var i = 0, l = js.length; i < l; ++i)
-				attachJs(js[i], onFileLoaded, onFileError);
+				loadQueue.push([ attachJs, js[i], onFileLoaded, onFileError ]);
+			
+			touchQueue();
 		},
 		
 		getTimestamp: function(name)
