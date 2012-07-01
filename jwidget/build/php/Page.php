@@ -21,10 +21,11 @@
 
 class JWSDK_Page
 {
-	private $name;     // String
-	private $template; // String
-	private $package;  // String
-	private $params;   // Map from String to String
+	private $name;       // String
+	private $template;   // String
+	private $package;    // String
+	private $outputName; // String
+	private $params;     // Map from String to String
 	
 	public function __construct(
 		$name, // String
@@ -37,6 +38,11 @@ class JWSDK_Page
 		
 		if (isset($json['package']) && is_string($json['package']))
 			$this->package = $json['package'];
+		
+		if (isset($json['outputName']) && is_string($json['outputName']))
+			$this->outputName = $json['outputName'];
+		else
+			$this->outputName = "$name.html";
 		
 		$this->params = $this->filterParams($json);
 	}
@@ -54,6 +60,11 @@ class JWSDK_Page
 	public function getPackage() // String
 	{
 		return $this->package;
+	}
+	
+	public function getOutputName() // String
+	{
+		return $this->outputName;
 	}
 	
 	public function getParams() // Map from String to String

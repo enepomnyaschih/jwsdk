@@ -108,7 +108,7 @@ class JWSDK_Page_Manager
 			$template = $this->templateManager->readTemplate($templateName);
 			$contents = $this->applyTemplate($template, $page);
 			
-			JWSDK_Util_File::write($this->getPageBuildPath($name), $contents);
+			JWSDK_Util_File::write($this->getPageBuildPath($page), $contents);
 			
 			return $page;
 		}
@@ -212,9 +212,9 @@ class JWSDK_Page_Manager
 	}
 	
 	private function getPageBuildPath( // String
-		$name) // String
+		$page) // JWSDK_Page
 	{
-		return $this->getPagesBuildPath() . "/$name.html";
+		return $this->getPagesBuildPath() . '/' . $page->getOutputName();
 	}
 	
 	private function addPage(
