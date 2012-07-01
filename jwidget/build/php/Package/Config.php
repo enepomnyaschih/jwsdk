@@ -372,7 +372,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 	
 	private function getHeaderName() // String
 	{
-		return $this->globalConfig->getBuildUrl() . '/packages/' . $this->getName() . ".header.js";
+		return $this->globalConfig->getBuildUrl() . '/packages/' . $this->getName() . '.header.' . $this->mode->getId() . '.js';
 	}
 	
 	private function getHeaderPath() // String
