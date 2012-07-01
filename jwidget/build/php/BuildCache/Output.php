@@ -59,6 +59,13 @@ class JWSDK_BuildCache_Output
 		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'configMtime'), $value);
 	}
 	
+	public function setPackageHeaderMtime(
+		$packageName, // String
+		$value)       // Timestamp
+	{
+		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'headerMtime'), $value);
+	}
+	
 	public function setPackageResourceMtime(
 		$packageName,  // String
 		$resourceName, // String

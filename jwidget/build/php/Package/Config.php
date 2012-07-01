@@ -130,6 +130,9 @@ class JWSDK_Package_Config extends JWSDK_Package
 		
 		try
 		{
+			// Header file should be rebuilt before "isModified" call
+			$this->getSourceFiles();
+			
 			if ($this->isModified())
 				return $this->initCompressedFilesModified();
 			else
@@ -148,9 +151,14 @@ class JWSDK_Package_Config extends JWSDK_Package
 		
 		$json = $this->getHeaderJson();
 		$jsonStr = json_encode($json);
-		$contents = "JWSDK.packageHeader($jsonStr);";
 		
-		JWSDK_Util_File::write($path, $contents);
+		$oldContents = @file_get_contents($path);
+		$newContents = "JWSDK.packageHeader($jsonStr);";
+		
+		if ($oldContents == $newContents)
+			return $this->fileManager->getFile($name, 'js');
+		
+		JWSDK_Util_File::write($path, $newContents);
 		
 		return $this->fileManager->getFile($name, 'js');
 	}
@@ -217,6 +225,17 @@ class JWSDK_Package_Config extends JWSDK_Package
 			return true;
 		}
 		
+		if ($this->globalConfig->isDynamicLoader())
+		{
+			$oldMtime = $this->buildCache->input->getPackageHeaderMtime($this->getName());
+			$newMtime = JWSDK_Util_File::mtime($this->getHeaderPath());
+			if ($oldMtime != $newMtime)
+			{
+				//echo "-- Package header is modified ($oldMtime:$newMtime)\n";
+				return true;
+			}
+		}
+		
 		foreach ($this->resources as $resource)
 		{
 			$name = $resource->getName();
@@ -267,6 +286,12 @@ class JWSDK_Package_Config extends JWSDK_Package
 		
 		$this->buildCache->output->setPackageConfigMtime(
 			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
+		
+		if ($this->globalConfig->isDynamicLoader())
+		{
+			$this->buildCache->output->setPackageHeaderMtime(
+				$this->getName(), JWSDK_Util_File::mtime($this->getHeaderPath()));
+		}
 		
 		foreach ($this->resources as $resource)
 		{

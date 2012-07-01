@@ -56,6 +56,12 @@ class JWSDK_BuildCache_Input
 		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'configMtime'));
 	}
 	
+	public function getPackageHeaderMtime( // Timestamp
+		$packageName) // String
+	{
+		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'headerMtime'));
+	}
+	
 	public function getPackageResourceMtime( // Timestamp
 		$packageName,  // String
 		$resourceName) // String
