@@ -34,7 +34,7 @@ class JWSDK_Resource_Converter_Util
 		$contents = JWSDK_Util_String::smoothCrlf($contents);
 		$contents = preg_replace('/>\ *\n\s*</', '><', $contents);
 		$contents = preg_replace('/\ *\n\s*/', ' ', $contents);
-		$contents = str_replace ("'", "\\'", $contents);
+		$contents = str_replace(array("\\", "'"), array("\\\\", "\\'"), $contents);
 		
 		return $contents;
 	}
@@ -42,6 +42,6 @@ class JWSDK_Resource_Converter_Util
 	static function smoothText( // String
 		$contents) // String
 	{
-		return str_replace(array("\n", "\r", "\t", "'"), array("\\n\\\n", "\\r", "\\t", "\\'"), $contents);
+		return str_replace(array("\n", "\r", "\t", "\\", "'"), array("\\n\\\n", "\\r", "\\t", "\\\\", "\\'"), $contents);
 	}
 }
