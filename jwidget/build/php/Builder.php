@@ -32,9 +32,16 @@ class JWSDK_Builder
 	private $pageManager;     // JWSDK_Page_Manager
 	
 	public function __construct(
+		$runPath,    // String
 		$modeName,   // String
 		$configPath) // String
 	{
+		$slashIndex = strrpos($runPath, '/');
+		if ($slashIndex === false)
+			$runDir = '.';
+		else
+			$runDir = substr($runPath, 0, $slashIndex);
+		
 		if (!is_string($configPath))
 			$configPath = '.';
 		
@@ -46,11 +53,19 @@ class JWSDK_Builder
 		else
 		{
 			$slashIndex = strrpos($configPath, '/');
-			$configDir  = substr($configPath, 0, $slashIndex);
-			$configName = substr($configPath, $slashIndex + 1);
+			if ($slashIndex === false)
+			{
+				$configDir  = '.';
+				$configName = $configPath;
+			}
+			else
+			{
+				$configDir  = substr($configPath, 0, $slashIndex);
+				$configName = substr($configPath, $slashIndex + 1);
+			}
 		}
 		
-		$this->globalConfig = new JWSDK_GlobalConfig($configDir, $configName);
+		$this->globalConfig = new JWSDK_GlobalConfig($runDir, $configDir, $configName);
 		$this->mode = JWSDK_Mode::getMode($modeName);
 		$this->buildCache = new JWSDK_BuildCache($this->globalConfig->getTempPath() . '/buildcache.json');
 		

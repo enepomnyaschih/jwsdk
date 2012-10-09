@@ -21,17 +21,20 @@
 
 class JWSDK_GlobalConfig
 {
-	private $dir;   // String
-	private $json;  // Object
-	private $mtime; // Timestamp
+	private $runDir;    // String
+	private $configDir; // String
+	private $json;      // Object
+	private $mtime;     // Timestamp
 	
 	public function __construct(
-		$dir,  // String
-		$name) // String
+		$runDir,    // String
+		$configDir, // String
+		$name)      // String
 	{
-		$path = "$dir/$name";
+		$path = "$configDir/$name";
 		
-		$this->dir = $dir;
+		$this->runDir = $runDir;
+		$this->configDir = $configDir;
 		$this->json = JWSDK_Util_File::readJson($path, 'global config');
 		$this->mtime = JWSDK_Util_File::mtime($path);
 		
@@ -56,29 +59,29 @@ class JWSDK_GlobalConfig
 			throw new JWSDK_Exception_InvalidFileFormat('config.json', 'global config');
 	}
 	
-	public function getDir() // String
+	public function getRunDir() // String
 	{
-		return $this->dir;
+		return $this->runDir;
 	}
 	
 	public function getPackagesPath() // String
 	{
-		return $this->dir . '/' . $this->json['packagesPath'];
+		return $this->configDir . '/' . $this->json['packagesPath'];
 	}
 	
 	public function getPagesPath() // String
 	{
-		return $this->dir . '/' . $this->json['pagesPath'];
+		return $this->configDir . '/' . $this->json['pagesPath'];
 	}
 	
 	public function getTemplatesPath() // String
 	{
-		return $this->dir . '/' . $this->json['templatesPath'];
+		return $this->configDir . '/' . $this->json['templatesPath'];
 	}
 	
 	public function getPublicPath() // String
 	{
-		return $this->dir . '/' . $this->json['publicPath'];
+		return $this->configDir . '/' . $this->json['publicPath'];
 	}
 	
 	public function getBuildUrl() // String
@@ -93,7 +96,7 @@ class JWSDK_GlobalConfig
 	
 	public function getTempPath() // String
 	{
-		return $this->dir . '/' . $this->json['tempPath'];
+		return $this->configDir . '/' . $this->json['tempPath'];
 	}
 	
 	public function getUrlPrefix() // String
