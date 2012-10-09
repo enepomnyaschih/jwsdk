@@ -32,9 +32,25 @@ class JWSDK_Builder
 	private $pageManager;     // JWSDK_Page_Manager
 	
 	public function __construct(
-		$modeName) // String
+		$modeName,   // String
+		$configPath) // String
 	{
-		$this->globalConfig = new JWSDK_GlobalConfig();
+		if (!is_string($configPath))
+			$configPath = '.';
+		
+		if (!preg_match('/\.json$/', $configPath))
+		{
+			$configDir  = $configPath;
+			$configName = 'config.json';
+		}
+		else
+		{
+			$slashIndex = strrpos($configPath, '/');
+			$configDir  = substr($configPath, 0, $slashIndex);
+			$configName = substr($configPath, $slashIndex + 1);
+		}
+		
+		$this->globalConfig = new JWSDK_GlobalConfig($configDir, $configName);
 		$this->mode = JWSDK_Mode::getMode($modeName);
 		$this->buildCache = new JWSDK_BuildCache($this->globalConfig->getTempPath() . '/buildcache.json');
 		

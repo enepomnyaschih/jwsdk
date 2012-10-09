@@ -83,13 +83,14 @@ class JWSDK_Util_File
 	}
 	
 	public static function compress(
+		$dir,    // String
 		$source, // String
 		$target) // String
 	{
 		$yuiOutput = array();
 		$yuiStatus = 0;
 		
-		$command = "java -jar yuicompressor.jar $source -o $target --charset utf-8 --line-break 8000 2>> yui.log";
+		$command = "java -jar $dir/yuicompressor.jar $source -o $target --charset utf-8 --line-break 8000 2>> yui.log";
 		exec($command, $yuiOutput, $yuiStatus);
 		
 		if ($yuiStatus != 0)

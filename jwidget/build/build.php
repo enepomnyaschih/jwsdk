@@ -31,7 +31,7 @@ include_once 'php/Mode/Release.php';
 
 if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 {
-	echo "USAGE php build.php <mode>\n\n" .
+	echo "USAGE php build.php <mode> [<path_to_config.json>]\n\n" .
 	     "Supported modes:\n" .
 	     JWSDK_Mode::getModesDescription();
 	
@@ -97,7 +97,7 @@ JWSDK_Log::logTo('build.log', 'Building frontend with jWidget SDK 0.3...');
 
 try
 {
-    $builder = new JWSDK_Builder($argv[1]);
+    $builder = new JWSDK_Builder($argv[1], (count($argv) < 3) ? null : $argv[2]);
     $builder->buildPages();
     $builder->saveCache();
 }
