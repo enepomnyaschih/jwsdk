@@ -38,6 +38,9 @@ class JWSDK_Builder
 	{
 		$slashIndex = strrpos($runPath, '/');
 		if ($slashIndex === false)
+			$slashIndex = strrpos($runPath, '\\');
+		
+		if ($slashIndex === false)
 			$runDir = '.';
 		else
 			$runDir = substr($runPath, 0, $slashIndex);
