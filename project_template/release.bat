@@ -1,0 +1,1 @@
+php %JWSDK_HOME%\build.php release jwidget

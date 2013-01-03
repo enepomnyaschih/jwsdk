@@ -1,0 +1,14 @@
+﻿{
+	"packagesPath"  : "packages",
+	"pagesPath"     : "pages",
+	"templatesPath" : "templates",
+	
+	"publicPath"    : "../public",
+	"buildUrl"      : "build",
+	"pagesUrl"      : "pages",
+	
+	"tempPath"      : "temp",
+	
+	"urlPrefix"     : "/",
+	"dynamicLoader" : false
+}
