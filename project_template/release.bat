@@ -1,1 +1,1 @@
-php %JWSDK_HOME%\build.php release jwidget
+php %JWSDK_HOME%\build.php release jwsdk-config

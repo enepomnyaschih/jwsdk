@@ -1,1 +1,1 @@
-php %JWSDK_HOME%\build.php debug jwidget
+php %JWSDK_HOME%\build.php debug jwsdk-config
