@@ -1,2 +1,4 @@
-./*.log
-./jwsdk-config/temp
+/*.log
+/jwsdk-config/temp
+/public/build
+/public/pages
