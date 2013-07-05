@@ -82,6 +82,7 @@ include_once 'php/Resource.php';
 include_once 'php/Resource/Converter.php';
 include_once 'php/Resource/Converter/Css.php';
 include_once 'php/Resource/Converter/JwHtml.php';
+include_once 'php/Resource/Converter/SchemaJson.php';
 include_once 'php/Resource/Converter/Txt.php';
 include_once 'php/Resource/Converter/Html.php';
 include_once 'php/Resource/Converter/Json.php';

@@ -37,6 +37,7 @@ class JWSDK_Resource_Manager
 		
 		$this->registerConverter(new JWSDK_Resource_Converter_Css());
 		$this->registerConverter(new JWSDK_Resource_Converter_JwHtml());
+		$this->registerConverter(new JWSDK_Resource_Converter_SchemaJson());
 		$this->registerConverter(new JWSDK_Resource_Converter_Txt());
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());
 		$this->registerConverter(new JWSDK_Resource_Converter_Json());
