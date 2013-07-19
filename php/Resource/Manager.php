@@ -42,6 +42,8 @@ class JWSDK_Resource_Manager
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());
 		$this->registerConverter(new JWSDK_Resource_Converter_Json());
 		$this->registerConverter(new JWSDK_Resource_Converter_Js());
+		$this->registerConverter(new JWSDK_Resource_Converter_Sass());
+		$this->registerConverter(new JWSDK_Resource_Converter_Scss());
 	}
 	
 	public function getResourceByDefinition( // JWSDK_Resource
@@ -74,14 +76,6 @@ class JWSDK_Resource_Manager
 		$resource->setOutputFile($file);
 		
 		return $file;
-	}
-	
-	public function getResourceContents( // String
-		$resource) // JWSDK_Resource
-	{
-		$name = $resource->getName();
-		$sourcePath = $this->getResourceSourcePath($name);
-		return JWSDK_Util_File::read($sourcePath, 'resource file');
 	}
 	
 	private function getResourceByString( // JWSDK_Resource
@@ -148,16 +142,9 @@ class JWSDK_Resource_Manager
 				return $this->fileManager->getFile($resource->getName(), $converter->getAttacher());
 			
 			JWSDK_Log::logTo('build.log', "Converting resource $name");
-			
-			$sourceContents = $this->getResourceContents($resource);
-			$buildContents = $converter->convertResource($name, $sourceContents, $resource->getParams());
-			
-			$buildName = $this->getResourceBuildName($name);
-			$buildPath = $this->getResourceBuildPath($name);
-			
-			JWSDK_Util_File::write($buildPath, $buildContents);
-			
-			return $this->fileManager->getFile($buildName, $converter->getAttacher());
+			$attacher = $converter->getAttacher();
+			$converter->convert($resource, $this->getResourceSourcePath($name), $this->getResourceBuildPath($name, $attacher));
+			return $this->fileManager->getFile($this->getResourceBuildName($name, $attacher), $converter->getAttacher());
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -172,15 +159,17 @@ class JWSDK_Resource_Manager
 	}
 	
 	private function getResourceBuildName( // String
-		$name) // String
+		$name,     // String
+		$attacher) // String
 	{
-		return $this->globalConfig->getBuildUrl() . "/resources/$name.js";
+		return $this->globalConfig->getBuildUrl() . "/resources/$name.$attacher";
 	}
 	
 	private function getResourceBuildPath( // String
-		$name) // String
+		$name,     // String
+		$attacher) // String
 	{
-		return $this->globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($name);
+		return $this->globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($name, $attacher);
 	}
 	
 	private function registerConverter(

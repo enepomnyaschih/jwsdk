@@ -19,15 +19,26 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Js extends JWSDK_Resource_Converter_Internal
+class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter
 {
-	public function getType() // String
+	public function getAttacher() // String
 	{
-		return 'js';
+		return 'css';
 	}
 	
-	public function isConvertion() // Boolean
+	public function convert(
+		$resource,   // JWSDK_Resource
+		$sourcePath, // String
+		$buildPath)  // String
 	{
-		return false;
+		$sassOutput = array();
+		$sassStatus = 0;
+		
+		JWSDK_Util_File::mkdir($buildPath);
+		$command = "sass --unix-newlines -f $sourcePath $buildPath 2>> sass.log";
+		exec($command, $sassOutput, $sassStatus);
+		
+		if ($sassStatus != 0)
+			throw new JWSDK_Exception_SassError($sourcePath, $buildPath);
 	}
 }

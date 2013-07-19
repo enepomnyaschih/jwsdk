@@ -19,15 +19,23 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Js extends JWSDK_Resource_Converter_Internal
+class JWSDK_Resource_Converter_Internal extends JWSDK_Resource_Converter
 {
-	public function getType() // String
+	public function convert(
+		$resource,   // JWSDK_Resource
+		$sourcePath, // String
+		$buildPath)  // String
 	{
-		return 'js';
+		$sourceContents = JWSDK_Util_File::read($sourcePath, 'resource file');
+		$buildContents = $this->convertResource($resource->getName(), $sourceContents, $resource->getParams());
+		JWSDK_Util_File::write($buildPath, $buildContents);
 	}
 	
-	public function isConvertion() // Boolean
+	public function convertResource( // String, output contents
+		$name,     // String
+		$contents, // String
+		$params)   // Object
 	{
-		return false;
+		throw new JWSDK_Exception_MethodNotImplemented();
 	}
 }

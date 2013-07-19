@@ -19,7 +19,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Html extends JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_Html extends JWSDK_Resource_Converter_Internal
 {
 	public function getType() // String
 	{

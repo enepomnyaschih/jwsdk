@@ -19,15 +19,26 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Js extends JWSDK_Resource_Converter_Internal
+// Runtime
+class JWSDK_Exception_SassError extends JWSDK_Exception
 {
-	public function getType() // String
+	private $source;
+	private $target;
+	
+	public function __construct($source, $target)
 	{
-		return 'js';
+		parent::__construct("Error occured while running Sass compiler (input: $source, output: $target). See sass.log for details");
+		$this->source = $source;
+		$this->target = $target;
 	}
 	
-	public function isConvertion() // Boolean
+	public function getSource()
 	{
-		return false;
+		return $this->source;
+	}
+	
+	public function getTarget()
+	{
+		return $this->target;
 	}
 }

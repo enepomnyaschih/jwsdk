@@ -36,10 +36,10 @@ class JWSDK_Resource_Converter
 		return 'js';
 	}
 	
-	public function convertResource( // String, output contents
-		$name,     // String
-		$contents, // String
-		$params)   // Object
+	public function convert(
+		$resource,   // JWSDK_Resource
+		$sourcePath, // String
+		$buildPath)  // String
 	{
 		throw new JWSDK_Exception_MethodNotImplemented();
 	}

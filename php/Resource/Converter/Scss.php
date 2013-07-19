@@ -19,15 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Js extends JWSDK_Resource_Converter_Internal
+class JWSDK_Resource_Converter_Scss extends JWSDK_Resource_Converter_SassBase
 {
 	public function getType() // String
 	{
-		return 'js';
-	}
-	
-	public function isConvertion() // Boolean
-	{
-		return false;
+		return 'scss';
 	}
 }
