@@ -37,11 +37,8 @@ class JWSDK_Resource_Converter
 	}
 	
 	public function convert(
-		$resource,   // JWSDK_Resource
-		$sourceName, // String
-		$sourcePath, // String
-		$buildName,  // String
-		$buildPath)  // String
+		$resource,     // JWSDK_Resource
+		$globalConfig) // JWSDK_GlobalConfig
 	{
 		throw new JWSDK_Exception_MethodNotImplemented();
 	}
@@ -56,5 +53,34 @@ class JWSDK_Resource_Converter
 		$json) // Object
 	{
 		return $json;
+	}
+	
+	public function getResourceBuildName( // String
+		$resource,     // String
+		$globalConfig, // JWSDK_GlobalConfig
+		$suffix = '')  // String
+	{
+		$name = $resource->getName();
+		$attacher = $this->getAttacher();
+		if (!empty($suffix)) {
+			$suffix = $suffix . '.';
+		}
+		return $globalConfig->getBuildUrl() . "/resources/$name.$suffix$attacher";
+	}
+	
+	protected function getResourceSourcePath( // String
+		$resource,     // String
+		$globalConfig) // JWSDK_GlobalConfig
+	{
+		$name = $resource->getName();
+		return $globalConfig->getPublicPath() . "/$name";
+	}
+	
+	protected function getResourceBuildPath( // String
+		$resource,     // String
+		$globalConfig, // JWSDK_GlobalConfig
+		$suffix = '')  // String
+	{
+		return $globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($resource, $globalConfig, $suffix);
 	}
 }

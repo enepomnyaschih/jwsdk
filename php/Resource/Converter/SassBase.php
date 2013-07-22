@@ -19,34 +19,19 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter_CssBase
 {
-	public function getAttacher() // String
+	protected function getCommand( // String
+		$source, // String
+		$target) // String
 	{
-		return 'css';
+		return "sass --unix-newlines -f $source $target 2>> sass.log";
 	}
 	
-	public function convert(
-		$resource,   // JWSDK_Resource
-		$sourceName, // String
-		$sourcePath, // String
-		$buildName,  // String
-		$buildPath)  // String
+	protected function throwError(
+		$source, // String
+		$target) // String
 	{
-		$tempPath = preg_replace('~\.css$~', '.temp.css', $buildPath);
-		
-		$sassOutput = array();
-		$sassStatus = 0;
-		
-		JWSDK_Util_File::mkdir($buildPath);
-		$command = "sass --unix-newlines -f $sourcePath $tempPath 2>> sass.log";
-		exec($command, $sassOutput, $sassStatus);
-		
-		if ($sassStatus != 0)
-			throw new JWSDK_Exception_SassError($sourcePath, $buildPath);
-		
-		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
-		$buildContents = JWSDK_Util_Css::updateRelativePaths($sourceContents, $sourceName, $buildName);
-		JWSDK_Util_File::write($buildPath, $buildContents);
+		throw new JWSDK_Exception_SassError($source, $target);
 	}
 }

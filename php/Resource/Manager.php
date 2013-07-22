@@ -145,34 +145,14 @@ class JWSDK_Resource_Manager
 			
 			JWSDK_Log::logTo('build.log', "Converting resource $name");
 			$attacher = $converter->getAttacher();
-			$converter->convert($resource, $name, $this->getResourceSourcePath($name),
-				$this->getResourceBuildName($name, $attacher), $this->getResourceBuildPath($name, $attacher));
-			return $this->fileManager->getFile($this->getResourceBuildName($name, $attacher), $converter->getAttacher());
+			$converter->convert($resource, $this->globalConfig);
+			$buildName = $converter->getResourceBuildName($resource, $this->globalConfig);
+			return $this->fileManager->getFile($buildName, $converter->getAttacher());
 		}
 		catch (JWSDK_Exception $e)
 		{
 			throw new JWSDK_Exception_ResourceConvertionError($name, $type, $e);
 		}
-	}
-	
-	private function getResourceSourcePath( // String
-		$name) // String
-	{
-		return $this->globalConfig->getPublicPath() . "/$name";
-	}
-	
-	private function getResourceBuildName( // String
-		$name,     // String
-		$attacher) // String
-	{
-		return $this->globalConfig->getBuildUrl() . "/resources/$name.$attacher";
-	}
-	
-	private function getResourceBuildPath( // String
-		$name,     // String
-		$attacher) // String
-	{
-		return $this->globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($name, $attacher);
 	}
 	
 	private function registerConverter(

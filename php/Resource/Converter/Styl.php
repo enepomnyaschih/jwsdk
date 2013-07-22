@@ -19,39 +19,26 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Styl extends JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_Styl extends JWSDK_Resource_Converter_CssBase
 {
 	public function getType() // String
 	{
 		return 'styl';
 	}
 	
-	public function getAttacher() // String
+	protected function getCommand( // String
+		$source,       // String
+		$target,       // String
+		$globalConfig) // JWSDK_GlobalConfig
 	{
-		return 'css';
+		$publicPath = $globalConfig->getPublicPath();
+		return "stylus -I $publicPath < $source > $target 2>> stylus.log";
 	}
 	
-	public function convert(
-		$resource,   // JWSDK_Resource
-		$sourceName, // String
-		$sourcePath, // String
-		$buildName,  // String
-		$buildPath)  // String
+	protected function throwError(
+		$source, // String
+		$target) // String
 	{
-		$tempPath = preg_replace('~\.css$~', '.temp.css', $buildPath);
-		
-		$lessOutput = array();
-		$lessStatus = 0;
-		
-		JWSDK_Util_File::mkdir($buildPath);
-		$command = "stylus < $sourcePath > $tempPath 2>> stylus.log";
-		exec($command, $lessOutput, $lessStatus);
-		
-		if ($lessStatus != 0)
-			throw new JWSDK_Exception_StylusError($sourcePath, $tempPath);
-		
-		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
-		$buildContents = JWSDK_Util_Css::updateRelativePaths($sourceContents, $sourceName, $buildName);
-		JWSDK_Util_File::write($buildPath, $buildContents);
+		throw new JWSDK_Exception_StylusError($source, $target);
 	}
 }
