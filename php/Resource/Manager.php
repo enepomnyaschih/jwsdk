@@ -42,6 +42,7 @@ class JWSDK_Resource_Manager
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());
 		$this->registerConverter(new JWSDK_Resource_Converter_Json());
 		$this->registerConverter(new JWSDK_Resource_Converter_Js());
+		$this->registerConverter(new JWSDK_Resource_Converter_Less());
 		$this->registerConverter(new JWSDK_Resource_Converter_Sass());
 		$this->registerConverter(new JWSDK_Resource_Converter_Scss());
 	}
@@ -143,7 +144,8 @@ class JWSDK_Resource_Manager
 			
 			JWSDK_Log::logTo('build.log', "Converting resource $name");
 			$attacher = $converter->getAttacher();
-			$converter->convert($resource, $this->getResourceSourcePath($name), $this->getResourceBuildPath($name, $attacher));
+			$converter->convert($resource, $name, $this->getResourceSourcePath($name),
+				$this->getResourceBuildName($name, $attacher), $this->getResourceBuildPath($name, $attacher));
 			return $this->fileManager->getFile($this->getResourceBuildName($name, $attacher), $converter->getAttacher());
 		}
 		catch (JWSDK_Exception $e)

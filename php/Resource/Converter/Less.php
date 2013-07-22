@@ -19,8 +19,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_Less extends JWSDK_Resource_Converter
 {
+	public function getType() // String
+	{
+		return 'less';
+	}
+	
 	public function getAttacher() // String
 	{
 		return 'css';
@@ -35,15 +40,15 @@ class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter
 	{
 		$tempPath = preg_replace('~\.css$~', '.temp.css', $buildPath);
 		
-		$sassOutput = array();
-		$sassStatus = 0;
+		$lessOutput = array();
+		$lessStatus = 0;
 		
 		JWSDK_Util_File::mkdir($buildPath);
-		$command = "sass --unix-newlines -f $sourcePath $tempPath 2>> sass.log";
-		exec($command, $sassOutput, $sassStatus);
+		$command = "lessc $sourcePath > $tempPath 2>> less.log";
+		exec($command, $lessOutput, $lessStatus);
 		
-		if ($sassStatus != 0)
-			throw new JWSDK_Exception_SassError($sourcePath, $buildPath);
+		if ($lessStatus != 0)
+			throw new JWSDK_Exception_LessError($sourcePath, $tempPath);
 		
 		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
 		$buildContents = JWSDK_Util_Css::updateRelativePaths($sourceContents, $sourceName, $buildName);

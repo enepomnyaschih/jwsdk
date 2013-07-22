@@ -19,42 +19,26 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter
+// Runtime
+class JWSDK_Exception_LessError extends JWSDK_Exception
 {
-	public function getType() // String
+	private $source;
+	private $target;
+	
+	public function __construct($source, $target)
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
+		parent::__construct("Error occured while running LESS compiler (input: $source, output: $target). See less.log for details");
+		$this->source = $source;
+		$this->target = $target;
 	}
 	
-	public function isConvertion() // Boolean
+	public function getSource()
 	{
-		return true;
+		return $this->source;
 	}
 	
-	public function getAttacher() // String
+	public function getTarget()
 	{
-		return 'js';
-	}
-	
-	public function convert(
-		$resource,   // JWSDK_Resource
-		$sourceName, // String
-		$sourcePath, // String
-		$buildName,  // String
-		$buildPath)  // String
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function getParamsByArray( // Array
-		$params) // Array
-	{
-		return array();
-	}
-	
-	public function getParamsByJson( // Array
-		$json) // Object
-	{
-		return $json;
+		return $this->target;
 	}
 }

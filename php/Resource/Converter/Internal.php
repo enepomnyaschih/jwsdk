@@ -23,7 +23,9 @@ class JWSDK_Resource_Converter_Internal extends JWSDK_Resource_Converter
 {
 	public function convert(
 		$resource,   // JWSDK_Resource
+		$sourceName, // String
 		$sourcePath, // String
+		$buildName,  // String
 		$buildPath)  // String
 	{
 		$sourceContents = JWSDK_Util_File::read($sourcePath, 'resource file');

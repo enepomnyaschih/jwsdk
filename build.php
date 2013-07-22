@@ -20,6 +20,7 @@
 */
 
 include_once 'php/Util/Array.php';
+include_once 'php/Util/Css.php';
 include_once 'php/Util/File.php';
 include_once 'php/Util/Json.php';
 include_once 'php/Util/String.php';
@@ -56,6 +57,7 @@ include_once 'php/Exception/InvalidFileFormat.php';
 include_once 'php/Exception/InvalidResourceFormat.php';
 include_once 'php/Exception/InvalidResourceParameter.php';
 include_once 'php/Exception/InvalidResourceType.php';
+include_once 'php/Exception/LessError.php';
 include_once 'php/Exception/MethodNotImplemented.php';
 include_once 'php/Exception/PackageCompressError.php';
 include_once 'php/Exception/PageBuildError.php';
@@ -89,6 +91,7 @@ include_once 'php/Resource/Converter/Txt.php';
 include_once 'php/Resource/Converter/Html.php';
 include_once 'php/Resource/Converter/Json.php';
 include_once 'php/Resource/Converter/Js.php';
+include_once 'php/Resource/Converter/Less.php';
 include_once 'php/Resource/Converter/SassBase.php';
 include_once 'php/Resource/Converter/Sass.php';
 include_once 'php/Resource/Converter/Scss.php';
