@@ -143,7 +143,9 @@ class JWSDK_Resource_Manager
 			if (!$converter->isConvertion())
 				return $this->fileManager->getFile($resource->getName(), $converter->getAttacher());
 			
-			JWSDK_Log::logTo('build.log', "Converting resource $name");
+			if ($this->globalConfig->isConversionLog())
+				JWSDK_Log::logTo('build.log', "Converting resource $name");
+			
 			$attacher = $converter->getAttacher();
 			$converter->convert($resource, $name, $this->getResourceSourcePath($name),
 				$this->getResourceBuildName($name, $attacher), $this->getResourceBuildPath($name, $attacher));

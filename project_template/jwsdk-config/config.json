@@ -10,5 +10,6 @@
 	"tempPath"      : "temp",
 	
 	"urlPrefix"     : "/",
-	"dynamicLoader" : false
+	"dynamicLoader" : false,
+	"conversionLog" : false
 }
