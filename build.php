@@ -85,6 +85,7 @@ include_once 'php/Page/Manager.php';
 include_once 'php/Resource.php';
 include_once 'php/Resource/Converter.php';
 include_once 'php/Resource/Converter/Internal.php';
+include_once 'php/Resource/Converter/CssBase.php';
 include_once 'php/Resource/Converter/Css.php';
 include_once 'php/Resource/Converter/JwHtml.php';
 include_once 'php/Resource/Converter/SchemaJson.php';

@@ -19,23 +19,47 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Internal extends JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_CssBase extends JWSDK_Resource_Converter
 {
+	public function getAttacher() // String
+	{
+		return 'css';
+	}
+	
 	public function convert(
 		$resource,     // JWSDK_Resource
 		$globalConfig) // JWSDK_GlobalConfig
 	{
-		$sourceName = $this->getResourceSourcePath($resource, $globalConfig);
-		$sourceContents = JWSDK_Util_File::read($sourceName, 'resource file');
-		$buildContents = $this->convertResource($resource->getName(), $sourceContents, $resource->getParams());
+		$sourcePath = $this->getResourceSourcePath($resource, $globalConfig);
+		$tempPath = $this->getResourceBuildPath($resource, $globalConfig, 'temp');
 		$buildPath = $this->getResourceBuildPath($resource, $globalConfig);
+		
+		$output = array();
+		$status = 0;
+		
+		JWSDK_Util_File::mkdir($buildPath);
+		$command = $this->getCommand($sourcePath, $tempPath, $globalConfig);
+		exec($command, $output, $status);
+		
+		if ($status != 0)
+			$this->throwError($sourcePath, $tempPath);
+		
+		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
+		$buildName = $this->getResourceBuildName($resource, $globalConfig);
+		$buildContents = JWSDK_Util_Css::updateRelativePaths($sourceContents, $resource->getName(), $buildName);
 		JWSDK_Util_File::write($buildPath, $buildContents);
 	}
 	
-	public function convertResource( // String, output contents
-		$name,     // String
-		$contents, // String
-		$params)   // Object
+	protected function getCommand( // String
+		$source, // String
+		$target) // String
+	{
+		throw new JWSDK_Exception_MethodNotImplemented();
+	}
+	
+	protected function throwError(
+		$source, // String
+		$target) // String
 	{
 		throw new JWSDK_Exception_MethodNotImplemented();
 	}

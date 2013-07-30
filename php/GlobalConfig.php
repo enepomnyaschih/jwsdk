@@ -58,16 +58,22 @@ class JWSDK_GlobalConfig
 			}
 		}
 		
-		if (!isset($this->json['dynamicLoader']) || !is_bool($this->json['dynamicLoader']))
+		if (!isset($this->json['dynamicLoader']))
+			$this->json['dynamicLoader'] = false;
+		
+		if (!is_bool($this->json['dynamicLoader']))
 		{
 			throw new JWSDK_Exception_InvalidFileFormat(
-				'config.json', 'global config', 'dynamicLoader boolean property is missing');
+				'config.json', 'global config', 'dynamicLoader must be boolean');
 		}
 		
-		if (!isset($this->json['conversionLog']) || !is_bool($this->json['conversionLog']))
+		if (!isset($this->json['conversionLog']))
+			$this->json['conversionLog'] = false;
+		
+		if (!is_bool($this->json['conversionLog']))
 		{
 			throw new JWSDK_Exception_InvalidFileFormat(
-				'config.json', 'global config', 'conversionLog boolean property is missing');
+				'config.json', 'global config', 'conversionLog must be boolean');
 		}
 	}
 	

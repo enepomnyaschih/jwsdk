@@ -19,39 +19,24 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter_Less extends JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_Less extends JWSDK_Resource_Converter_CssBase
 {
 	public function getType() // String
 	{
 		return 'less';
 	}
 	
-	public function getAttacher() // String
+	protected function getCommand( // String
+		$source, // String
+		$target) // String
 	{
-		return 'css';
+		return "lessc $source > $target 2>> less.log";
 	}
 	
-	public function convert(
-		$resource,   // JWSDK_Resource
-		$sourceName, // String
-		$sourcePath, // String
-		$buildName,  // String
-		$buildPath)  // String
+	protected function throwError(
+		$source, // String
+		$target) // String
 	{
-		$tempPath = preg_replace('~\.css$~', '.temp.css', $buildPath);
-		
-		$lessOutput = array();
-		$lessStatus = 0;
-		
-		JWSDK_Util_File::mkdir($buildPath);
-		$command = "lessc $sourcePath > $tempPath 2>> less.log";
-		exec($command, $lessOutput, $lessStatus);
-		
-		if ($lessStatus != 0)
-			throw new JWSDK_Exception_LessError($sourcePath, $tempPath);
-		
-		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
-		$buildContents = JWSDK_Util_Css::updateRelativePaths($sourceContents, $sourceName, $buildName);
-		JWSDK_Util_File::write($buildPath, $buildContents);
+		throw new JWSDK_Exception_LessError($source, $target);
 	}
 }
