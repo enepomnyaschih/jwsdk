@@ -52,11 +52,29 @@ class JWSDK_GlobalConfig
 		foreach ($stringFields as $field)
 		{
 			if (!isset($this->json[$field]) || !is_string($this->json[$field]))
-				throw new JWSDK_Exception_InvalidFileFormat('config.json', 'global config');
+			{
+				throw new JWSDK_Exception_InvalidFileFormat(
+					'config.json', 'global config', "$field string property is missing");
+			}
 		}
 		
-		if (!isset($this->json['dynamicLoader']) || !is_bool($this->json['dynamicLoader']))
-			throw new JWSDK_Exception_InvalidFileFormat('config.json', 'global config');
+		if (!isset($this->json['dynamicLoader']))
+			$this->json['dynamicLoader'] = false;
+		
+		if (!is_bool($this->json['dynamicLoader']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'dynamicLoader must be boolean');
+		}
+		
+		if (!isset($this->json['conversionLog']))
+			$this->json['conversionLog'] = false;
+		
+		if (!is_bool($this->json['conversionLog']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'conversionLog must be boolean');
+		}
 	}
 	
 	public function getRunDir() // String
@@ -107,6 +125,11 @@ class JWSDK_GlobalConfig
 	public function isDynamicLoader() // Boolean
 	{
 		return $this->json['dynamicLoader'];
+	}
+	
+	public function isConversionLog() // Boolean
+	{
+		return $this->json['conversionLog'];
 	}
 	
 	public function getMtime() // Timestamp

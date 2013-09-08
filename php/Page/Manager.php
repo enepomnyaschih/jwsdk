@@ -145,7 +145,7 @@ class JWSDK_Page_Manager
 		$page)     // JWSDK_Page
 	{
 		$replaces = $page->getParams();
-		$replaces['sources'] = $this->buildSources($page);
+		$replaces = array_merge($replaces, $this->buildSources($page));
 		
 		$replaceKeys   = array_keys  ($replaces);
 		$replaceValues = array_values($replaces);
@@ -191,13 +191,15 @@ class JWSDK_Page_Manager
 		}
 		
 		$buf = array();
-		foreach ($attaches as $lines)
+		$result = array();
+		foreach ($attaches as $attacherId => $lines)
 		{
-			foreach ($lines as $line)
-				$buf[] = $line;
+			$text = implode("\n", $lines);
+			$result[$attacherId] = $text;
+			array_push($buf, $text);
 		}
-		
-		return implode("\n", $buf);
+		$result['sources'] = implode("\n", $buf);
+		return $result;
 	}
 	
 	private function getPageConfigPath( // String

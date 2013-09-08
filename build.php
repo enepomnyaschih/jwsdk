@@ -105,7 +105,7 @@ include_once 'php/Template/Manager.php';
 
 $date = date('Y-m-d H:i:s');
 JWSDK_Log::logTo('build.log', "\n\n[$date]");
-JWSDK_Log::logTo('build.log', 'Building frontend with jWidget SDK 0.4...');
+JWSDK_Log::logTo('build.log', 'Building frontend with jWidget SDK 0.4.3...');
 
 try
 {
