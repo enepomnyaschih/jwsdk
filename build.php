@@ -32,7 +32,7 @@ include_once 'php/Mode/Release.php';
 
 if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 {
-	echo "USAGE php build.php <mode> [<path_to_config.json>]\n\n" .
+	echo "USAGE jwsdk <mode> [<path_to_config.json>]\n\n" .
 	     "Supported modes:\n" .
 	     JWSDK_Mode::getModesDescription();
 	

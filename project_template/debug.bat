@@ -1,1 +1,0 @@
-php %JWSDK_HOME%\build.php debug jwsdk-config
