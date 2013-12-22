@@ -117,7 +117,10 @@ class JWSDK_Template_Manager
 	private function getTemplatePath( // String
 		$name) // String
 	{
-		return $this->globalConfig->getTemplatesPath() . "/$name.html";
+		if (!preg_match("~\.[^/]+$~i", $name)) {
+			$name = "$name.html";
+		}
+		return $this->globalConfig->getTemplatesPath() . "/$name";
 	}
 	
 	private function registerTemplate(
