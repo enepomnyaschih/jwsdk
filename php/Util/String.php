@@ -21,6 +21,10 @@
 
 class JWSDK_Util_String
 {
+	const COMMENTS_LINE  = 0x01;
+	const COMMENTS_BLOCK = 0x02;
+	const COMMENTS_ALL   = 0x03;
+	
 	public static function repeat( // String
 		$str, // String
 		$num) // Integer
@@ -53,7 +57,8 @@ class JWSDK_Util_String
 	}
 	
 	public static function removeComments( // String
-		$text) // String
+		$text,                       // String
+		$flags = self::COMMENTS_ALL) // Integer
 	{
 		$text = self::smoothCrlf($text);
 		
@@ -63,7 +68,7 @@ class JWSDK_Util_String
 		
 		while ($index < strlen($text))
 		{
-			if (substr($text, $index, 2) == '//')
+			if (($flags & self::COMMENTS_LINE) && (substr($text, $index, 2) == '//'))
 			{
 				$buf[] = substr($text, $last, $index - $last);
 				$index = strpos($text, "\n", $index);
@@ -72,7 +77,7 @@ class JWSDK_Util_String
 				
 				$last = $index;
 			}
-			else if (substr($text, $index, 2) == '/*')
+			else if (($flags & self::COMMENTS_BLOCK) && (substr($text, $index, 2) == '/*'))
 			{
 				$buf[] = substr($text, $last, $index - $last);
 				$index = strpos($text, '*/', $index);

@@ -48,7 +48,7 @@ class JWSDK_File_Attacher_Css extends JWSDK_Resource_Attacher
 	{
 		$matches = array();
 		$contents = $fileManager->getFileContents($file);
-		$contents = JWSDK_Util_String::removeComments($contents);
+		$contents = JWSDK_Util_String::removeComments($contents, JWSDK_Util_String::COMMENTS_BLOCK);
 		$matchCount = preg_match_all(JWSDK_Util_Css::URL_REG, $contents,
 			$matches, PREG_SET_ORDER);
 		if (!$matchCount)

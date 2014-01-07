@@ -167,7 +167,7 @@ class JWSDK_Util_Css
 		$__cssUrlFileManager = $fileManager;
 		$__cssUrlHitCount = array();
 		
-		$contents = JWSDK_Util_String::removeComments($contents);
+		$contents = JWSDK_Util_String::removeComments($contents, JWSDK_Util_String::COMMENTS_BLOCK);
 		$contents = preg_replace_callback(self::URL_REG, '__cssRelativeUrlReplacer', $contents);
 		return preg_replace_callback(self::URL_REG, '__cssCompressUrlReplacer', $contents);
 	}
