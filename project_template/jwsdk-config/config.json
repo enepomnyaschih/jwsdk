@@ -1,11 +1,15 @@
 ﻿{
+	// input
 	"packagesPath"  : "packages",
 	"pagesPath"     : "pages",
-	"templatesPath" : "templates",
+	"templatesPath" : "templates", // optional, skip to disable "template" processor
 	
+	// output
 	"publicPath"    : "../public",
 	"buildUrl"      : "build",
-	"pagesUrl"      : "pages",
+	"pagesUrl"      : "pages",     // optional, skip to disable "template" processor
+	"jsonPath"      : "json",      // optional, skip to disable "json" processor
+	"snippetsPath"  : "snippets",  // optional, skip to disable "snippets" processor
 	
 	"tempPath"      : "temp",
 	

@@ -45,16 +45,34 @@ class JWSDK_GlobalConfig
 			'publicPath',
 			'buildUrl',
 			'pagesUrl',
+			'jsonPath',
+			'snippetsPath',
 			'tempPath',
 			'urlPrefix'
 		);
 		
+		$defaults = array(
+			'templatesPath' => null,
+			'pagesUrl' => null,
+			'jsonPath' => null,
+			'snippetsPath' => null
+		);
+		
 		foreach ($stringFields as $field)
 		{
-			if (!isset($this->json[$field]) || !is_string($this->json[$field]))
+			if (!isset($this->json[$field]))
+			{
+				if (!array_key_exists($field, $defaults))
+				{
+					throw new JWSDK_Exception_InvalidFileFormat(
+						'config.json', 'global config', "$field is required");
+				}
+				$this->json[$field] = $defaults[$field];
+			}
+			else if (!is_string($this->json[$field]))
 			{
 				throw new JWSDK_Exception_InvalidFileFormat(
-					'config.json', 'global config', "$field string property is missing");
+					'config.json', 'global config', "$field must be string");
 			}
 		}
 		
@@ -114,6 +132,21 @@ class JWSDK_GlobalConfig
 		}
 	}
 	
+	public function isTemplateProcessorEnabled() // Boolean
+	{
+		return isset($this->json['pagesUrl']) && isset($this->json['templatesPath']);
+	}
+	
+	public function isJsonProcessorEnabled() // Boolean
+	{
+		return isset($this->json['jsonPath']);
+	}
+	
+	public function isSnippetsProcessorEnabled() // Boolean
+	{
+		return isset($this->json['snippetsPath']);
+	}
+	
 	public function getRunDir() // String
 	{
 		return $this->runDir;
@@ -129,6 +162,7 @@ class JWSDK_GlobalConfig
 		return $this->configDir . '/' . $this->json['pagesPath'];
 	}
 	
+	// requires template processor on!
 	public function getTemplatesPath() // String
 	{
 		return $this->configDir . '/' . $this->json['templatesPath'];
@@ -144,9 +178,22 @@ class JWSDK_GlobalConfig
 		return $this->json['buildUrl'];
 	}
 	
+	// requires template processor on!
 	public function getPagesUrl() // String
 	{
 		return $this->json['pagesUrl'];
+	}
+	
+	// requires json processor on!
+	public function getJsonPath() // String
+	{
+		return $this->configDir . '/' . $this->json['jsonPath'];
+	}
+	
+	// requires snippets processor on!
+	public function getSnippetsPath() // String
+	{
+		return $this->configDir . '/' . $this->json['snippetsPath'];
 	}
 	
 	public function getTempPath() // String

@@ -97,18 +97,18 @@ class JWSDK_Page_Manager
 		try
 		{
 			$page = $this->readPage($name);
+			$sources = $this->buildSources($page);
 			
-			$templateName = $page->getTemplate();
-			if (!$templateName)
+			$this->processJson($page, $sources);
+			
+			if ($this->globalConfig->isTemplateProcessorEnabled() ||
+			    $this->globalConfig->isSnippetsProcessorEnabled())
 			{
-				$this->buildSources($page);
-				return;
+				$snippets = $this->buildSnippets($sources);
+				
+				$this->processSnippets($page, $snippets);
+				$this->processTemplate($page, $snippets);
 			}
-			
-			$template = $this->templateManager->readTemplate($templateName);
-			$contents = $this->applyTemplate($template, $page);
-			
-			JWSDK_Util_File::write($this->getPageBuildPath($page), $contents);
 			
 			return $page;
 		}
@@ -140,34 +140,16 @@ class JWSDK_Page_Manager
 		}
 	}
 	
-	private function applyTemplate( // String
-		$template, // JWSDK_Template
-		$page)     // JWSDK_Page
-	{
-		$replaces = $page->getParams();
-		$replaces = array_merge($replaces, $this->buildSources($page));
-		
-		$replaceKeys   = array_keys  ($replaces);
-		$replaceValues = array_values($replaces);
-		
-		for ($i = 0; $i < count($replaceKeys); $i++)
-			$replaceKeys[$i] = '${' . $replaceKeys[$i] . '}';
-		
-		return str_replace($replaceKeys, $replaceValues, $template->getContents());
-	}
-	
-	private function buildSources( // String, attachment HTML fragment
+	private function buildSources( // Map from attacherId:String to Array of url:String
 		$page) // JWSDK_Page
 	{
+		$result = array();
+		foreach ($this->fileManager->getAttachers() as $type => $attacher)
+			$result[$type] = array();
+		
 		$rootPackageName = $page->getPackage();
 		if (!$rootPackageName)
-			return array();
-		
-		$name = $page->getName();
-		
-		$attaches = array(); // Map from attacherType:String to Array of String
-		foreach ($this->fileManager->getAttachers() as $type => $attacher)
-			$attaches[$type] = array();
+			return $result;
 		
 		$packages = $this->packageManager->readPackagesWithDependencies(array($rootPackageName));
 		if ($this->globalConfig->isDynamicLoader())
@@ -180,32 +162,99 @@ class JWSDK_Page_Manager
 				$package->getSourceFiles();
 			
 			foreach ($files as $file)
-			{
-				$attacherId = $file->getAttacher();
-				
-				$url = $this->fileManager->getFileUrl($file);
-				$attachStr = $this->fileManager->getAttacher($attacherId)->format($url);
-				
-				array_push($attaches[$attacherId], JWSDK_Util_String::tabulize($attachStr, 2, "\t"));
-			}
+				array_push($result[$file->getAttacher()], $this->fileManager->getFileUrl($file));
 		}
 		
-		$buf = array();
-		$result = array();
-		foreach ($attaches as $attacherId => $lines)
-		{
-			$text = implode("\n", $lines);
-			$result[$attacherId] = $text;
-			array_push($buf, $text);
-		}
-		$result['sources'] = implode("\n", $buf);
 		return $result;
+	}
+	
+	private function buildSnippets( // Map from attacherId:String to html:String
+		$sources) // Map from attacherId:String to Array of url:String
+	{
+		$result = array();
+		foreach ($sources as $attacherId => $urls)
+		{
+			$lines = array();
+			foreach ($urls as $url)
+			{
+				$attachStr = $this->fileManager->getAttacher($attacherId)->format($url);
+				array_push($lines, JWSDK_Util_String::tabulize($attachStr, 2, "\t"));
+			}
+			$result[$attacherId] = implode("\n", $lines);
+		}
+		return $result;
+	}
+	
+	private function processJson(
+		$page,    // JWSDK_Page
+		$sources) // Map from attacherId:String to Array of url:String
+	{
+		if (!$this->globalConfig->isJsonProcessorEnabled())
+			return;
+		
+		JWSDK_Util_File::write($this->getJsonBuildPath($page), json_encode($sources));
+	}
+	
+	private function processSnippets(
+		$page,     // JWSDK_Page
+		$snippets) // Map from attacherId:String to html:String
+	{
+		if (!$this->globalConfig->isSnippetsProcessorEnabled())
+			return;
+		
+		foreach ($snippets as $attacherId => $html)
+			JWSDK_Util_File::write($this->getSnippetsBuildPath($page, $attacherId), $html);
+	}
+	
+	private function processTemplate(
+		$page,     // JWSDK_Page
+		$snippets) // Map from attacherId:String to html:String
+	{
+		if (!$this->globalConfig->isTemplateProcessorEnabled())
+			return;
+		
+		$templateName = $page->getTemplate();
+		if (!$templateName)
+			return;
+		
+		$template = $this->templateManager->readTemplate($templateName);
+		
+		$replaces = $page->getParams();
+		$snippetsArray = array();
+		foreach ($snippets as $attacherId => $html)
+		{
+			$replaces[$attacherId] = $html;
+			$snippetsArray[] = $html;
+		}
+		$replaces['sources'] = implode("\n", $snippetsArray);
+		
+		$replaceKeys   = array_keys  ($replaces);
+		$replaceValues = array_values($replaces);
+		
+		for ($i = 0; $i < count($replaceKeys); $i++)
+			$replaceKeys[$i] = '${' . $replaceKeys[$i] . '}';
+		
+		$contents = str_replace($replaceKeys, $replaceValues, $template->getContents());
+		JWSDK_Util_File::write($this->getPageBuildPath($page), $contents);
 	}
 	
 	private function getPageConfigPath( // String
 		$name) // String
 	{
 		return $this->globalConfig->getPagesPath() . "/$name.json";
+	}
+	
+	private function getJsonBuildPath( // String
+		$page) // JWSDK_Page
+	{
+		return $this->globalConfig->getJsonPath() . '/' . $page->getName() . '.json';
+	}
+	
+	private function getSnippetsBuildPath( // String
+		$page,       // JWSDK_Page
+		$attacherId) // String
+	{
+		return $this->globalConfig->getSnippetsPath() . '/' . $page->getName() . ".$attacherId.html";
 	}
 	
 	private function getPagesBuildPath() // String
