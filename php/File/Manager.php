@@ -46,8 +46,8 @@ class JWSDK_File_Manager
 	}
 	
 	public function getFile( // JWSDK_File
-		$name,     // String
-		$attacher) // String
+		$name,            // String
+		$attacher = null) // String
 	{
 		$file = JWSDK_Util_Array::get($this->files, $name);
 		if ($file)
@@ -66,6 +66,18 @@ class JWSDK_File_Manager
 		return $file;
 	}
 	
+	public function getFileSize( // Integer
+		$file) // JWSDK_File
+	{
+		$size = $file->getSize();
+		if ($size !== null)
+			return $size;
+		
+		$size = filesize($this->getFilePath($file->getName()));
+		$file->setSize($size);
+		return $size;
+	}
+	
 	public function getFileContents( // String
 		$file) // JWSDK_File
 	{
@@ -76,6 +88,19 @@ class JWSDK_File_Manager
 		$contents = JWSDK_Util_File::read($this->getFilePath($file->getName()));
 		$file->setContents($contents);
 		return $contents;
+	}
+	
+	public function getFileDependencies( // Array or JWSDK_File
+		$file) // JWSDK_File
+	{
+		$dependencies = $file->getDependencies();
+		if ($dependencies)
+			return $dependencies;
+		
+		$attacher = $this->getAttacher($file->getAttacher());
+		$dependencies = $attacher->getFileDependencies($file, $this);
+		$file->setDependencies($dependencies);
+		return $dependencies;
 	}
 	
 	public function getFileUrl( // String

@@ -40,4 +40,44 @@ class JWSDK_Util_Url
 		
 		return implode('/', $result);
 	}
+	
+	public static function extractName( // String
+		$url) // String
+	{
+		$length = strlen($url);
+		$index1 = strpos($url, '?');
+		$index1 = ($index1 === false) ? $length : $index1;
+		$index2 = strpos($url, '#');
+		$index2 = ($index2 === false) ? $length : $index2;
+		return substr($url, 0, min($index1, $index2));
+	}
+	
+	public static function isDataUrl( // Boolean
+		$url) // String
+	{
+		return preg_match('~^data:~', $url);
+	}
+	
+	public static function isDomesticUrl( // Boolean
+		$url) // String
+	{
+		return !self::isDataUrl($url) && !preg_match('~^\w+://~', $url);
+	}
+	
+	public static function isRelativeUrl( // Boolean
+		$url) // String
+	{
+		return self::isDomesticUrl($url) && ($url[0] != '/');
+	}
+	
+	public static function addQueryParam( // String
+		$url,   // String
+		$name,  // String
+		$value) // String
+	{
+		$separator = (strpos($url, '?') === false) ? '?' : '&';
+		$index = strpos($url, '#');
+		$index = ($index === false) ? strlen($url) : $index;
+		return substr($url, 0, $index) . "$separator$name=$value" . substr($url, $index);
+	}
 }

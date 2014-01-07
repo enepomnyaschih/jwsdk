@@ -36,14 +36,7 @@ class JWSDK_Builder
 		$modeName,   // String
 		$configPath) // String
 	{
-		$slashIndex = strrpos($runPath, '/');
-		if ($slashIndex === false)
-			$slashIndex = strrpos($runPath, '\\');
-		
-		if ($slashIndex === false)
-			$runDir = '.';
-		else
-			$runDir = substr($runPath, 0, $slashIndex);
+		$runDir = JWSDK_Util_File::getDirectory($runPath);
 		
 		if (!is_string($configPath))
 			$configPath = '.';

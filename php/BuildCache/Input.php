@@ -75,4 +75,11 @@ class JWSDK_BuildCache_Input
 	{
 		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'compressions', $attacherType, 'mtime'));
 	}
+	
+	public function getPackageDependencyMtime( // Timestamp
+		$packageName, // String
+		$dependency)  // String
+	{
+		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'dependencies', $dependency, 'mtime'));
+	}
 }

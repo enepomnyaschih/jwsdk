@@ -19,33 +19,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Attacher
+class JWSDK_Exception_FileProcessError extends JWSDK_Exception
 {
-	public function getType() // String
+	private $name;
+	
+	public function __construct($name, $cause)
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
+		parent::__construct("Error occured while processing file '$name'\n" . $cause->getMessage(), $cause);
+		$this->name = $name;
 	}
 	
-	public function format( // String
-		$url) // String
+	public function getName()
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-	
-	public function beforeCompress( // String
-		$contents,     // String
-		$sourceName,   // String
-		$targetName,   // String
-		$globalConfig, // JWSDK_GlobalConfig
-		$fileManager)  // JWSDK_File_Manager
-	{
-		return $contents;
-	}
-	
-	public function getFileDependencies( // Array of JWSDK_File
-		$file,        // JWSDK_File
-		$fileManager) // JWSDK_File_Manager
-	{
-		return array();
+		return $this->name;
 	}
 }

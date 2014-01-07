@@ -19,6 +19,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+date_default_timezone_set('UTC');
+
 include_once 'php/Util/Array.php';
 include_once 'php/Util/Css.php';
 include_once 'php/Util/File.php';
@@ -52,6 +54,7 @@ include_once 'php/Exception/CanNotWriteFile.php';
 include_once 'php/Exception/CompressorError.php';
 include_once 'php/Exception/DuplicatedResourceError.php';
 include_once 'php/Exception/DynamicLoaderDisabled.php';
+include_once 'php/Exception/FileProcessError.php';
 include_once 'php/Exception/InsufficientFileType.php';
 include_once 'php/Exception/InvalidFileFormat.php';
 include_once 'php/Exception/InvalidResourceFormat.php';

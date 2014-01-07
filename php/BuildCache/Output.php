@@ -81,4 +81,12 @@ class JWSDK_BuildCache_Output
 	{
 		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'compressions', $attacherType, 'mtime'), $value);
 	}
+	
+	public function setPackageDependencyMtime(
+		$packageName, // String
+		$dependency,  // String
+		$value)       // Timestamp
+	{
+		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'dependencies', $dependency, 'mtime'), $value);
+	}
 }

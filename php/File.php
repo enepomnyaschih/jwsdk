@@ -21,15 +21,17 @@
 
 class JWSDK_File
 {
-	private $name;     // String
-	private $attacher; // String
-	private $mtime;    // Integer
-	private $contents; // String
+	private $name;         // String
+	private $attacher;     // String
+	private $mtime;        // Integer
+	private $size;         // Integer
+	private $contents;     // String
+	private $dependencies; // Array of JWSDK_File
 	
 	public function __construct(
 		$name,     // String
 		$attacher, // String
-		$mtime)    // Array of String
+		$mtime)    // Integer
 	{
 		$this->name = $name;
 		$this->attacher = $attacher;
@@ -51,6 +53,17 @@ class JWSDK_File
 		return $this->mtime;
 	}
 	
+	public function getSize() // Integer
+	{
+		return $this->size;
+	}
+	
+	public function setSize(
+		$size) // Integer
+	{
+		$this->size = $size;
+	}
+	
 	public function getContents() // String
 	{
 		return $this->contents;
@@ -60,5 +73,26 @@ class JWSDK_File
 		$contents) // String
 	{
 		$this->contents = $contents;
+	}
+	
+	public function getDependencies() // Array of JWSDK_File
+	{
+		return $this->dependencies;
+	}
+	
+	public function setDependencies(
+		$dependencies) // Array of JWSDK_File
+	{
+		$this->dependencies = $dependencies;
+	}
+	
+	public function getDirectory() // String
+	{
+		return JWSDK_Util_File::getDirectory($this->name);
+	}
+	
+	public function getExtension() // String
+	{
+		return JWSDK_Util_File::getExtension($this->name);
 	}
 }

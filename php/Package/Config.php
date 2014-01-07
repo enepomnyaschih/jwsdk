@@ -130,9 +130,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 		
 		try
 		{
-			// Header file should be rebuilt before "isModified" call
-			$this->getSourceFiles();
-			
 			if ($this->isModified())
 				return $this->initCompressedFilesModified();
 			else
@@ -209,6 +206,12 @@ class JWSDK_Package_Config extends JWSDK_Package
 	
 	private function isModified() // Boolean
 	{
+		/*
+		- Header file should be rebuilt before modification detection
+		- All CSS-base resources must be converted to CSS files before modification detection
+		*/
+		$sourceFiles = $this->getSourceFiles();
+		
 		$oldMtime = $this->buildCache->input->getPackageGlobalConfigMtime($this->getName());
 		$newMtime = $this->globalConfig->getMtime();
 		if ($oldMtime != $newMtime)
@@ -245,6 +248,24 @@ class JWSDK_Package_Config extends JWSDK_Package
 			{
 				//echo "-- Resource $name is modified ($oldMtime:$newMtime)\n";
 				return true;
+			}
+		}
+		
+		foreach ($sourceFiles as $file)
+		{
+			$fileName = $file->getName();
+			$dependencies = $this->fileManager->getFileDependencies($file);
+			foreach ($dependencies as $dependency) // JWSDK_File
+			{
+				$dependencyName = $dependency->getName();
+				$oldMtime = $this->buildCache->input->getPackageDependencyMtime(
+					$this->getName(), $dependencyName);
+				$newMtime = $dependency->getMtime();
+				if ($oldMtime != $newMtime)
+				{
+					//echo "-- Dependency $dependencyName of $fileName is modified ($oldMtime:$newMtime)\n";
+					return true;
+				}
 			}
 		}
 		
@@ -299,6 +320,16 @@ class JWSDK_Package_Config extends JWSDK_Package
 				$this->getName(), $resource->getName(), $resource->getSourceFile()->getMtime());
 		}
 		
+		foreach ($sourceFiles as $file)
+		{
+			$dependencies = $this->fileManager->getFileDependencies($file);
+			foreach ($dependencies as $dependency) // JWSDK_File
+			{
+				$this->buildCache->output->setPackageDependencyMtime(
+					$this->getName(), $dependency->getName(), $dependency->getMtime());
+			}
+		}
+		
 		$result = array();
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 		{
@@ -310,10 +341,18 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$contents = array();
 			foreach ($sourceFiles as $file)
 			{
-				if ($file->getAttacher() == $type)
+				try
 				{
-					$fileContents = $this->fileManager->getFileContents($file);
-					$contents[] = $attacher->beforeCompress($fileContents, $file->getName(), $buildName);
+					if ($file->getAttacher() == $type)
+					{
+						$fileContents = $this->fileManager->getFileContents($file);
+						$contents[] = $attacher->beforeCompress($fileContents, $file->getName(), $buildName,
+							$this->globalConfig, $this->fileManager);
+					}
+				}
+				catch (JWSDK_Exception $e)
+				{
+					throw new JWSDK_Exception_FileProcessError($file->getName(), $e);
 				}
 			}
 			

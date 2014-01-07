@@ -161,7 +161,7 @@ class JWSDK_Page_Manager
 	{
 		$rootPackageName = $page->getPackage();
 		if (!$rootPackageName)
-			return '';
+			return array();
 		
 		$name = $page->getName();
 		

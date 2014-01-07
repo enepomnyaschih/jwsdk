@@ -33,10 +33,44 @@ class JWSDK_File_Attacher_Css extends JWSDK_Resource_Attacher
 	}
 	
 	public function beforeCompress( // String
-		$contents,   // String
-		$sourceName, // String
-		$targetName) // String
+		$contents,     // String
+		$sourceName,   // String
+		$targetName,   // String
+		$globalConfig, // JWSDK_GlobalConfig
+		$fileManager)  // JWSDK_File_Manager
 	{
-		return JWSDK_Util_Css::updateRelativePaths($contents, $sourceName, $targetName);
+		return JWSDK_Util_Css::compressUrls($contents, $sourceName, $targetName, $globalConfig, $fileManager);
+	}
+	
+	public function getFileDependencies( // Array of JWSDK_File
+		$file,        // JWSDK_File
+		$fileManager) // JWSDK_File_Manager
+	{
+		$matches = array();
+		$contents = $fileManager->getFileContents($file);
+		$contents = JWSDK_Util_String::removeComments($contents);
+		$matchCount = preg_match_all(JWSDK_Util_Css::URL_REG, $contents,
+			$matches, PREG_SET_ORDER);
+		if (!$matchCount)
+			return array();
+		
+		$urls = array();
+		foreach ($matches as $match)
+		{
+			$url = $match[2];
+			if (JWSDK_Util_Url::isDomesticUrl($url))
+				$urls[JWSDK_Util_Url::extractName($url)] = null;
+		}
+		$urls = array_keys($urls);
+		
+		$relativeUrlPrefix = $file->getDirectory();
+		$relativeUrlPrefix = ($relativeUrlPrefix == '.') ? '' : "$relativeUrlPrefix/";
+		$dependencies = array();
+		foreach ($urls as $url)
+		{
+			$name = JWSDK_Util_Url::isRelativeUrl($url) ? ($relativeUrlPrefix . $url) : substr($url, 1);
+			$dependencies[] = $fileManager->getFile($name);
+		}
+		return $dependencies;
 	}
 }

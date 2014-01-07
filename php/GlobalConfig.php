@@ -75,6 +75,43 @@ class JWSDK_GlobalConfig
 			throw new JWSDK_Exception_InvalidFileFormat(
 				'config.json', 'global config', 'conversionLog must be boolean');
 		}
+		
+		if (!isset($this->json['embedDataUri']))
+			$this->json['embedDataUri'] = false;
+		
+		if (!is_bool($this->json['embedDataUri']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'embedDataUri must be boolean');
+		}
+		
+		if (!isset($this->json['dataUriMaxSize']))
+			$this->json['dataUriMaxSize'] = 30720;
+		
+		if (!is_int($this->json['dataUriMaxSize']) || ($this->json['dataUriMaxSize'] <= 0))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'dataUriMaxSize must be positive integer');
+		}
+		
+		if (!isset($this->json['mimeTypes']))
+			$this->json['mimeTypes'] = array();
+		
+		$mimeTypes = $this->json['mimeTypes'];
+		if (!is_array($mimeTypes))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'mimeTypes must be dictionary of strings');
+		}
+		
+		foreach ($mimeTypes as $key => $value)
+		{
+			if (!is_string($value))
+			{
+				throw new JWSDK_Exception_InvalidFileFormat(
+					'config.json', 'global config', 'mimeTypes must be dictionary of strings');
+			}
+		}
 	}
 	
 	public function getRunDir() // String
@@ -130,6 +167,23 @@ class JWSDK_GlobalConfig
 	public function isConversionLog() // Boolean
 	{
 		return $this->json['conversionLog'];
+	}
+	
+	public function isEmbedDataUri() // Boolean
+	{
+		return $this->json['embedDataUri'];
+	}
+	
+	public function getDataUriMaxSize() // Integer
+	{
+		return $this->json['dataUriMaxSize'];
+	}
+	
+	public function getMimeType( // String
+		$extension) // String
+	{
+		$mimeTypes = $this->json['mimeTypes'];
+		return isset($mimeTypes[$extension]) ? $mimeTypes[$extension] : "image/$extension";
 	}
 	
 	public function getMtime() // Timestamp

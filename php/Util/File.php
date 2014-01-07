@@ -96,4 +96,21 @@ class JWSDK_Util_File
 		if ($yuiStatus != 0)
 			throw new JWSDK_Exception_CompressorError($source, $target);
 	}
+	
+	public static function getDirectory( // String
+		$filePath) // String
+	{
+		$slashIndex = strrpos($filePath, '/');
+		if ($slashIndex === false)
+			$slashIndex = strrpos($filePath, '\\');
+		
+		return ($slashIndex === false) ? '.' : substr($filePath, 0, $slashIndex);
+	}
+	
+	public static function getExtension( // String
+		$filePath) // String
+	{
+		$index = strrpos($filePath, '.');
+		return ($index === false) ? null : substr($filePath, $index + 1);
+	}
 }

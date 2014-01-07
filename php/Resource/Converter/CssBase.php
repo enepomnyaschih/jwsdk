@@ -46,7 +46,7 @@ class JWSDK_Resource_Converter_CssBase extends JWSDK_Resource_Converter
 		
 		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
 		$buildName = $this->getResourceBuildName($resource, $globalConfig);
-		$buildContents = JWSDK_Util_Css::updateRelativePaths($sourceContents, $resource->getName(), $buildName);
+		$buildContents = JWSDK_Util_Css::updateRelativeUrls($sourceContents, $resource->getName(), $buildName);
 		JWSDK_Util_File::write($buildPath, $buildContents);
 	}
 	
