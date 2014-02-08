@@ -1,0 +1,10 @@
+{
+	"requires": [
+		"static/thirdparty/jquery-1.11.0.js|auto"
+	],
+	"resources": [
+		"static/common.css",
+		"static/target.js",
+		"static/game.js"
+	]
+}
