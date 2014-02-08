@@ -1,0 +1,9 @@
+{
+	"requires": [
+		"common"
+	],
+	"resources": [
+		"easy.css",
+		"easy.json : config"
+	]
+}

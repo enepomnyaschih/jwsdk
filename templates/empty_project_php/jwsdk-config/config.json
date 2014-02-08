@@ -1,0 +1,38 @@
+﻿{
+	// input
+	"packagesPath"  : "packages",
+	"pagesPath"     : "pages",
+//	"templatesPath" : "templates", // optional, skip to disable "template" processor
+	
+	// output
+	"publicPath"    : "../public",
+	"buildUrl"      : "build",
+//	"pagesUrl"      : "pages",     // optional, skip to disable "template" processor
+//	"jsonPath"      : "json",      // optional, skip to disable "json" processor
+	"snippetsPath"  : "snippets",  // optional, skip to disable "snippets" processor
+	
+	"tempPath"      : "temp",
+	
+	"urlPrefix"     : "/",
+	"dynamicLoader" : false,
+	"conversionLog" : false,
+	
+	// Data URI is base64-formatted file contents in CSS files. Minor Web optimization.
+	"embedDataUri"   : true,
+	"dataUriMaxSize" : 30720,
+	
+	// Custom mime-types for data URI conversion. Defaults to "image/<file_extension>".
+	"mimeTypes": {
+		"eot"  : "application/vnd.ms-fontobject",
+		"ico"  : "image/x-icon",
+		"jfif" : "image/jpeg",
+		"jpe"  : "image/jpeg",
+		"jpg"  : "image/jpeg",
+		"otf"  : "application/x-font-opentype",
+		"pcx"  : "image/x-pcx",
+		"svg"  : "image/svg+xml",
+		"tif"  : "image/tiff",
+		"ttf"  : "application/x-font-truetype",
+		"woff" : "application/font-woff"
+	}
+}

@@ -1,0 +1,4 @@
+RewriteEngine On
+
+RewriteRule ^$ /index
+RewriteRule ^([^\.]*[^/])/?$ /pages/$1.html

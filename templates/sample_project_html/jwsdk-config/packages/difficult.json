@@ -1,0 +1,9 @@
+{
+	"requires": [
+		"common"
+	],
+	"resources": [
+		"difficult.css",
+		"difficult.json : config"
+	]
+}
