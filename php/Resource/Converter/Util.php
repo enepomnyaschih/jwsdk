@@ -42,6 +42,6 @@ class JWSDK_Resource_Converter_Util
 	static function smoothText( // String
 		$contents) // String
 	{
-		return str_replace(array("\n", "\r", "\t", "\\", "'"), array("\\n\\\n", "\\r", "\\t", "\\\\", "\\'"), $contents);
+		return str_replace(array("\\", "\n", "\r", "\t", "'"), array('\\\\', '\\n\\' . "\n", '\r', '\t', '\\\''), $contents);
 	}
 }
