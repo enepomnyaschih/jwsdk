@@ -46,6 +46,7 @@ class JWSDK_Resource_Manager
 		$this->registerConverter(new JWSDK_Resource_Converter_Sass());
 		$this->registerConverter(new JWSDK_Resource_Converter_Scss());
 		$this->registerConverter(new JWSDK_Resource_Converter_Styl());
+		$this->registerConverter(new JWSDK_Resource_Converter_Jsx());
 	}
 	
 	public function getResourceByDefinition( // JWSDK_Resource
