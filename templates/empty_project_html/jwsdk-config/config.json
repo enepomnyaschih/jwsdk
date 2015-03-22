@@ -3,24 +3,25 @@
 	"packagesPath"  : "packages",
 	"pagesPath"     : "pages",
 	"templatesPath" : "templates", // optional, skip to disable "template" processor
-	
+
 	// output
 	"publicPath"    : "../public",
 	"buildUrl"      : "build",
 	"pagesUrl"      : "pages",     // optional, skip to disable "template" processor
 //	"jsonPath"      : "json",      // optional, skip to disable "json" processor
 //	"snippetsPath"  : "snippets",  // optional, skip to disable "snippets" processor
-	
+
 	"tempPath"      : "temp",
-	
+	"tsTarget"      : "ES5",
+
 	"urlPrefix"     : "/",
 	"dynamicLoader" : false,
 	"conversionLog" : false,
-	
+
 	// Data URI is base64-formatted file contents in CSS files. Minor Web optimization.
 	"embedDataUri"   : true,
 	"dataUriMaxSize" : 30720,
-	
+
 	// Custom mime-types for data URI conversion. Defaults to "image/<file_extension>".
 	"mimeTypes": {
 		"eot"  : "application/vnd.ms-fontobject",

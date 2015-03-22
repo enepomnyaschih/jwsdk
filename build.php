@@ -2,19 +2,19 @@
 
 /*
     jWidget project builder.
-    
+
     Copyright (C) 2013 Egor Nepomnyaschih
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
-    
+
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -26,6 +26,7 @@ include_once 'php/Util/Css.php';
 include_once 'php/Util/File.php';
 include_once 'php/Util/Json.php';
 include_once 'php/Util/String.php';
+include_once 'php/Util/Ts.php';
 include_once 'php/Util/Url.php';
 
 include_once 'php/Mode.php';
@@ -37,7 +38,7 @@ if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 	echo "USAGE jwsdk <mode> [<path_to_config.json>]\n\n" .
 	     "Supported modes:\n" .
 	     JWSDK_Mode::getModesDescription();
-	
+
 	exit(1);
 }
 
@@ -72,6 +73,7 @@ include_once 'php/Exception/SassError.php';
 include_once 'php/Exception/StylusError.php';
 include_once 'php/Exception/TemplateCircleDependency.php';
 include_once 'php/Exception/TemplateReadError.php';
+include_once 'php/Exception/TsError.php';
 include_once 'php/File.php';
 include_once 'php/File/Attacher.php';
 include_once 'php/File/Attacher/Css.php';
@@ -103,6 +105,7 @@ include_once 'php/Resource/Converter/SassBase.php';
 include_once 'php/Resource/Converter/Sass.php';
 include_once 'php/Resource/Converter/Scss.php';
 include_once 'php/Resource/Converter/Styl.php';
+include_once 'php/Resource/Converter/Ts.php';
 include_once 'php/Resource/Converter/Util.php';
 include_once 'php/Resource/Manager.php';
 include_once 'php/Template.php';
