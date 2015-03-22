@@ -167,7 +167,7 @@ class JWSDK_Resource_Manager
 		$this->converters[$converter->getType()] = $converter;
 	}
 
-	private function getConverter( // JWSDK_Resource_Converter
+	public function getConverter( // JWSDK_Resource_Converter
 		$type) // String
 	{
 		return JWSDK_Util_Array::get($this->converters, $type);

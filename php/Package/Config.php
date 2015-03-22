@@ -121,6 +121,12 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 	protected function initSourceFiles() // Array of JWSDK_File
 	{
+		$this->buildCache->output->setPackageGlobalConfigMtime(
+			$this->getName(), $this->globalConfig->getMtime());
+
+		$this->buildCache->output->setPackageConfigMtime(
+			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
+
 		$dts = array();
 		foreach ($this->requires as $require)
 		{
@@ -129,7 +135,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 		}
 
 		$this->dtsResources = array_merge($dts, $this->dtsResources);
-		$typeScripts = $this->dtsResources;
+		$typeScripts = array();
 		foreach ($this->resources as $resource)
 		{
 			if ($resource->getType() === 'ts')
@@ -138,8 +144,17 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		if (!empty($typeScripts))
 		{
-			$dtsPath = JWSDK_Util_Ts::build($this, $typeScripts, $this->globalConfig);
-			$this->dtsResources[] = $this->resourceManager->getResourceByDefinition($dtsPath);
+			$allTypeScripts = array_merge($this->dtsResources, $typeScripts);
+			if ($this->isPackageModified() || $this->isResourceSourceModified($allTypeScripts) ||
+				$this->isResourceOutputModified($typeScripts) || $this->isDtsOutputModified())
+			{
+				JWSDK_Util_Ts::build($this, $allTypeScripts, $this->globalConfig, $this->buildCache);
+			}
+			$dtsName = $this->getDtsOutputName();
+			$dtsResource = $this->resourceManager->getResourceByDefinition($dtsName);
+			$this->dtsResources[] = $dtsResource;
+			$this->buildCache->output->setPackageDtsOutputMtime(
+				$this->getName(), $dtsResource->getSourceFile()->getMtime());
 		}
 
 		$result = array();
@@ -148,7 +163,20 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$result[] = $this->createHeader();
 
 		foreach ($this->resources as $resource)
+		{
 			$result[] = $this->resourceManager->convertResource($resource);
+			$name = $resource->getName();
+			$this->buildCache->output->setPackageResourceMtime(
+				$this->getName(), $name, $resource->getSourceFile()->getMtime());
+			$this->buildCache->output->setPackageResourceTargetMtime(
+				$this->getName(), $name, $resource->getOutputFile()->getMtime());
+		}
+
+		foreach ($this->dtsResources as $resource)
+		{
+			$this->buildCache->output->setPackageResourceMtime(
+				$this->getName(), $resource->getName(), $resource->getSourceFile()->getMtime());
+		}
 
 		return $result;
 	}
@@ -159,7 +187,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		try
 		{
-			if ($this->isModified())
+			if ($this->isCompressedModified())
 				return $this->initCompressedFilesModified();
 			else
 				return $this->initCompressedFilesUnmodified();
@@ -233,14 +261,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 		return $result;
 	}
 
-	private function isModified() // Boolean
+	private function isPackageModified() // Boolean
 	{
-		/*
-		- Header file should be rebuilt before modification detection
-		- All CSS-base resources must be converted to CSS files before modification detection
-		*/
-		$sourceFiles = $this->getSourceFiles();
-
 		$oldMtime = $this->buildCache->input->getPackageGlobalConfigMtime($this->getName());
 		$newMtime = $this->globalConfig->getMtime();
 		if ($oldMtime != $newMtime)
@@ -257,6 +279,72 @@ class JWSDK_Package_Config extends JWSDK_Package
 			return true;
 		}
 
+		return false;
+	}
+
+	private function isDtsOutputModified() // Boolean
+	{
+		$dtsPath = $this->getDtsOutputPath();
+		$exists = file_exists($dtsPath);
+		$oldMtime = $this->buildCache->input->getPackageDtsOutputMtime($this->getName());
+		$newMtime = $exists ? JWSDK_Util_File::mtime($dtsPath) : null;
+		if (!$exists || $oldMtime != $newMtime)
+		{
+			//echo "-- d.ts output is modified ($oldMtime:$newMtime)\n";
+			return true;
+		}
+
+		return false;
+	}
+
+	private function isResourceSourceModified($resources) // Boolean
+	{
+		foreach ($resources as $resource)
+		{
+			$name = $resource->getName();
+			$oldMtime = $this->buildCache->input->getPackageResourceMtime($this->getName(), $name);
+			$newMtime = $resource->getSourceFile()->getMtime();
+			if ($oldMtime != $newMtime)
+			{
+				//echo "-- Resource $name is modified ($oldMtime:$newMtime)\n";
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function isResourceOutputModified($resources) // Boolean
+	{
+		foreach ($resources as $resource)
+		{
+			$name = $resource->getName();
+			$converter = $this->resourceManager->getConverter($resource->getType());
+			$buildPath = $converter->getResourceBuildPath($resource, $this->globalConfig);
+			$exists = file_exists($buildPath);
+			$oldMtime = $this->buildCache->input->getPackageResourceTargetMtime($this->getName(), $name);
+			$newMtime = $exists ? JWSDK_Util_File::mtime($buildPath) : null;
+			if (!$exists || $oldMtime != $newMtime)
+			{
+				//echo "-- Resource $name output is modified ($oldMtime:$newMtime)\n";
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function isCompressedModified() // Boolean
+	{
+		if ($this->isPackageModified())
+			return true;
+
+		/*
+		- Header file should be rebuilt before modification detection
+		- All CSS-base resources must be converted to CSS files before modification detection
+		*/
+		$sourceFiles = $this->getSourceFiles();
+
 		if ($this->globalConfig->isDynamicLoader())
 		{
 			$oldMtime = $this->buildCache->input->getPackageHeaderMtime($this->getName());
@@ -268,17 +356,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 			}
 		}
 
-		foreach ($this->resources as $resource)
-		{
-			$name = $resource->getName();
-			$oldMtime = $this->buildCache->input->getPackageResourceMtime($this->getName(), $name);
-			$newMtime = $resource->getSourceFile()->getMtime();
-			if ($oldMtime != $newMtime)
-			{
-				//echo "-- Resource $name is modified ($oldMtime:$newMtime)\n";
-				return true;
-			}
-		}
+		if ($this->isResourceSourceModified($this->resources))
+			return true;
 
 		foreach ($sourceFiles as $file)
 		{
@@ -331,22 +410,10 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		JWSDK_Log::logTo('build.log', "Compressing package $name");
 
-		$this->buildCache->output->setPackageGlobalConfigMtime(
-			$this->getName(), $this->globalConfig->getMtime());
-
-		$this->buildCache->output->setPackageConfigMtime(
-			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
-
 		if ($this->globalConfig->isDynamicLoader())
 		{
 			$this->buildCache->output->setPackageHeaderMtime(
 				$this->getName(), JWSDK_Util_File::mtime($this->getHeaderPath()));
-		}
-
-		foreach ($this->resources as $resource)
-		{
-			$this->buildCache->output->setPackageResourceMtime(
-				$this->getName(), $resource->getName(), $resource->getSourceFile()->getMtime());
 		}
 
 		foreach ($sourceFiles as $file)
@@ -464,5 +531,15 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$type) // String
 	{
 		return $this->globalConfig->getPublicPath() . '/' . $this->getBuildName($type);
+	}
+
+	private function getDtsOutputName() // String
+	{
+		return $this->globalConfig->getBuildUrl() . '/d.ts/' . $this->getName() . '.d.ts';
+	}
+
+	private function getDtsOutputPath() // String
+	{
+		return $this->globalConfig->getPublicPath() . '/' . $this->getDtsOutputName();
 	}
 }
