@@ -70,7 +70,7 @@ function __cssCompressUrlBuilder($url)
 		JWSDK_Util_Url::normalizeRelative($__cssUrlTargetName . '/' . $url) : substr($url, 1);
 	$name = JWSDK_Util_Url::extractName($name);
 	$file = $__cssUrlFileManager->getFile($name);
-	if ($__cssUrlGlobalConfig->isEmbedDataUri() && ($__cssUrlHitCount[$name] == 1))
+	if ($__cssUrlGlobalConfig->isEmbedDataUri() && ($__cssUrlHitCount[$name] <= $__cssUrlGlobalConfig->getDataUriMaxHits()))
 	{
 		$size = $__cssUrlFileManager->getFileSize($file);
 		if ($size <= $__cssUrlGlobalConfig->getDataUriMaxSize())
