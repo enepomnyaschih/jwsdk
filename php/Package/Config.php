@@ -32,7 +32,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 	private $requires = array();     // Array of String
 	private $loaders = array();      // Array of String
 	private $timestamps = array();   // Array of String
-	private $dtsResources = array(); // Array of JWSDK_Resource
 
 	public function __construct(
 		$name,            // String
@@ -69,10 +68,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			foreach ($resources as $resourceDefinition)
 			{
 				$resource = $this->resourceManager->getResourceByDefinition($resourceDefinition);
-				if (($resource->getType() === 'ts') && preg_match('/\.d\.ts/', $resource->getName()))
-					$this->dtsResources[] = $resource;
-				else
-					$this->resources[] = $resource;
+				$this->resources[] = $resource;
 			}
 
 			if (isset($json['loaders']))
@@ -114,11 +110,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 		return $this->requires;
 	}
 
-	public function getDtsResources() // Array of JWSDK_Resource
-	{
-		return $this->dtsResources;
-	}
-
 	protected function initSourceFiles() // Array of JWSDK_File
 	{
 		$this->buildCache->output->setPackageGlobalConfigMtime(
@@ -127,14 +118,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$this->buildCache->output->setPackageConfigMtime(
 			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
 
-		$dts = array();
-		foreach ($this->requires as $require)
-		{
-			$package = $this->packageManager->getPackage($require);
-			$dts = array_merge($dts, $package->getDtsResources());
-		}
-
-		$this->dtsResources = array_merge($dts, $this->dtsResources);
 		$typeScripts = array();
 		foreach ($this->resources as $resource)
 		{
@@ -144,15 +127,13 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		if (!empty($typeScripts))
 		{
-			$allTypeScripts = array_merge($this->dtsResources, $typeScripts);
-			if ($this->isPackageModified() || $this->isResourceSourceModified($allTypeScripts) ||
+			if ($this->isPackageModified() || $this->isResourceSourceModified($typeScripts) ||
 				$this->isResourceOutputModified($typeScripts) || $this->isDtsOutputModified())
 			{
-				JWSDK_Util_Ts::build($this, $allTypeScripts, $this->globalConfig, $this->buildCache);
+				JWSDK_Util_Ts::build($this, $typeScripts, $this->globalConfig, $this->buildCache);
 			}
 			$dtsName = $this->getDtsOutputName();
 			$dtsResource = $this->resourceManager->getResourceByDefinition($dtsName);
-			$this->dtsResources[] = $dtsResource;
 			$this->buildCache->output->setPackageDtsOutputMtime(
 				$this->getName(), $dtsResource->getSourceFile()->getMtime());
 		}
@@ -170,12 +151,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 				$this->getName(), $name, $resource->getSourceFile()->getMtime());
 			$this->buildCache->output->setPackageResourceTargetMtime(
 				$this->getName(), $name, $resource->getOutputFile()->getMtime());
-		}
-
-		foreach ($this->dtsResources as $resource)
-		{
-			$this->buildCache->output->setPackageResourceMtime(
-				$this->getName(), $resource->getName(), $resource->getSourceFile()->getMtime());
 		}
 
 		return $result;

@@ -58,11 +58,6 @@ class JWSDK_Package
 		return array();
 	}
 
-	public function getDtsResources() // Array of JWSDK_Resource
-	{
-		return array();
-	}
-
 	protected function initSourceFiles() // Array of JWSDK_File
 	{
 		throw new JWSDK_Exception_MethodNotImplemented();

@@ -41,7 +41,7 @@ class JWSDK_Resource_Converter_JwHtml extends JWSDK_Resource_Converter_Internal
 		$templateName = JWSDK_Util_Array::get($params, 'template', 'main');
 		$contents     = JWSDK_Resource_Converter_Util::smoothHtml($contents);
 		
-		return "JW.UI.template($className, { $templateName: '$contents' });\n";
+		return "(window.viewha || JW.UI).template($className, { $templateName: '$contents' });\n";
 	}
 	
 	public function getParamsByArray( // Array

@@ -26,6 +26,10 @@ class JWSDK_Util_Ts
 		$resources,    // Array<JWSDK_Resource>
 		$globalConfig) // JWSDK_GlobalConfig
 	{
+		$dummyName = '__dummy.ts';
+		$dummyPath = $globalConfig->getPublicPath() . '/' . $dummyName;
+		JWSDK_Util_File::write($dummyPath, '');
+
 		$sourcePaths = array();
 		foreach ($resources as $resource)
 			$sourcePaths[] = $resource->getName();
@@ -37,13 +41,14 @@ class JWSDK_Util_Ts
 		$cwd = getcwd();
 
 		// build JavaScript
-		$buildDir =  "$buildUrl/ts/$packageName";
+		$buildDir =  "$buildUrl/ts";
 		$output = array();
 		$status = 0;
-		$command = "tsc -d -t $target --outDir $buildDir $sourcePath 2>> ts.log";
+		$command = "tsc -d -t $target --outDir $buildDir $sourcePath $dummyName 2> ts.log";
 		chdir($globalConfig->getPublicPath());
 		exec($command, $output, $status);
 		chdir($cwd);
+		unlink($dummyPath);
 
 		if ($status != 0)
 			throw new JWSDK_Exception_TsError($packageName, $buildDir);
@@ -52,7 +57,7 @@ class JWSDK_Util_Ts
 		$buildPath = "$buildUrl/d.ts/$packageName.js";
 		$output = array();
 		$status = 0;
-		$command = "tsc -d -t $target --out $buildPath $sourcePath 2>> ts.log";
+		$command = "tsc -d -t $target --out $buildPath $sourcePath 2> ts.log";
 		chdir($globalConfig->getPublicPath());
 		exec($command, $output, $status);
 		chdir($cwd);
