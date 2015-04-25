@@ -106,6 +106,7 @@ include_once 'php/Resource/Converter/Sass.php';
 include_once 'php/Resource/Converter/Scss.php';
 include_once 'php/Resource/Converter/Styl.php';
 include_once 'php/Resource/Converter/Ts.php';
+include_once 'php/Resource/Converter/RefTs.php';
 include_once 'php/Resource/Converter/Util.php';
 include_once 'php/Resource/Manager.php';
 include_once 'php/Template.php';

@@ -36,6 +36,20 @@ class JWSDK_Resource_Converter
 		return 'js';
 	}
 
+	// TypeScript files have a special trait: they are compiled all together
+	public function isTypeScript() // Boolean
+	{
+		return false;
+	}
+
+	public function expand( // Array<JWSDK_Resource>
+		$resource,        // JWSDK_Resource
+		$resourceManager, // JWSDK_Resource_Manager
+		$globalConfig)    // JWSDK_Global_Config
+	{
+		return array($resource);
+	}
+
 	public function convert(
 		$resource,     // JWSDK_Resource
 		$globalConfig) // JWSDK_GlobalConfig

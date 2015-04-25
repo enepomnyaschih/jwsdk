@@ -2,19 +2,19 @@
 
 /*
 	jWidget SDK source file.
-	
+
 	Copyright (C) 2013 Egor Nepomnyaschih
-	
+
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Lesser General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Lesser General Public License for more details.
-	
+
 	You should have received a copy of the GNU Lesser General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -28,10 +28,10 @@ class JWSDK_Util_File
 		$result = @file_get_contents($path);
 		if ($result === false)
 			throw new JWSDK_Exception_CanNotReadFile($path, $tip);
-		
+
 		return preg_replace('/^\xEF\xBB\xBF/', '', $result);
 	}
-	
+
 	public static function readJson( // Object
 		$path,         // String
 		$tip = 'file') // String
@@ -41,20 +41,20 @@ class JWSDK_Util_File
 		$result = json_decode($contents, true);
 		if (!$result)
 			throw new JWSDK_Exception_InvalidFileFormat($path, $tip, "Can't parse JSON");
-		
+
 		return $result;
 	}
-	
+
 	public static function mtime( // Integer
 		$path,         // String
 		$tip = 'file') // String
 	{
 		if (!file_exists($path))
 			throw new JWSDK_Exception_CanNotReadFile($path, $tip);
-		
+
 		return filemtime($path);
 	}
-	
+
 	public static function mkdir(
 		$path,         // String
 		$chmod = 0755) // Integer
@@ -67,21 +67,21 @@ class JWSDK_Util_File
 				throw new JWSDK_Exception_CanNotMakeDirectory($directory);
 		}
 	}
-	
+
 	public static function write(
 		$path,     // String
 		$contents) // String
 	{
 		self::mkdir($path);
-		
+
 		$file = @fopen($path, 'w');
 		if ($file === false)
 			throw new JWSDK_Exception_CanNotWriteFile($path);
-		
+
 		fwrite($file, $contents);
 		fclose($file);
 	}
-	
+
 	public static function compress(
 		$dir,    // String
 		$source, // String
@@ -89,28 +89,61 @@ class JWSDK_Util_File
 	{
 		$yuiOutput = array();
 		$yuiStatus = 0;
-		
+
 		$command = "java -jar $dir/yuicompressor.jar $source -o $target --charset utf-8 --line-break 8000 2>> yui.log";
 		exec($command, $yuiOutput, $yuiStatus);
-		
+
 		if ($yuiStatus != 0)
 			throw new JWSDK_Exception_CompressorError($source, $target);
 	}
-	
+
 	public static function getDirectory( // String
 		$filePath) // String
 	{
 		$slashIndex = strrpos($filePath, '/');
 		if ($slashIndex === false)
 			$slashIndex = strrpos($filePath, '\\');
-		
+
 		return ($slashIndex === false) ? '.' : substr($filePath, 0, $slashIndex);
 	}
-	
+
 	public static function getExtension( // String
 		$filePath) // String
 	{
 		$index = strrpos($filePath, '.');
 		return ($index === false) ? null : substr($filePath, $index + 1);
+	}
+
+	// from http://php.net/manual/en/function.realpath.php#112367
+	public static function normalizePath($path)
+	{
+		$parts = array();// Array to build a new path from the good parts
+		$path = str_replace('\\', '/', $path);// Replace backslashes with forwardslashes
+		$path = preg_replace('/\/+/', '/', $path);// Combine multiple slashes into a single slash
+		$segments = explode('/', $path);// Collect path segments
+		$test = '';// Initialize testing variable
+		foreach($segments as $segment)
+		{
+			if($segment != '.')
+			{
+				$test = array_pop($parts);
+				if(is_null($test))
+					$parts[] = $segment;
+				else if($segment == '..')
+				{
+					if($test == '..')
+						$parts[] = $test;
+
+					if($test == '..' || $test == '')
+						$parts[] = $segment;
+				}
+				else
+				{
+					$parts[] = $test;
+					$parts[] = $segment;
+				}
+			}
+		}
+		return implode('/', $parts);
 	}
 }

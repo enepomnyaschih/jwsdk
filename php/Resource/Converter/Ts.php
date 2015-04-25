@@ -33,6 +33,11 @@ class JWSDK_Resource_Converter_Ts extends JWSDK_Resource_Converter
 		return 'js';
 	}
 
+	public function isTypeScript() // Boolean
+	{
+		return true;
+	}
+
 	public function convert(
 		$resource,     // JWSDK_Resource
 		$globalConfig) // JWSDK_GlobalConfig

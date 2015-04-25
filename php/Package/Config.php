@@ -68,7 +68,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 			foreach ($resources as $resourceDefinition)
 			{
 				$resource = $this->resourceManager->getResourceByDefinition($resourceDefinition);
-				$this->resources[] = $resource;
+				$subresources = $this->resourceManager->expandResource($resource);
+				$this->resources = array_merge($this->resources, $subresources);
 			}
 
 			if (isset($json['loaders']))
@@ -121,7 +122,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$typeScripts = array();
 		foreach ($this->resources as $resource)
 		{
-			if ($resource->getType() === 'ts')
+			if ($this->resourceManager->isTypeScriptResource($resource))
 				$typeScripts[] = $resource;
 		}
 

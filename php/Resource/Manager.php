@@ -37,6 +37,7 @@ class JWSDK_Resource_Manager
 
 		$this->registerConverter(new JWSDK_Resource_Converter_Css());
 		$this->registerConverter(new JWSDK_Resource_Converter_JwHtml());
+		$this->registerConverter(new JWSDK_Resource_Converter_RefTs());
 		$this->registerConverter(new JWSDK_Resource_Converter_SchemaJson());
 		$this->registerConverter(new JWSDK_Resource_Converter_Txt());
 		$this->registerConverter(new JWSDK_Resource_Converter_Html());
@@ -67,6 +68,20 @@ class JWSDK_Resource_Manager
 		{
 			throw new JWSDK_Exception_ResourceReadError(json_encode($definition), $e);
 		}
+	}
+
+	public function isTypeScriptResource( // Boolean
+		$resource) // JWSDK_Resource
+	{
+		$converter = $this->getConverter($resource->getType());
+		return $converter->isTypeScript($resource);
+	}
+
+	public function expandResource( // Array<JWSDK_Resource>
+		$resource) // JWSDK_Resource
+	{
+		$converter = $this->getConverter($resource->getType());
+		return $converter->expand($resource, $this, $this->globalConfig);
 	}
 
 	public function convertResource( // JWSDK_File
@@ -191,7 +206,9 @@ class JWSDK_Resource_Manager
 		$attacher, // String
 		$params)   // Array of String
 	{
-		return new JWSDK_Resource($name, $type, $params, $this->fileManager->getFile($name, $attacher));
+		$resource = new JWSDK_Resource($name, $type, $params, $this->fileManager->getFile($name, $attacher));
+		//$this->registerResource($resource); // can cause back compatibility issues
+		return $resource;
 	}
 
 	private function registerResource(
