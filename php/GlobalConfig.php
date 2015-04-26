@@ -49,7 +49,8 @@ class JWSDK_GlobalConfig
 			'snippetsPath',
 			'tempPath',
 			'tsTarget',
-			'urlPrefix'
+			'urlPrefix',
+			'javaCmd'
 		);
 
 		$defaults = array(
@@ -57,7 +58,8 @@ class JWSDK_GlobalConfig
 			'pagesUrl' => null,
 			'jsonPath' => null,
 			'snippetsPath' => null,
-			'tsTarget' => 'ES5'
+			'tsTarget' => 'ES5',
+			'javaCmd' => 'java'
 		);
 
 		foreach ($stringFields as $field)
@@ -245,6 +247,11 @@ class JWSDK_GlobalConfig
 	{
 		$mimeTypes = $this->json['mimeTypes'];
 		return isset($mimeTypes[$extension]) ? $mimeTypes[$extension] : "image/$extension";
+	}
+
+	public function getJavaCmd() // String
+	{
+		return $this->json['javaCmd'];
 	}
 
 	public function getMtime() // Timestamp

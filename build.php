@@ -25,6 +25,7 @@ include_once 'php/Util/Array.php';
 include_once 'php/Util/Css.php';
 include_once 'php/Util/File.php';
 include_once 'php/Util/Json.php';
+include_once 'php/Util/Os.php';
 include_once 'php/Util/String.php';
 include_once 'php/Util/Ts.php';
 include_once 'php/Util/Url.php';

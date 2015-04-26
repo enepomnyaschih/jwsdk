@@ -35,5 +35,7 @@
 		"tif"  : "image/tiff",
 		"ttf"  : "application/x-font-truetype",
 		"woff" : "application/font-woff"
-	}
+	},
+
+	"javaCmd" : "java"
 }
