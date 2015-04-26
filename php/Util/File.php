@@ -91,8 +91,12 @@ class JWSDK_Util_File
 		$yuiOutput = array();
 		$yuiStatus = 0;
 
-		$javaCmd = JWSDK_Util_Os::escapePath($javaCmd);
-		$command = "$javaCmd -jar $dir/yuicompressor.jar $source -o $target --charset utf-8 --line-break 8000 2>> yui.log";
+		$javaCmdOs = JWSDK_Util_Os::escapePath($javaCmd);
+		$jarPathOs = JWSDK_Util_Os::escapePath("$dir/yuicompressor.jar");
+		$sourceOs  = JWSDK_Util_Os::escapePath($source);
+		$targetOs  = JWSDK_Util_Os::escapePath($target);
+
+		$command = "$javaCmdOs -jar $jarPathOs $sourceOs -o $targetOs --charset utf-8 --line-break 8000 2> yui.log";
 		exec($command, $yuiOutput, $yuiStatus);
 
 		if ($yuiStatus != 0)

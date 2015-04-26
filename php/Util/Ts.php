@@ -32,7 +32,7 @@ class JWSDK_Util_Ts
 
 		$sourcePaths = array();
 		foreach ($resources as $resource)
-			$sourcePaths[] = $publicPath . '/' . $resource->getName();
+			$sourcePaths[] = JWSDK_Util_Os::escapePath($publicPath . '/' . $resource->getName());
 
 		$sourcePath = implode(' ', $sourcePaths);
 		$buildUrl = $globalConfig->getBuildUrl();
@@ -40,10 +40,12 @@ class JWSDK_Util_Ts
 		$target = $globalConfig->getTsTarget();
 
 		// build JavaScript
-		$buildDir =  "$buildUrl/ts";
+		$buildDir = "$publicPath/$buildUrl/ts";
+		$buildDirOs  = JWSDK_Util_Os::escapePath($buildDir);
+		$dummyPathOs = JWSDK_Util_Os::escapePath($dummyPath);
 		$output = array();
 		$status = 0;
-		$command = "tsc -t $target --outDir $publicPath/$buildDir $sourcePath $dummyPath 2> ts.log";
+		$command = "tsc -t $target --outDir $buildDirOs $sourcePath $dummyPathOs 2> ts.log";
 		exec($command, $output, $status);
 		unlink($dummyPath);
 
@@ -51,10 +53,11 @@ class JWSDK_Util_Ts
 			throw new JWSDK_Exception_TsError($packageName, $buildDir);
 
 		// build d.ts
-		$buildPath = "$buildUrl/d.ts/$packageName.js";
+		$buildPath = "$publicPath/$buildUrl/d.ts/$packageName.js";
+		$buildPathOs = JWSDK_Util_Os::escapePath($buildPath);
 		$output = array();
 		$status = 0;
-		$command = "tsc -d -t $target --out $publicPath/$buildPath $sourcePath 2> ts.log";
+		$command = "tsc -d -t $target --out $buildPathOs $sourcePath 2> ts.log";
 		exec($command, $output, $status);
 
 		if ($status != 0)
