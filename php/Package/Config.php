@@ -29,6 +29,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 	private $fileManager;            // JWSDK_File_Manager
 
 	private $resources = array();    // Array of JWSDK_Resource
+	private $resourceDefs = array(); // Array of Object
 	private $requires = array();     // Array of String
 	private $loaders = array();      // Array of String
 	private $timestamps = array();   // Array of String
@@ -64,13 +65,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 				$this->requires[] = $require;
 			}
 
-			$resources = JWSDK_Util_Array::get($json, 'resources', array());
-			foreach ($resources as $resourceDefinition)
-			{
-				$resource = $this->resourceManager->getResourceByDefinition($resourceDefinition);
-				$subresources = $this->resourceManager->expandResource($resource);
-				$this->resources = array_merge($this->resources, $subresources);
-			}
+			$this->resourceDefs = JWSDK_Util_Array::get($json, 'resources', array());
 
 			if (isset($json['loaders']))
 			{
@@ -119,7 +114,19 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$this->buildCache->output->setPackageConfigMtime(
 			$this->getName(), JWSDK_Util_File::mtime($this->getConfigPath()));
 
-		$typeScripts = array();
+		$resources = array();
+		foreach ($this->resourceDefs as $resourceDefinition)
+			$resources[] = $this->resourceManager->getResourceByDefinition($resourceDefinition);
+
+		$typeScriptDependencies = array(); // to check for modifications
+		foreach ($resources as $resource)
+		{
+			$this->resourceManager->addTypeScriptDependencies($typeScriptDependencies, $resource);
+			JWSDK_Util_Array::addAll($this->resources, $this->resourceManager->expandResource($resource));
+		}
+		$typeScriptDependencies = array_values($typeScriptDependencies);
+
+		$typeScripts = array(); // to compile
 		foreach ($this->resources as $resource)
 		{
 			if ($this->resourceManager->isTypeScriptResource($resource))
@@ -128,9 +135,10 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		if (!empty($typeScripts))
 		{
-			if ($this->isPackageModified() || $this->isResourceSourceModified($typeScripts) ||
+			if ($this->isPackageModified() || $this->isResourceSourceModified($typeScriptDependencies) ||
 				$this->isResourceOutputModified($typeScripts) || $this->isDtsOutputModified())
 			{
+				JWSDK_Log::logTo('build.log', 'Compiling TypeScript for package ' . $this->getName());
 				JWSDK_Util_Ts::build($this, $typeScripts, $this->globalConfig, $this->buildCache);
 			}
 			$dtsName = $this->getDtsOutputName();
@@ -144,14 +152,25 @@ class JWSDK_Package_Config extends JWSDK_Package
 		if ($this->globalConfig->isDynamicLoader())
 			$result[] = $this->createHeader();
 
+		foreach ($typeScriptDependencies as $resource)
+		{
+			$this->buildCache->output->setPackageResourceMtime(
+				$this->getName(), $resource->getName(), $resource->getSourceFile()->getMtime());
+		}
+
 		foreach ($this->resources as $resource)
 		{
-			$result[] = $this->resourceManager->convertResource($resource);
 			$name = $resource->getName();
 			$this->buildCache->output->setPackageResourceMtime(
 				$this->getName(), $name, $resource->getSourceFile()->getMtime());
+
+			$output = $this->resourceManager->convertResource($resource);
+			if (!$output)
+				continue;
+
+			$result[] = $output;
 			$this->buildCache->output->setPackageResourceTargetMtime(
-				$this->getName(), $name, $resource->getOutputFile()->getMtime());
+				$this->getName(), $name, $output->getMtime());
 		}
 
 		return $result;

@@ -36,10 +36,20 @@ class JWSDK_Resource_Converter
 		return 'js';
 	}
 
-	// TypeScript files have a special trait: they are compiled all together
+	// TypeScript files have special traits:
+	// * they are compiled all together
+	// * they need recompilation on dependency modification
 	public function isTypeScript() // Boolean
 	{
 		return false;
+	}
+
+	public function addTypeScriptDependencies(
+		&$typeScripts,    // Array<JWSDK_Resource>
+		$resource,        // JWSDK_Resource
+		$resourceManager, // JWSDK_Resource_Manager
+		$globalConfig)    // JWSDK_GlobalConfig
+	{
 	}
 
 	public function expand( // Array<JWSDK_Resource>

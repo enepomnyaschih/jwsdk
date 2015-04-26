@@ -31,8 +31,8 @@ class JWSDK_Resource_Converter_RefTs extends JWSDK_Resource_Converter_Ts
 		$resourceManager, // JWSDK_Resource_Manager
 		$globalConfig)    // JWSDK_Global_Config
 	{
-		$sourceName = $this->getResourceSourcePath($resource, $globalConfig);
-		$sourceContents = JWSDK_Util_File::read($sourceName, 'resource file');
+		$sourcePath = $this->getResourceSourcePath($resource, $globalConfig);
+		$sourceContents = JWSDK_Util_File::read($sourcePath, 'resource file');
 		$sourceContents = JWSDK_Util_String::smoothCrlf($sourceContents);
 		$sourceLines = explode("\n", $sourceContents);
 		$result = array($resource);

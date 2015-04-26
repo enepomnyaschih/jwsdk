@@ -74,7 +74,15 @@ class JWSDK_Resource_Manager
 		$resource) // JWSDK_Resource
 	{
 		$converter = $this->getConverter($resource->getType());
-		return $converter->isTypeScript($resource);
+		return $converter->isTypeScript();
+	}
+
+	public function addTypeScriptDependencies(
+		&$typeScripts, // Array<JWSDK_Resource>
+		$resource)     // JWSDK_Resource
+	{
+		$converter = $this->getConverter($resource->getType());
+		return $converter->addTypeScriptDependencies($typeScripts, $resource, $this, $this->globalConfig);
 	}
 
 	public function expandResource( // Array<JWSDK_Resource>

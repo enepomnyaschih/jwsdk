@@ -38,6 +38,32 @@ class JWSDK_Resource_Converter_Ts extends JWSDK_Resource_Converter
 		return true;
 	}
 
+	public function addTypeScriptDependencies(
+		&$typeScripts,    // Array<JWSDK_Resource>
+		$resource,        // JWSDK_Resource
+		$resourceManager, // JWSDK_Resource_Manager
+		$globalConfig)    // JWSDK_GlobalConfig
+	{
+		$name = $resource->getName();
+		if (isset($typeScripts[$name]))
+			return;
+
+		$sourcePath = $this->getResourceSourcePath($resource, $globalConfig);
+		$sourceContents = JWSDK_Util_File::read($sourcePath, 'resource file');
+		$sourceContents = JWSDK_Util_String::smoothCrlf($sourceContents);
+		$sourceLines = explode("\n", $sourceContents);
+		$typeScripts[$name] = $resource;
+		foreach ($sourceLines as $line)
+		{
+			if (!preg_match('~^\s*///\s*<reference path="([^"]*)"\s*/>\s*$~', $line, $matches))
+				continue;
+			$definition = JWSDK_Util_File::normalizePath(
+				JWSDK_Util_File::getDirectory($name) . '/' . $matches[1]);
+			$subresource = $resourceManager->getResourceByDefinition($definition);
+			$resourceManager->addTypeScriptDependencies($typeScripts, $subresource);
+		}
+	}
+
 	public function convert(
 		$resource,     // JWSDK_Resource
 		$globalConfig) // JWSDK_GlobalConfig
