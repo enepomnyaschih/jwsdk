@@ -173,6 +173,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 				$this->getName(), $name, $output->getMtime());
 		}
 
+		$this->buildCache->output->save();
+
 		return $result;
 	}
 
@@ -461,6 +463,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 			$result[] = $compressedFile;
 		}
+
+		$this->buildCache->output->save();
 
 		return $result;
 	}
