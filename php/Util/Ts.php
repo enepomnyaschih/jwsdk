@@ -26,28 +26,25 @@ class JWSDK_Util_Ts
 		$resources,    // Array<JWSDK_Resource>
 		$globalConfig) // JWSDK_GlobalConfig
 	{
-		$dummyName = '__dummy.ts';
-		$dummyPath = $globalConfig->getPublicPath() . '/' . $dummyName;
+		$publicPath = $globalConfig->getPublicPath();
+		$dummyPath = "$publicPath/__dummy.ts";
 		JWSDK_Util_File::write($dummyPath, '');
 
 		$sourcePaths = array();
 		foreach ($resources as $resource)
-			$sourcePaths[] = $resource->getName();
+			$sourcePaths[] = $publicPath . '/' . $resource->getName();
 
 		$sourcePath = implode(' ', $sourcePaths);
 		$buildUrl = $globalConfig->getBuildUrl();
 		$packageName = $package->getName();
 		$target = $globalConfig->getTsTarget();
-		$cwd = getcwd();
 
 		// build JavaScript
 		$buildDir =  "$buildUrl/ts";
 		$output = array();
 		$status = 0;
-		$command = "tsc -d -t $target --outDir $buildDir $sourcePath $dummyName 2> ts.log";
-		chdir($globalConfig->getPublicPath());
+		$command = "tsc -t $target --outDir $publicPath/$buildDir $sourcePath $dummyPath 2> ts.log";
 		exec($command, $output, $status);
-		chdir($cwd);
 		unlink($dummyPath);
 
 		if ($status != 0)
@@ -57,10 +54,8 @@ class JWSDK_Util_Ts
 		$buildPath = "$buildUrl/d.ts/$packageName.js";
 		$output = array();
 		$status = 0;
-		$command = "tsc -d -t $target --out $buildPath $sourcePath 2> ts.log";
-		chdir($globalConfig->getPublicPath());
+		$command = "tsc -d -t $target --out $publicPath/$buildPath $sourcePath 2> ts.log";
 		exec($command, $output, $status);
-		chdir($cwd);
 
 		if ($status != 0)
 			throw new JWSDK_Exception_TsError($packageName, $buildPath);
