@@ -114,6 +114,15 @@ class JWSDK_GlobalConfig
 				'config.json', 'global config', 'embedDataUri must be boolean');
 		}
 
+		if (!isset($this->json['dataUriMaxHits']))
+			$this->json['dataUriMaxHits'] = 1;
+
+		if (!is_int($this->json['dataUriMaxHits']) || ($this->json['dataUriMaxHits'] <= 0))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'dataUriMaxHits must be positive integer');
+		}
+
 		if (!isset($this->json['dataUriMaxSize']))
 			$this->json['dataUriMaxSize'] = 30720;
 
@@ -235,6 +244,11 @@ class JWSDK_GlobalConfig
 	public function isEmbedDataUri() // Boolean
 	{
 		return $this->json['embedDataUri'];
+	}
+
+	public function getDataUriMaxHits() // Integer
+	{
+		return $this->json['dataUriMaxHits'];
 	}
 
 	public function getDataUriMaxSize() // Integer
