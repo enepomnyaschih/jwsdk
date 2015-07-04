@@ -456,7 +456,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 			JWSDK_Util_File::write($mergePath, $contents);
 			JWSDK_Util_File::mkdir($buildPath);
-			JWSDK_Util_File::compress($this->globalConfig->getJavaCmd(), $this->globalConfig->getRunDir(), $mergePath, $buildPath);
+			JWSDK_Util_File::compress($this->globalConfig, $mergePath, $buildPath);
 
 			$compressedFile = $this->fileManager->getFile($buildName, $type);
 			$this->buildCache->output->setPackageCompressionMtime($this->getName(), $type, $compressedFile->getMtime());

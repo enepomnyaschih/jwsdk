@@ -19,28 +19,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Util_Os
+class JWSDK_Exception_ProcessNotStarted extends JWSDK_Exception
 {
-	public static function isWindows() // Boolean
+	public function __construct($process)
 	{
-		return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-	}
-
-	public static function escapePath( // String
-		$path) // String
-	{
-		return self::isWindows() ? self::escapePathWindows($path) : self::escapePathUnix($path);
-	}
-
-	public static function escapePathWindows( // String
-		$path) // String
-	{
-		return '"' . str_replace('/', '\\', $path) . '"';
-	}
-
-	public static function escapePathUnix( // String
-		$path) // String
-	{
-		return str_replace(' ', '\\ ', str_replace('\\', '/', $path));
+		parent::__construct("Can not run process: $process");
 	}
 }

@@ -70,6 +70,8 @@ include_once $jwsdkDir . 'php/Exception/MethodNotImplemented.php';
 include_once $jwsdkDir . 'php/Exception/PackageCompressError.php';
 include_once $jwsdkDir . 'php/Exception/PageBuildError.php';
 include_once $jwsdkDir . 'php/Exception/PageReadError.php';
+include_once $jwsdkDir . 'php/Exception/ProcessNotStarted.php';
+include_once $jwsdkDir . 'php/Exception/ProcessReturnedError.php';
 include_once $jwsdkDir . 'php/Exception/ResourceConvertionError.php';
 include_once $jwsdkDir . 'php/Exception/ResourceReadError.php';
 include_once $jwsdkDir . 'php/Exception/SassError.php';
@@ -91,6 +93,7 @@ include_once $jwsdkDir . 'php/Package/Manager.php';
 include_once $jwsdkDir . 'php/Package/Simple.php';
 include_once $jwsdkDir . 'php/Page.php';
 include_once $jwsdkDir . 'php/Page/Manager.php';
+include_once $jwsdkDir . 'php/Process.php';
 include_once $jwsdkDir . 'php/Resource.php';
 include_once $jwsdkDir . 'php/Resource/Converter.php';
 include_once $jwsdkDir . 'php/Resource/Converter/Internal.php';
@@ -117,7 +120,7 @@ include_once $jwsdkDir . 'php/Template/Manager.php';
 
 $date = date('Y-m-d H:i:s');
 JWSDK_Log::logTo('build.log', "\n\n[$date]");
-JWSDK_Log::logTo('build.log', 'Building frontend with jWidget SDK 0.6...');
+JWSDK_Log::logTo('build.log', 'Building frontend with jWidget SDK 0.7...');
 
 try
 {

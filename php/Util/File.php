@@ -83,24 +83,22 @@ class JWSDK_Util_File
 	}
 
 	public static function compress(
-		$javaCmd, // String
-		$dir,     // String
-		$source,  // String
-		$target)  // String
+		$globalConfig, // JWSDK_GlobalConfig
+		$source,       // String
+		$target)       // String
 	{
 		$yuiOutput = array();
 		$yuiStatus = 0;
 
-		$javaCmdOs = JWSDK_Util_Os::escapePath($javaCmd);
-		$jarPathOs = JWSDK_Util_Os::escapePath("$dir/yuicompressor.jar");
-		$sourceOs  = JWSDK_Util_Os::escapePath($source);
-		$targetOs  = JWSDK_Util_Os::escapePath($target);
+		$jarPath = JWSDK_Util_File::normalizePath($globalConfig->getRunDir() . '/yuicompressor.jar');
 
-		$command = "$javaCmdOs -jar $jarPathOs $sourceOs -o $targetOs --charset utf-8 --line-break 8000 2> yui.log";
-		exec($command, $yuiOutput, $yuiStatus);
+		$javaCmdOs = JWSDK_Util_Os::escapePathUnix($globalConfig->getJavaCmd());
+		$jarPathOs = JWSDK_Util_Os::escapePathUnix($jarPath);
+		$sourceOs  = JWSDK_Util_Os::escapePathUnix($source);
+		$targetOs  = JWSDK_Util_Os::escapePathUnix($target);
 
-		if ($yuiStatus != 0)
-			throw new JWSDK_Exception_CompressorError($source, $target);
+		$process = new JWSDK_Process("$javaCmdOs -jar $jarPath $sourceOs -o $targetOs --charset utf-8 --line-break 8000");
+		$process->execute();
 	}
 
 	public static function getDirectory( // String
