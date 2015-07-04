@@ -22,8 +22,9 @@
 class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter_CssBase
 {
 	protected function getCommand( // String
-		$source, // String
-		$target) // String
+		$source,       // String
+		$target,       // String
+		$globalConfig) // JWSDK_GlobalConfig
 	{
 		return "sass --unix-newlines -f $source $target 2> sass.log";
 	}

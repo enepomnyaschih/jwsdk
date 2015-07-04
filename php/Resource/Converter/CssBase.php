@@ -55,8 +55,9 @@ class JWSDK_Resource_Converter_CssBase extends JWSDK_Resource_Converter
 	}
 
 	protected function getCommand( // String
-		$source, // String
-		$target) // String
+		$source,       // String
+		$target,       // String
+		$globalConfig) // JWSDK_GlobalConfig
 	{
 		throw new JWSDK_Exception_MethodNotImplemented();
 	}

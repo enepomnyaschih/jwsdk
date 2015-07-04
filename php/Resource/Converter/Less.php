@@ -27,8 +27,9 @@ class JWSDK_Resource_Converter_Less extends JWSDK_Resource_Converter_CssBase
 	}
 
 	protected function getCommand( // String
-		$source, // String
-		$target) // String
+		$source,       // String
+		$target,       // String
+		$globalConfig) // JWSDK_GlobalConfig
 	{
 		return "lessc $source > $target 2> less.log";
 	}
