@@ -56,12 +56,6 @@ class JWSDK_BuildCache_Input
 		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'configMtime'));
 	}
 
-	public function getPackageHeaderMtime( // Timestamp
-		$packageName) // String
-	{
-		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'headerMtime'));
-	}
-
 	public function getPackageDtsOutputMtime( // Timestamp
 		$packageName) // String
 	{
@@ -80,19 +74,5 @@ class JWSDK_BuildCache_Input
 		$resourceName) // String
 	{
 		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'resources', $resourceName, 'targetMtime'));
-	}
-
-	public function getPackageCompressionMtime( // Timestamp
-		$packageName,  // String
-		$attacherType) // String
-	{
-		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'compressions', $attacherType, 'mtime'));
-	}
-
-	public function getPackageDependencyMtime( // Timestamp
-		$packageName, // String
-		$dependency)  // String
-	{
-		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'dependencies', $dependency, 'mtime'));
 	}
 }

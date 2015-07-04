@@ -427,22 +427,6 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		JWSDK_Log::logTo('build.log', "Compressing package $name");
 
-		if ($this->globalConfig->isDynamicLoader())
-		{
-			$this->buildCache->output->setPackageHeaderMtime(
-				$this->getName(), JWSDK_Util_File::mtime($this->getHeaderPath()));
-		}
-
-		foreach ($sourceFiles as $file)
-		{
-			$dependencies = $this->fileManager->getFileDependencies($file);
-			foreach ($dependencies as $dependency) // JWSDK_File
-			{
-				$this->buildCache->output->setPackageDependencyMtime(
-					$this->getName(), $dependency->getName(), $dependency->getMtime());
-			}
-		}
-
 		$result = array();
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 		{
@@ -478,10 +462,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			JWSDK_Util_File::mkdir($buildPath);
 			JWSDK_Util_File::compress($this->globalConfig, $mergePath, $buildPath);
 
-			$compressedFile = $this->fileManager->getFile($buildName, $type);
-			$this->buildCache->output->setPackageCompressionMtime($this->getName(), $type, $compressedFile->getMtime());
-
-			$result[] = $compressedFile;
+			$result[] = $this->fileManager->getFile($buildName, $type);
 		}
 
 		$this->buildCache->output->save();
