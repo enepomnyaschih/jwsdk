@@ -47,12 +47,12 @@ class JWSDK_Process
 		if (!is_resource($process))
 			throw new JWSDK_Exception_ProcessNotStarted($this);
 
-		$errors = stream_get_contents($pipes[2]);
+		$error = stream_get_contents($pipes[2]);
 		fclose($pipes[2]);
 
 		$returnValue = proc_close($process);
 		if ($returnValue != 0)
-			throw new JWSDK_Exception_ProcessReturnedError($this, $returnValue, $errors);
+			throw new JWSDK_Exception_ProcessReturnedError($this, $returnValue, $error);
 	}
 
 	public function __toString()

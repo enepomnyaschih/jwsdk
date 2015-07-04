@@ -21,8 +21,16 @@
 
 class JWSDK_Exception_ProcessReturnedError extends JWSDK_Exception
 {
+	private $error; // String
+
 	public function __construct($process, $returnValue, $error)
 	{
 		parent::__construct("Process returned $returnValue code. Command:\n$process\nError:\n$error");
+		$this->error = $error;
+	}
+
+	public function getError()
+	{
+		return $this->error;
 	}
 }

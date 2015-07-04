@@ -98,7 +98,14 @@ class JWSDK_Util_File
 		$targetOs  = JWSDK_Util_Os::escapePathUnix($target);
 
 		$process = new JWSDK_Process("$javaCmdOs -jar $jarPath $sourceOs -o $targetOs --charset utf-8 --line-break 8000");
-		$process->execute();
+		try
+		{
+			$process->execute();
+		}
+		catch (JWSDK_Exception_ProcessReturnedError $e)
+		{
+			throw new JWSDK_Exception_CompressorError($source, $e->getError());
+		}
 	}
 
 	public static function getDirectory( // String
