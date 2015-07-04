@@ -19,6 +19,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+define('VERBOSE_VERSIONING', false);
+
 class JWSDK_Package_Config extends JWSDK_Package
 {
 	private $globalConfig;           // JWSDK_GlobalConfig
@@ -264,7 +266,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$newMtime = $this->globalConfig->getMtime();
 		if ($oldMtime != $newMtime)
 		{
-			//echo "-- Global config is modified ($oldMtime:$newMtime)\n";
+			if (VERBOSE_VERSIONING)
+				echo "-- Global config is modified ($oldMtime:$newMtime)\n";
 			return true;
 		}
 
@@ -272,7 +275,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$newMtime = JWSDK_Util_File::mtime($this->getConfigPath());
 		if ($oldMtime != $newMtime)
 		{
-			//echo "-- Package config is modified ($oldMtime:$newMtime)\n";
+			if (VERBOSE_VERSIONING)
+				echo "-- Package config is modified ($oldMtime:$newMtime)\n";
 			return true;
 		}
 
@@ -287,7 +291,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 		$newMtime = $exists ? JWSDK_Util_File::mtime($dtsPath) : null;
 		if (!$exists || $oldMtime != $newMtime)
 		{
-			//echo "-- d.ts output is modified ($oldMtime:$newMtime)\n";
+			if (VERBOSE_VERSIONING)
+				echo "-- d.ts output is modified ($oldMtime:$newMtime)\n";
 			return true;
 		}
 
@@ -303,7 +308,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$newMtime = $resource->getSourceFile()->getMtime();
 			if ($oldMtime != $newMtime)
 			{
-				//echo "-- Resource $name is modified ($oldMtime:$newMtime)\n";
+				if (VERBOSE_VERSIONING)
+					echo "-- Resource $name is modified ($oldMtime:$newMtime)\n";
 				return true;
 			}
 		}
@@ -323,7 +329,8 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$newMtime = $exists ? JWSDK_Util_File::mtime($buildPath) : null;
 			if (!$exists || $oldMtime != $newMtime)
 			{
-				//echo "-- Resource $name output is modified ($oldMtime:$newMtime)\n";
+				if (VERBOSE_VERSIONING)
+					echo "-- Resource $name output is modified ($oldMtime:$newMtime)\n";
 				return true;
 			}
 		}
@@ -333,46 +340,11 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 	private function isCompressedModified() // Boolean
 	{
-		if ($this->isPackageModified())
-			return true;
-
 		/*
 		- Header file should be rebuilt before modification detection
 		- All CSS-base resources must be converted to CSS files before modification detection
 		*/
 		$sourceFiles = $this->getSourceFiles();
-
-		if ($this->globalConfig->isDynamicLoader())
-		{
-			$oldMtime = $this->buildCache->input->getPackageHeaderMtime($this->getName());
-			$newMtime = JWSDK_Util_File::mtime($this->getHeaderPath());
-			if ($oldMtime != $newMtime)
-			{
-				//echo "-- Package header is modified ($oldMtime:$newMtime)\n";
-				return true;
-			}
-		}
-
-		if ($this->isResourceSourceModified($this->resources))
-			return true;
-
-		foreach ($sourceFiles as $file)
-		{
-			$fileName = $file->getName();
-			$dependencies = $this->fileManager->getFileDependencies($file);
-			foreach ($dependencies as $dependency) // JWSDK_File
-			{
-				$dependencyName = $dependency->getName();
-				$oldMtime = $this->buildCache->input->getPackageDependencyMtime(
-					$this->getName(), $dependencyName);
-				$newMtime = $dependency->getMtime();
-				if ($oldMtime != $newMtime)
-				{
-					//echo "-- Dependency $dependencyName of $fileName is modified ($oldMtime:$newMtime)\n";
-					return true;
-				}
-			}
-		}
 
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 		{
@@ -383,16 +355,64 @@ class JWSDK_Package_Config extends JWSDK_Package
 			$path = $this->fileManager->getFilePath($name);
 			if (!file_exists($path))
 			{
-				//echo "-- Compressed $type file does not exist\n";
+				if (VERBOSE_VERSIONING)
+					echo "-- Compressed $type file does not exist\n";
 				return true;
 			}
 
-			$oldMtime = $this->buildCache->input->getPackageCompressionMtime($this->getName(), $type);
-			$newMtime = filemtime($path);
-			if ($oldMtime != $newMtime)
+			$compressionMtime = filemtime($path);
+			if ($this->globalConfig->getMtime() > $compressionMtime)
 			{
-				//echo "-- Compressed $type file is modified ($oldMtime:$newMtime)\n";
+				if (VERBOSE_VERSIONING)
+					echo "-- Global config has been changed after compression\n";
 				return true;
+			}
+
+			if (JWSDK_Util_File::mtime($this->getConfigPath()) > $compressionMtime)
+			{
+				if (VERBOSE_VERSIONING)
+					echo "-- Package config has been changed after compression\n";
+				return true;
+			}
+
+			if ($this->globalConfig->isDynamicLoader())
+			{
+				if (JWSDK_Util_File::mtime($this->getHeaderPath()) > $compressionMtime)
+				{
+					if (VERBOSE_VERSIONING)
+						echo "-- Package header is modified after compression\n";
+					return true;
+				}
+			}
+
+			foreach ($this->resources as $resource)
+			{
+				if ($resource->getSourceFile()->getAttacher() != $type)
+					continue;
+
+				if ($resource->getSourceFile()->getMtime() > $compressionMtime)
+				{
+					if (VERBOSE_VERSIONING)
+						echo "-- Resource " . $resource->getName() . " is modified after compression\n";
+					return true;
+				}
+			}
+
+			foreach ($sourceFiles as $file)
+			{
+				if ($file->getAttacher() != $type)
+					continue;
+
+				$dependencies = $this->fileManager->getFileDependencies($file);
+				foreach ($dependencies as $dependency) // JWSDK_File
+				{
+					if ($dependency->getMtime() > $compressionMtime)
+					{
+						if (VERBOSE_VERSIONING)
+							echo "-- Dependency " . $dependency->getName() . " of " . $file->getName() . " is modified after compression\n";
+						return true;
+					}
+				}
 			}
 		}
 
