@@ -19,16 +19,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Resource_Converter
+class JWSDK_Resource_Converter_Ts extends JWSDK_Resource_Converter
 {
+	public static $availableTargets = array('ES3', 'ES5');
+
 	public function getType() // String
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-
-	public function isConvertion() // Boolean
-	{
-		return true;
+		return 'ts';
 	}
 
 	public function getAttacher() // String
@@ -36,12 +33,9 @@ class JWSDK_Resource_Converter
 		return 'js';
 	}
 
-	// TypeScript files have special traits:
-	// * they are compiled all together
-	// * they need recompilation on dependency modification
 	public function isTypeScript() // Boolean
 	{
-		return false;
+		return true;
 	}
 
 	public function addTypeScriptDependencies(
@@ -50,33 +44,31 @@ class JWSDK_Resource_Converter
 		$resourceManager, // JWSDK_Resource_Manager
 		$globalConfig)    // JWSDK_GlobalConfig
 	{
-	}
+		$name = $resource->getName();
+		if (isset($typeScripts[$name]))
+			return;
 
-	public function expand( // Array<JWSDK_Resource>
-		$resource,        // JWSDK_Resource
-		$resourceManager, // JWSDK_Resource_Manager
-		$globalConfig)    // JWSDK_Global_Config
-	{
-		return array($resource);
+		$sourcePath = $this->getResourceSourcePath($resource, $globalConfig);
+		$sourceContents = JWSDK_Util_File::read($sourcePath, 'resource file');
+		$sourceContents = JWSDK_Util_String::smoothCrlf($sourceContents);
+		$sourceLines = explode("\n", $sourceContents);
+		$typeScripts[$name] = $resource;
+		foreach ($sourceLines as $line)
+		{
+			if (!preg_match('~^\s*///\s*<reference path="([^"]*)"\s*/>\s*$~', $line, $matches))
+				continue;
+			$definition = JWSDK_Util_File::normalizePath(
+				JWSDK_Util_File::getDirectory($name) . '/' . $matches[1]);
+			$subresource = $resourceManager->getResourceByDefinition($definition);
+			$resourceManager->addTypeScriptDependencies($typeScripts, $subresource);
+		}
 	}
 
 	public function convert(
 		$resource,     // JWSDK_Resource
 		$globalConfig) // JWSDK_GlobalConfig
 	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-
-	public function getParamsByArray( // Array
-		$params) // Array
-	{
-		return array();
-	}
-
-	public function getParamsByJson( // Array
-		$json) // Object
-	{
-		return $json;
+		// do nothing - everything is implemented in JWSDK_Package_Config
 	}
 
 	public function getResourceBuildName( // String
@@ -84,27 +76,11 @@ class JWSDK_Resource_Converter
 		$globalConfig, // JWSDK_GlobalConfig
 		$suffix = '')  // String
 	{
-		$name = $resource->getName();
+		$name = preg_replace('/(\.d)?\.ts/', '', $resource->getName());
 		$attacher = $this->getAttacher();
 		if (!empty($suffix)) {
 			$suffix = $suffix . '.';
 		}
-		return $globalConfig->getBuildUrl() . "/resources/$name.$suffix$attacher";
-	}
-
-	public function getResourceSourcePath( // String
-		$resource,     // String
-		$globalConfig) // JWSDK_GlobalConfig
-	{
-		$name = $resource->getName();
-		return $globalConfig->getPublicPath() . "/$name";
-	}
-
-	public function getResourceBuildPath( // String
-		$resource,     // String
-		$globalConfig, // JWSDK_GlobalConfig
-		$suffix = '')  // String
-	{
-		return $globalConfig->getPublicPath() . "/" . $this->getResourceBuildName($resource, $globalConfig, $suffix);
+		return $globalConfig->getBuildUrl() . "/ts/$name.$suffix$attacher";
 	}
 }

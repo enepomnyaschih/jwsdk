@@ -2,19 +2,19 @@
 
 /*
 	jWidget SDK source file.
-	
+
 	Copyright (C) 2013 Egor Nepomnyaschih
-	
+
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Lesser General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Lesser General Public License for more details.
-	
+
 	You should have received a copy of the GNU Lesser General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -23,7 +23,7 @@ class JWSDK_BuildCache_Output
 {
 	private $path; // String
 	private $json; // Object
-	
+
 	public function __construct(
 		$path,  // String
 		$input) // JWSDK_BuildCache_Input
@@ -31,17 +31,17 @@ class JWSDK_BuildCache_Output
 		$this->path = $path;
 		$this->json = JWSDK_Util_Json::cloneRecursive($input->getJson());
 	}
-	
+
 	public function getJson()
 	{
 		return $this->json;
 	}
-	
+
 	public function save()
 	{
 		JWSDK_Util_File::write($this->path, json_encode($this->json));
 	}
-	
+
 	/**
 	 * Compression info.
 	 */
@@ -51,21 +51,21 @@ class JWSDK_BuildCache_Output
 	{
 		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'globalConfigMtime'), $value);
 	}
-	
+
 	public function setPackageConfigMtime(
 		$packageName, // String
 		$value)       // Timestamp
 	{
 		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'configMtime'), $value);
 	}
-	
-	public function setPackageHeaderMtime(
+
+	public function setPackageDtsOutputMtime(
 		$packageName, // String
 		$value)       // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'headerMtime'), $value);
+		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'dtsOutputMtime'), $value);
 	}
-	
+
 	public function setPackageResourceMtime(
 		$packageName,  // String
 		$resourceName, // String
@@ -73,20 +73,12 @@ class JWSDK_BuildCache_Output
 	{
 		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'resources', $resourceName, 'mtime'), $value);
 	}
-	
-	public function setPackageCompressionMtime(
+
+	public function setPackageResourceTargetMtime(
 		$packageName,  // String
-		$attacherType, // String
+		$resourceName, // String
 		$value)        // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'compressions', $attacherType, 'mtime'), $value);
-	}
-	
-	public function setPackageDependencyMtime(
-		$packageName, // String
-		$dependency,  // String
-		$value)       // Timestamp
-	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'dependencies', $dependency, 'mtime'), $value);
+		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'resources', $resourceName, 'targetMtime'), $value);
 	}
 }
