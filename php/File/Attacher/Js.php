@@ -42,11 +42,11 @@ class JWSDK_File_Attacher_Js extends JWSDK_Resource_Attacher
 		$result = array();
 		$index = 0;
 		while (true) {
-			if (!preg_match('~^//\s*<jwdebug>\s*$~m', $contents, $matches, PREG_OFFSET_CAPTURE, $index)) {
+			if (!preg_match('~^\s*//\s*<jwdebug>\s*$~m', $contents, $matches, PREG_OFFSET_CAPTURE, $index)) {
 				break;
 			}
 			$begin = $matches[0][1];
-			if (!preg_match('~^//\s*</jwdebug>\s*$~m', $contents, $matches, PREG_OFFSET_CAPTURE, $begin)) {
+			if (!preg_match('~^\s*//\s*</jwdebug>\s*$~m', $contents, $matches, PREG_OFFSET_CAPTURE, $begin)) {
 				break;
 			}
 			$result[] = substr($contents, $index, $begin - $index);
