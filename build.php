@@ -73,7 +73,6 @@ include_once $jwsdkDir . 'php/Exception/ResourceConvertionError.php';
 include_once $jwsdkDir . 'php/Exception/ResourceReadError.php';
 include_once $jwsdkDir . 'php/Exception/TemplateCircleDependency.php';
 include_once $jwsdkDir . 'php/Exception/TemplateReadError.php';
-include_once $jwsdkDir . 'php/Exception/TsError.php';
 include_once $jwsdkDir . 'php/File.php';
 include_once $jwsdkDir . 'php/File/Attacher.php';
 include_once $jwsdkDir . 'php/File/Attacher/Css.php';

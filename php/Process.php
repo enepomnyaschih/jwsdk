@@ -40,8 +40,8 @@ class JWSDK_Process
 		$this->command        = $command;
 		$this->input          = $input;
 		$this->output         = $output;
-		$this->inputEmbedded  = $inputEmbedded;
-		$this->outputEmbedded = $outputEmbedded;
+		$this->inputEmbedded  = $inputEmbedded  || ($this->input  == null);
+		$this->outputEmbedded = $outputEmbedded || ($this->output == null);
 	}
 
 	public function getName()
@@ -52,9 +52,9 @@ class JWSDK_Process
 	public function execute()
 	{
 		$descriptors = array(2 => array('pipe', 'w'));
-		if ($this->input != null && !$this->inputEmbedded)
+		if (!$this->inputEmbedded)
 			$descriptors[0] = array('file', $this->input, 'r');
-		if ($this->output != null && !$this->outputEmbedded)
+		if (!$this->outputEmbedded)
 			$descriptors[1] = array('file', $this->output, 'w');
 
 		$process = proc_open($this->command, $descriptors, $pipes, getcwd());
@@ -72,8 +72,8 @@ class JWSDK_Process
 	public function __toString()
 	{
 		return $this->command .
-			(($this->input  != null && !$this->inputEmbedded)  ? (' < ' . JWSDK_Process::escapePath($this->input )) : '') .
-			(($this->output != null && !$this->outputEmbedded) ? (' > ' . JWSDK_Process::escapePath($this->output)) : '');
+			(!$this->inputEmbedded  ? (' < ' . JWSDK_Process::escapePath($this->input )) : '') .
+			(!$this->outputEmbedded ? (' > ' . JWSDK_Process::escapePath($this->output)) : '');
 	}
 
 	public static function escapePath($path)
