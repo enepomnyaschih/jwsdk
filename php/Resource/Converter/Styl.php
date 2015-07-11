@@ -26,19 +26,12 @@ class JWSDK_Resource_Converter_Styl extends JWSDK_Resource_Converter_CssBase
 		return 'styl';
 	}
 
-	protected function getCommand( // String
+	protected function getProcess( // JWSDK_Process
 		$source,       // String
 		$target,       // String
 		$globalConfig) // JWSDK_GlobalConfig
 	{
-		$publicPath = $globalConfig->getPublicPath();
-		return "stylus -I $publicPath < $source > $target 2> stylus.log";
-	}
-
-	protected function throwError(
-		$source, // String
-		$target) // String
-	{
-		throw new JWSDK_Exception_StylusError($source, $target);
+		$publicPathOs = JWSDK_Process::escapePath($globalConfig->getPublicPath());
+		return new JWSDK_Process('Stylus compilation', "stylus -I $publicPathOs", $source, $target);
 	}
 }

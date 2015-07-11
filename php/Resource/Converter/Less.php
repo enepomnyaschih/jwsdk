@@ -26,18 +26,12 @@ class JWSDK_Resource_Converter_Less extends JWSDK_Resource_Converter_CssBase
 		return 'less';
 	}
 
-	protected function getCommand( // String
+	protected function getProcess( // JWSDK_Process
 		$source,       // String
 		$target,       // String
 		$globalConfig) // JWSDK_GlobalConfig
 	{
-		return "lessc $source > $target 2> less.log";
-	}
-
-	protected function throwError(
-		$source, // String
-		$target) // String
-	{
-		throw new JWSDK_Exception_LessError($source, $target);
+		$sourceOs = JWSDK_Process::escapePath($source);
+		return new JWSDK_Process('LESS compilation', "lessc $sourceOs", $source, $target, true, false);
 	}
 }

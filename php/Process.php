@@ -21,27 +21,41 @@
 
 class JWSDK_Process
 {
-	private $command; // String
-	private $input;   // String
-	private $output;  // String
+	private $name;           // String
+	private $command;        // String
+	private $input;          // String
+	private $output;         // String
+	private $inputEmbedded;  // Boolean
+	private $outputEmbedded; // Boolean
 
 	public function __construct(
-		$command,       // String
-		$input = null,  // String
-		$output = null) // String
+		$name,                   // String
+		$command,                // String
+		$input = null,           // String
+		$output = null,          // String
+		$inputEmbedded = false,  // Boolean
+		$outputEmbedded = false) // Boolean
 	{
-		$this->command = $command;
-		$this->input   = $input;
-		$this->output  = $output;
+		$this->name           = $name;
+		$this->command        = $command;
+		$this->input          = $input;
+		$this->output         = $output;
+		$this->inputEmbedded  = $inputEmbedded;
+		$this->outputEmbedded = $outputEmbedded;
+	}
+
+	public function getName()
+	{
+		return $this->name;
 	}
 
 	public function execute()
 	{
 		$descriptors = array(2 => array('pipe', 'w'));
-		if ($this->input != null)
-			$descriptors[0] = array(0 => array('file', $this->input, 'r'));
-		if ($this->output != null)
-			$descriptors[1] = array(1 => array('file', $this->output, 'w'));
+		if ($this->input != null && !$this->inputEmbedded)
+			$descriptors[0] = array('file', $this->input, 'r');
+		if ($this->output != null && !$this->outputEmbedded)
+			$descriptors[1] = array('file', $this->output, 'w');
 
 		$process = proc_open($this->command, $descriptors, $pipes, getcwd());
 		if (!is_resource($process))
@@ -50,15 +64,20 @@ class JWSDK_Process
 		$error = stream_get_contents($pipes[2]);
 		fclose($pipes[2]);
 
-		$returnValue = proc_close($process);
-		if ($returnValue != 0)
-			throw new JWSDK_Exception_ProcessReturnedError($this, $returnValue, $error);
+		$code = proc_close($process);
+		if ($code != 0)
+			throw new JWSDK_Exception_ProcessError($this->name, $this->input, $code, $error);
 	}
 
 	public function __toString()
 	{
 		return $this->command .
-			(($this->input  != null) ? (' < ' . JWSDK_Util_Os::escapePath($this->input )) : '') .
-			(($this->output != null) ? (' > ' . JWSDK_Util_Os::escapePath($this->output)) : '');
+			(($this->input  != null && !$this->inputEmbedded)  ? (' < ' . JWSDK_Process::escapePath($this->input )) : '') .
+			(($this->output != null && !$this->outputEmbedded) ? (' > ' . JWSDK_Process::escapePath($this->output)) : '');
+	}
+
+	public static function escapePath($path)
+	{
+		return JWSDK_Util_Os::escapePathUnix($path);
 	}
 }

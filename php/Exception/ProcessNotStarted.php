@@ -23,6 +23,7 @@ class JWSDK_Exception_ProcessNotStarted extends JWSDK_Exception
 {
 	public function __construct($process)
 	{
-		parent::__construct("Can not run process: $process");
+		$name = $process->getName();
+		parent::__construct("Can not run $name process.\nPlease make sure that required software is installed.\nCommand: $process");
 	}
 }

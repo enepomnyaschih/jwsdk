@@ -140,7 +140,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 			if ($this->isPackageModified() || $this->isResourceSourceModified($typeScriptDependencies) ||
 				$this->isResourceOutputModified($typeScripts) || $this->isDtsOutputModified())
 			{
-				JWSDK_Log::logTo('build.log', 'Compiling TypeScript for package ' . $this->getName());
+				echo "Compiling TypeScript for package " . $this->getName() . "\n";
 				JWSDK_Util_Ts::build($this, $typeScripts, $this->globalConfig, $this->buildCache);
 			}
 			$dtsName = $this->getDtsOutputName();
@@ -425,7 +425,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		$sourceFiles = $this->getSourceFiles();
 
-		JWSDK_Log::logTo('build.log', "Compressing package $name");
+		echo "Compressing package $name\n";
 
 		$result = array();
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
@@ -474,7 +474,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 	{
 		$name = $this->getName();
 
-		JWSDK_Log::logTo('build.log', "Package $name is not modified, skipping...");
+		echo "Package $name is not modified, skipping...\n";
 
 		$result = array();
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)

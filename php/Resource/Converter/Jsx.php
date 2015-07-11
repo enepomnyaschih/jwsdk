@@ -36,20 +36,11 @@ class JWSDK_Resource_Converter_Jsx extends JWSDK_Resource_Converter
 		$globalConfig) // JWSDK_GlobalConfig
 	{
 		$sourcePath = $this->getResourceSourcePath($resource, $globalConfig);
-		$buildPath = $this->getResourceBuildPath($resource, $globalConfig);
-
-		$output = array();
-		$status = 0;
+		$buildPath  = $this->getResourceBuildPath ($resource, $globalConfig);
 
 		JWSDK_Util_File::mkdir($buildPath);
 
-		$sourcePathOs = JWSDK_Util_Os::escapePath($sourcePath);
-		$buildPathOs  = JWSDK_Util_Os::escapePath($buildPath);
-
-		$command = "jsx < $sourcePathOs > $buildPathOs 2> jsx.log";
-		exec($command, $output, $status);
-
-		if ($status != 0)
-			throw new JWSDK_Exception_JsxError($sourcePath, $buildPath);
+		$process = new JWSDK_Process('JSX compilation', 'jsx', $sourcePath, $buildPath);
+		$process->execute();
 	}
 }

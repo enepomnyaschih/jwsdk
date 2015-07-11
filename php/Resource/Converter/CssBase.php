@@ -31,22 +31,16 @@ class JWSDK_Resource_Converter_CssBase extends JWSDK_Resource_Converter
 		$globalConfig) // JWSDK_GlobalConfig
 	{
 		$sourcePath = $this->getResourceSourcePath($resource, $globalConfig);
-		$tempPath = $this->getResourceBuildPath($resource, $globalConfig, 'temp');
-		$buildPath = $this->getResourceBuildPath($resource, $globalConfig);
+		$tempPath   = $this->getResourceBuildPath ($resource, $globalConfig, 'temp');
+		$buildPath  = $this->getResourceBuildPath ($resource, $globalConfig);
 
 		$output = array();
 		$status = 0;
 
 		JWSDK_Util_File::mkdir($buildPath);
 
-		$sourcePathOs = JWSDK_Util_Os::escapePath($sourcePath);
-		$tempPathOs   = JWSDK_Util_Os::escapePath($tempPath);
-
-		$command = $this->getCommand($sourcePathOs, $tempPathOs, $globalConfig);
-		exec($command, $output, $status);
-
-		if ($status != 0)
-			$this->throwError($sourcePath, $tempPath);
+		$process = $this->getProcess($sourcePath, $tempPath, $globalConfig);
+		$process->execute();
 
 		$sourceContents = JWSDK_Util_File::read($tempPath, 'temp file');
 		$buildName = $this->getResourceBuildName($resource, $globalConfig);
@@ -54,17 +48,10 @@ class JWSDK_Resource_Converter_CssBase extends JWSDK_Resource_Converter
 		JWSDK_Util_File::write($buildPath, $buildContents);
 	}
 
-	protected function getCommand( // String
+	protected function getProcess( // JWSDK_Process
 		$source,       // String
 		$target,       // String
 		$globalConfig) // JWSDK_GlobalConfig
-	{
-		throw new JWSDK_Exception_MethodNotImplemented();
-	}
-
-	protected function throwError(
-		$source, // String
-		$target) // String
 	{
 		throw new JWSDK_Exception_MethodNotImplemented();
 	}

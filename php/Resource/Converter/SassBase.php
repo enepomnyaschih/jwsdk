@@ -21,18 +21,14 @@
 
 class JWSDK_Resource_Converter_SassBase extends JWSDK_Resource_Converter_CssBase
 {
-	protected function getCommand( // String
+	protected function getProcess( // JWSDK_Process
 		$source,       // String
 		$target,       // String
 		$globalConfig) // JWSDK_GlobalConfig
 	{
-		return "sass --unix-newlines -f $source $target 2> sass.log";
-	}
-
-	protected function throwError(
-		$source, // String
-		$target) // String
-	{
-		throw new JWSDK_Exception_SassError($source, $target);
+		$sourceOs = JWSDK_Process::escapePath($source);
+		$targetOs = JWSDK_Process::escapePath($target);
+		$command = "sass --unix-newlines -f $sourceOs $targetOs";
+		return new JWSDK_Process('Sass/SCSS compilation', $command, $source, $target, true, true);
 	}
 }

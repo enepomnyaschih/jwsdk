@@ -19,18 +19,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class JWSDK_Exception_ProcessReturnedError extends JWSDK_Exception
+class JWSDK_Exception_ProcessError extends JWSDK_Exception
 {
-	private $error; // String
-
-	public function __construct($process, $returnValue, $error)
+	public function __construct($name, $input, $code, $error)
 	{
-		parent::__construct("Process returned $returnValue code. Command:\n$process\nError:\n$error");
-		$this->error = $error;
-	}
-
-	public function getError()
-	{
-		return $this->error;
+		$inputText = isset($input) ? "\nInput file: $input" : '';
+		parent::__construct("$name error.$inputText\nError $code:\n$error");
 	}
 }
