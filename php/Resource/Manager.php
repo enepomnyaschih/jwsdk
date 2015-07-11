@@ -171,7 +171,7 @@ class JWSDK_Resource_Manager
 			// TODO: check that resource mtime has been changed
 
 			if ($this->globalConfig->isConversionLog())
-				JWSDK_Log::logTo('build.log', "Converting resource $name");
+				echo "Converting resource $name\n";
 
 			$attacher = $converter->getAttacher();
 			$converter->convert($resource, $this->globalConfig);

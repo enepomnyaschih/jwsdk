@@ -1,22 +1,22 @@
 <?php
 
 /*
-    jWidget project builder.
+	jWidget project builder.
 
-    Copyright (C) 2013 Egor Nepomnyaschih
+	Copyright (C) 2013 Egor Nepomnyaschih
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU Lesser General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 date_default_timezone_set('UTC');
@@ -38,14 +38,13 @@ include_once $jwsdkDir . 'php/Mode/Release.php';
 
 if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
 {
-	echo "USAGE jwsdk <mode> [<path_to_config.json>]\n\n" .
-	     "Supported modes:\n" .
-	     JWSDK_Mode::getModesDescription();
+	fwrite(STDERR,
+		"USAGE jwsdk <mode> [<path_to_config.json>]\n\n" .
+		"Supported modes:\n" .
+		JWSDK_Mode::getModesDescription());
 
 	exit(1);
 }
-
-include_once $jwsdkDir . 'php/Log.php';
 
 include_once $jwsdkDir . 'php/BuildCache.php';
 include_once $jwsdkDir . 'php/BuildCache/Input.php';
@@ -112,27 +111,26 @@ include_once $jwsdkDir . 'php/Resource/Manager.php';
 include_once $jwsdkDir . 'php/Template.php';
 include_once $jwsdkDir . 'php/Template/Manager.php';
 
-$date = date('Y-m-d H:i:s');
-JWSDK_Log::logTo('build.log', "\n\n[$date]");
-JWSDK_Log::logTo('build.log', 'Building frontend with jWidget SDK 0.7...');
+echo "Building frontend with jWidget SDK 0.7...\n";
 
 try
 {
-    $builder = new JWSDK_Builder($argv[0], $argv[1], (count($argv) < 3) ? null : $argv[2]);
-    $builder->buildPages();
-    $builder->saveCache();
+	$builder = new JWSDK_Builder($argv[0], $argv[1], (count($argv) < 3) ? null : $argv[2]);
+	$builder->buildPages();
+	$builder->saveCache();
 }
 catch (JWSDK_Exception $e)
 {
-    JWSDK_Log::logTo('build.log', "\nERROR\n" . $e->getMessage());
-    exit(1);
+	$message = $e->getMessage();
+	fwrite(STDERR, "ERROR\n$message\n");
+	exit(1);
 }
 catch (Exception $e)
 {
-    JWSDK_Log::logTo('build.log', "\nUNEXPECTED ERROR\nPlease report to https://github.com/enepomnyaschih/jwsdk/issues/new\n\n" . $e);
-    exit(1);
+	fwrite(STDERR, "UNEXPECTED ERROR\nPlease report to https://github.com/enepomnyaschih/jwsdk/issues/new\n\n$e\n");
+	exit(2);
 }
 
-JWSDK_Log::logTo('build.log', 'Done');
+echo "Done\n";
 
 exit(0);
