@@ -23,7 +23,7 @@ class JWSDK_Util_Obfuscator
 {
 	const SYMBOL_REG = '~^[A-Za-z_$][A-Za-z0-9_$]*$~';
 	const INVOKE_REG = '~[A-Za-z_$\)\]][A-Za-z0-9_$.]*~';
-	const DEFINE_REG = '~([A-Za-z_$][A-Za-z0-9_$]*)\s*:~';
+	const DEFINE_REG = '~([{,])\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*:~';
 
 	private $contents;
 	private $fileManager;
@@ -128,6 +128,6 @@ class JWSDK_Util_Obfuscator
 
 	private function replaceDefine($match)
 	{
-		return $this->fileManager->getJsSymbol($match[1], '') . ':';
+		return $match[1] . "\n" . $this->fileManager->getJsSymbol($match[2], '') . ':';
 	}
 }

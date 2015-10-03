@@ -32,7 +32,7 @@ class JWSDK_File_Manager
 		'enum', 'await', 'implements', 'package', 'protected', 'static', 'interface', 'private', 'public',
 		// Unused
 		'abstract', 'boolean', 'byte', 'char', 'double', 'final', 'float', 'goto', 'int', 'long',
-		'native', 'short', 'synchronized', 'transient', 'volatile'
+		'native', 'short', 'synchronized', 'transient', 'volatile', 'prototype'
 	);
 
 	private $globalConfig;        // JWSDK_GlobalConfig
@@ -136,7 +136,8 @@ class JWSDK_File_Manager
 		$namespace) // String
 	{
 		if ($this->globalConfig->isNotObfuscateSymbol($symbol) ||
-			$this->globalConfig->isNotObfuscateNamespace($namespace)) {
+			$this->globalConfig->isNotObfuscateNamespace($namespace) ||
+			in_array($symbol, self::$RESERVED_WORDS, true)) {
 			return $symbol;
 		}
 		$format = $this->globalConfig->getObfuscateDebugFormat();
@@ -145,9 +146,13 @@ class JWSDK_File_Manager
 		}
 		if (!isset($this->jsSymbols[$symbol])) {
 			$this->jsSymbols[$symbol] = $this->newJsSymbol();
-			echo "Map $symbol to " . $this->jsSymbols[$symbol] . "\n";
 		}
 		return $this->jsSymbols[$symbol];
+	}
+
+	public function getJsSymbols() // Map<String>
+	{
+		return $this->jsSymbols;
 	}
 
 	private function newJsSymbol() // String

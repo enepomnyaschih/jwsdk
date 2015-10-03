@@ -76,8 +76,13 @@ class JWSDK_Builder
 	public function buildPages()
 	{
 		$this->pageManager->buildPages();
+		if ($this->globalConfig->isObfuscate()) {
+			$tempPath = $this->globalConfig->getTempPath();
+			$jsSymbols = $this->fileManager->getJsSymbols();
+			JWSDK_Util_File::write("$tempPath/obfuscation-map.json", json_encode($jsSymbols));
+		}
 	}
-	
+
 	public function saveCache()
 	{
 		JWSDK_Log::logTo('build.log', 'Saving build cache...');
