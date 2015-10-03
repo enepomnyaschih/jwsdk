@@ -31,4 +31,18 @@ class JWSDK_File_Attacher_Js extends JWSDK_Resource_Attacher
 	{
 		return '<script type="text/javascript" charset="utf-8" src="' . htmlspecialchars($url) . '"></script>';
 	}
+
+	public function beforeCompress( // String
+		$contents,     // String
+		$sourceName,   // String
+		$targetName,   // String
+		$globalConfig, // JWSDK_GlobalConfig
+		$fileManager)  // JWSDK_File_Manager
+	{
+		if (!$globalConfig->isObfuscate()) {
+			return $contents;
+		}
+		$obfuscator = new JWSDK_Util_Obfuscator($contents, $fileManager);
+		return $obfuscator->obfuscate();
+	}
 }

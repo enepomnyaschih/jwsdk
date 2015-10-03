@@ -105,6 +105,15 @@ class JWSDK_GlobalConfig
 				'config.json', 'global config', 'conversionLog must be boolean');
 		}
 
+		if (!isset($this->json['obfuscate']))
+			$this->json['obfuscate'] = false;
+
+		if (!is_bool($this->json['obfuscate']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'obfuscate must be boolean');
+		}
+
 		if (!isset($this->json['embedDataUri']))
 			$this->json['embedDataUri'] = false;
 
@@ -148,6 +157,44 @@ class JWSDK_GlobalConfig
 			{
 				throw new JWSDK_Exception_InvalidFileFormat(
 					'config.json', 'global config', 'mimeTypes must be dictionary of strings');
+			}
+		}
+
+		if (!isset($this->json['notObfuscateSymbols']))
+			$this->json['notObfuscateSymbols'] = array();
+
+		$notObfuscateSymbols = &$this->json['notObfuscateSymbols'];
+		if (!is_array($notObfuscateSymbols))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'notObfuscateSymbols must be array of strings');
+		}
+
+		foreach ($notObfuscateSymbols as $value)
+		{
+			if (!is_string($value))
+			{
+				throw new JWSDK_Exception_InvalidFileFormat(
+					'config.json', 'global config', 'notObfuscateSymbols must be array of strings');
+			}
+		}
+
+		if (!isset($this->json['notObfuscateNamespaces']))
+			$this->json['notObfuscateNamespaces'] = array();
+
+		$notObfuscateNamespaces = $this->json['notObfuscateNamespaces'];
+		if (!is_array($notObfuscateNamespaces))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'notObfuscateNamespaces must be array of strings');
+		}
+
+		foreach ($notObfuscateNamespaces as $value)
+		{
+			if (!is_string($value))
+			{
+				throw new JWSDK_Exception_InvalidFileFormat(
+					'config.json', 'global config', 'notObfuscateNamespaces must be array of strings');
 			}
 		}
 	}
@@ -241,6 +288,11 @@ class JWSDK_GlobalConfig
 		return $this->json['conversionLog'];
 	}
 
+	public function isObfuscate() // Boolean
+	{
+		return $this->json['obfuscate'];
+	}
+
 	public function isEmbedDataUri() // Boolean
 	{
 		return $this->json['embedDataUri'];
@@ -261,6 +313,28 @@ class JWSDK_GlobalConfig
 	{
 		$mimeTypes = $this->json['mimeTypes'];
 		return isset($mimeTypes[$extension]) ? $mimeTypes[$extension] : "image/$extension";
+	}
+
+	public function isNotObfuscateSymbol( // Boolean
+		$symbol) // String
+	{
+		foreach ($this->json['notObfuscateSymbols'] as $pattern) {
+			if (preg_match("~^$pattern$~", $symbol)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function isNotObfuscateNamespace( // Boolean
+		$namespace) // String
+	{
+		foreach ($this->json['notObfuscateNamespaces'] as $pattern) {
+			if (preg_match("~^$pattern$~", $namespace)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function getJavaCmd() // String
