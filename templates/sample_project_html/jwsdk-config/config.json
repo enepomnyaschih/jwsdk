@@ -18,6 +18,25 @@
 	"dynamicLoader" : false,
 	"conversionLog" : false,
 
+	// JS obfuscation settings
+	"obfuscate"     : false,
+//	"obfuscateDebugFormat": "_%v_", // enable to use predictable renaming pattern instead of obfuscation, useful for debugging
+	"notObfuscateNamespaces": [ // PHP regular expressions
+		"document", "window", "Math", "JSON", // Native
+		"jQuery", "\\$"                       // jQuery
+	],
+	"notObfuscateSymbols": [ // PHP regular expressions
+		// Native
+		"call", "length", "push", "slice", "indexOf", "split", "join", "replace", "toLowerCase",
+		"toUpperCase", "test", "exec", "className", "offsetWidth", "clientWidth",
+
+		// jQuery
+		"width", "height", "innerWidth", "innerHeight", "outerWidth", "outerHeight",
+		"toggleClass", "addClass", "removeClass", "text", "css", "attr", "val", "prop", "append",
+		"select", "focus", "blur", "trigger", "click", "bind", "unbind", "submit",
+		"preventDefault", "stopPropagation", "stopImmediatePropagation", "shiftKey", "ctrlKey"
+	],
+
 	// Data URI is base64-formatted file contents in CSS files. Minor Web optimization.
 	"embedDataUri"   : true,
 	"dataUriMaxHits" : 1,
