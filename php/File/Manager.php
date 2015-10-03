@@ -139,6 +139,10 @@ class JWSDK_File_Manager
 			$this->globalConfig->isNotObfuscateNamespace($namespace)) {
 			return $symbol;
 		}
+		$format = $this->globalConfig->getObfuscateDebugFormat();
+		if (isset($format)) {
+			return str_replace('%v', $symbol, $format);
+		}
 		if (!isset($this->jsSymbols[$symbol])) {
 			$this->jsSymbols[$symbol] = $this->newJsSymbol();
 			echo "Map $symbol to " . $this->jsSymbols[$symbol] . "\n";

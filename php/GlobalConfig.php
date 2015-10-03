@@ -50,6 +50,7 @@ class JWSDK_GlobalConfig
 			'tempPath',
 			'tsTarget',
 			'urlPrefix',
+			'obfuscateDebugFormat',
 			'javaCmd'
 		);
 
@@ -59,6 +60,7 @@ class JWSDK_GlobalConfig
 			'jsonPath' => null,
 			'snippetsPath' => null,
 			'tsTarget' => 'ES5',
+			'obfuscateDebugFormat' => null,
 			'javaCmd' => 'java'
 		);
 
@@ -291,6 +293,11 @@ class JWSDK_GlobalConfig
 	public function isObfuscate() // Boolean
 	{
 		return $this->json['obfuscate'];
+	}
+
+	public function getObfuscateDebugFormat() // String
+	{
+		return $this->json['obfuscateDebugFormat'];
 	}
 
 	public function isEmbedDataUri() // Boolean
