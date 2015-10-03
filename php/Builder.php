@@ -80,6 +80,12 @@ class JWSDK_Builder
 			$tempPath = $this->globalConfig->getTempPath();
 			$jsSymbols = $this->fileManager->getJsSymbols();
 			JWSDK_Util_File::write("$tempPath/obfuscation-map.json", json_encode($jsSymbols));
+			if ($this->globalConfig->isListObfuscatedSymbols()) {
+				$runDir = $this->globalConfig->getRunDir();
+				$jsSymbolArray = array_keys($jsSymbols);
+				sort($jsSymbolArray);
+				JWSDK_Util_File::write('symbols.txt', implode("\n", $jsSymbolArray) . "\n");
+			}
 		}
 	}
 

@@ -116,6 +116,15 @@ class JWSDK_GlobalConfig
 				'config.json', 'global config', 'obfuscate must be boolean');
 		}
 
+		if (!isset($this->json['listObfuscatedSymbols']))
+			$this->json['listObfuscatedSymbols'] = false;
+
+		if (!is_bool($this->json['listObfuscatedSymbols']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'listObfuscatedSymbols must be boolean');
+		}
+
 		if (!isset($this->json['embedDataUri']))
 			$this->json['embedDataUri'] = false;
 
@@ -293,6 +302,11 @@ class JWSDK_GlobalConfig
 	public function isObfuscate() // Boolean
 	{
 		return $this->json['obfuscate'];
+	}
+
+	public function isListObfuscatedSymbols() // Boolean
+	{
+		return $this->json['listObfuscatedSymbols'];
 	}
 
 	public function getObfuscateDebugFormat() // String
