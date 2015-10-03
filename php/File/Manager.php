@@ -161,7 +161,7 @@ class JWSDK_File_Manager
 				$symbol = self::$ALPHABET[$index % strlen(self::$ALPHABET)] . $symbol;
 				$index = (int)($index / strlen(self::$ALPHABET));
 			} while ($index != 0);
-		} while ($this->globalConfig->isNotObfuscateSymbol($symbol) && !in_array($symbol, self::$RESERVED, true));
+		} while ($this->globalConfig->isNotObfuscateSymbol($symbol) || in_array($symbol, self::$RESERVED_WORDS, true));
 		return $symbol;
 	}
 
