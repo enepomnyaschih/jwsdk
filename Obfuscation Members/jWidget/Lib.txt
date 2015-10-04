@@ -1,0 +1,43 @@
+		// jWidget Lib class members
+
+		// Common
+		"\\$.*", "source", "target", "update", "watch", "scope",
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/JW.Class
+		"_iid", "_super", "superclass", "destroy", "destroyObject", "own(Items|Value)?",
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/JW.Event
+		"bind", "purge", "trigger", "unbind",
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/JW.EventParams
+		// and its subclasses
+		"sender", "item", "value", "oldValue",
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/JW.Property
+		"bindTo", "get", "map", "set", "changeEvent", "acceptNull", "createValue",
+		"destroyValue", "sources", "init", "done",
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/JW.AbstractCollection
+		// and its subclasses
+		"(as|to)(Array|Map|Set)", "clear", "contains(Item|Key)", "count",
+		"create(Counter|Empty(Array|Map|Set)?|Filterer|Indexer|Lister|Mapper|Observer|Orderer|SorterComparing|Inserter|Merger|Reverser)",
+		"each", "every", "filter", "find", "get(First|Last)(Key)?",
+		"get(Items|Json|Keys?|Length|SortingKeys(Comparing)?)", "index",
+		"isEmpty", "keyOf", "map", "remove(All(Verbose)?|Item|Items)?", "search", "some",
+		"set(All(Verbose)?|Key)",
+		"to(Reversed|Sorted(Comparing)?)",
+		"try(Add(All)?|Clear|Move|Remove(All)?|Reindex|Reorder|Set(All|Key)?|Splice)",
+		"binarySearch", "backEvery", "merge", "add(All)?", "pop", "move", "splice",
+		"reorder", "sort(Comparing)?", "reverse", "collapse", "equal", "reindex",
+		"(detect|perform)(Splice|Filter|Reindex|Reorder)",
+		"detectSort(Comparing)?", "contains", "clone", "items", "toIndexCount",
+		"(add|remove)ParamsList", "(added|removed)ItemsList", "oldItems",
+		"removedKeys", "(added|removed|updated)Items",
+
+		// Observable collection events
+		"(clear|move|reindex|reorder|replace|splice)Event", "spliceResult",
+		"(from|to)Index", "indexArray", "keyMap", "(old|new)Item",
+
+		// Collection synchronizer options/methods
+		"(add|create|destroy|filter|remove)Item", "clearItems", "change", "compare", "order", "reconfigure", "recount",
+		"refilter(At|Item)?", "resort", "getKey",

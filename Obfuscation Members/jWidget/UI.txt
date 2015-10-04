@@ -1,0 +1,14 @@
+		// jWidget UI class members
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/jQuery
+		"jw(attr|class|css|html|on|prop|radio|show|text|val)",
+
+		// http://enepomnyaschih.github.io/jwidget#!/api/JW.UI.Component
+		"el", "children", "parent", "templates", "wasAfterAppend", "addArray",
+		"addCollection", "addReplaceable", "afterAppend", "afterDestroy",
+		"afterRender", "beforeRender", "getElement", "releaseDom", "remove",
+		"removeElement", "render.*", "unrender", "using", "main",
+
+		// Other
+		"cls", "style", "property", "simple", "name", "createElement",
+		"groups", "root",
