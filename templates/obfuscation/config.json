@@ -88,7 +88,10 @@
 		"document", "window", "location", "console",
 
 		// jQuery
-		"jQuery", "\\$"
+		"jQuery", "\\$",
+
+		// jWidget
+		"JW", "JWSDK"
 	],
 
 	// These members won't be obfuscated.
