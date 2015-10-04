@@ -1,4 +1,4 @@
-// jQuery Miscellaneous API
-// http://api.jquery.com/category/miscellaneous/
+		// jQuery Miscellaneous API
+		// http://api.jquery.com/category/miscellaneous/
 
-"get", "index", "toArray",
+		"get", "index", "toArray",

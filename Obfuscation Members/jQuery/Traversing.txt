@@ -1,7 +1,7 @@
-// jQuery Traversing API
-// http://api.jquery.com/category/traversing/
+		// jQuery Traversing API
+		// http://api.jquery.com/category/traversing/
 
-"add(Back)?", "andSelf", "children", "closest", "contents", "each", "end",
-"eq", "filter", "find", "first", "has", "is", "last", "map",
-"next(All|Until)?", "not", "offsetParent", "parent", "parents(Until)?",
-"prev(All|Until)?", "siblings", "slice",
+		"add(Back)?", "andSelf", "children", "closest", "contents", "each", "end",
+		"eq", "filter", "find", "first", "has", "is", "last", "map",
+		"next(All|Until)?", "not", "offsetParent", "parent", "parents(Until)?",
+		"prev(All|Until)?", "siblings", "slice",

@@ -1,4 +1,4 @@
-// jQuery Data API
-// http://api.jquery.com/category/data/
+		// jQuery Data API
+		// http://api.jquery.com/category/data/
 
-"clearQueue", "data", "dequeue", "queue", "removeData",
+		"clearQueue", "data", "dequeue", "queue", "removeData",

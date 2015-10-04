@@ -26,6 +26,9 @@ class JWSDK_GlobalConfig
 	private $json;      // Object
 	private $mtime;     // Timestamp
 
+	private $notObfuscateNamespaces;
+	private $notObfuscateMembers;
+
 	public function __construct(
 		$runDir,    // String
 		$configDir, // String
@@ -190,6 +193,8 @@ class JWSDK_GlobalConfig
 			}
 		}
 
+		$this->notObfuscateMembers = $this->mergePatterns($notObfuscateMembers);
+
 		if (!isset($this->json['notObfuscateNamespaces']))
 			$this->json['notObfuscateNamespaces'] = array();
 
@@ -208,6 +213,8 @@ class JWSDK_GlobalConfig
 					'config.json', 'global config', 'notObfuscateNamespaces must be array of strings');
 			}
 		}
+
+		$this->notObfuscateNamespaces = $this->mergePatterns($notObfuscateNamespaces);
 	}
 
 	public function isTemplateProcessorEnabled() // Boolean
@@ -339,23 +346,13 @@ class JWSDK_GlobalConfig
 	public function isNotObfuscateMember( // Boolean
 		$member) // String
 	{
-		foreach ($this->json['notObfuscateMembers'] as $pattern) {
-			if (preg_match("~^$pattern$~", $member)) {
-				return true;
-			}
-		}
-		return false;
+		return preg_match($this->notObfuscateMembers, $member);
 	}
 
 	public function isNotObfuscateNamespace( // Boolean
 		$namespace) // String
 	{
-		foreach ($this->json['notObfuscateNamespaces'] as $pattern) {
-			if (preg_match("~^$pattern$~", $namespace)) {
-				return true;
-			}
-		}
-		return false;
+		return preg_match($this->notObfuscateNamespaces, $namespace);
 	}
 
 	public function getJavaCmd() // String
@@ -366,5 +363,22 @@ class JWSDK_GlobalConfig
 	public function getMtime() // Timestamp
 	{
 		return $this->mtime;
+	}
+
+	private function mergePatterns( // String
+		$patterns) // Array<String>
+	{
+		$result = '~^(?:';
+		$first = true;
+		foreach ($patterns as $pattern) {
+			if ($first) {
+				$first = false;
+			} else {
+				$result .= '|';
+			}
+			$result .= '(?:' . $pattern . ')';
+		}
+		$result .= ')$~';
+		return $result;
 	}
 }

@@ -1,7 +1,7 @@
-// Event class
+		// Event class
 
-// May be inconsistent between browsers - consider using jQuery/MooTools/etc.
+		// May be inconsistent between browsers - consider using jQuery/MooTools/etc.
 
-"bubbles", "cancelable", "currentTarget", "defaultPrevented", "eventPhase",
-"target", "timeStamp", "type", "isTrusted", "preventDefault",
-"stopImmediatePropagation", "stopPropagation",
+		"bubbles", "cancelable", "currentTarget", "defaultPrevented", "eventPhase",
+		"target", "timeStamp", "type", "isTrusted", "preventDefault",
+		"stopImmediatePropagation", "stopPropagation",

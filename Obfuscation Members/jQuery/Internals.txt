@@ -1,4 +1,4 @@
-// jQuery Internals API
-// http://api.jquery.com/category/internals/
+		// jQuery Internals API
+		// http://api.jquery.com/category/internals/
 
-"jquery", "pushStack",
+		"jquery", "pushStack",

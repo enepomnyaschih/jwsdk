@@ -1,4 +1,4 @@
-// Error and its subclasses
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
+		// Error and its subclasses
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
 
-"message", "name", "fileName", "lineNumber", "columnNumber", "stack",
+		"message", "name", "fileName", "lineNumber", "columnNumber", "stack",

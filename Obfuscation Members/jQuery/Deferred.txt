@@ -1,5 +1,5 @@
-// jQuery Deferred Object API
-// http://api.jquery.com/category/deferred-object/
+		// jQuery Deferred Object API
+		// http://api.jquery.com/category/deferred-object/
 
-"always", "done", "fail", "(notify|reject|resolve)(With)?", "progress",
-"promise", "state", "then", "promise",
+		"always", "done", "fail", "(notify|reject|resolve)(With)?", "progress",
+		"promise", "state", "then", "promise",

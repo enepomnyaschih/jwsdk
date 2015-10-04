@@ -1,18 +1,18 @@
-// Element class
-// https://developer.mozilla.org/en-US/docs/Web/API/Element
+		// Element class
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element
 
-// Inherits Node - please include Node in your ignore-list as well to gain
-// access to all Element class members.
+		// Inherits Node - please include Node in your ignore-list as well to gain
+		// access to all Element class members.
 
-// We strongly discourage you from using this ignore-list for obfuscation
-// performance and quality reasons.
+		// We strongly discourage you from using this ignore-list for obfuscation
+		// performance and quality reasons.
 
-// Consider using jQuery/MooTools/etc instead.
+		// Consider using jQuery/MooTools/etc instead.
 
-"attributes", "childElementCount", "children", "classList", "className",
-"(client|scroll)(Height|Left|Top|Width)", "firstElementChild", "id",
-"(inner|outer)HTML", "lastElementChild", "namespaceURI", "nextElementSibling",
-"previousElementSibling", "tagName", "(add|remove)EventListener",
-"dispatchEvent", "(get|remove|set)Attribute(NS|Node)?",
-"(get|set)AttributeNodeNS", "getBoundingClientRect", "hasAttribute(NS)?",
-"remove", "setPointerCapture",
+		"attributes", "childElementCount", "children", "classList", "className",
+		"(client|scroll)(Height|Left|Top|Width)", "firstElementChild", "id",
+		"(inner|outer)HTML", "lastElementChild", "namespaceURI", "nextElementSibling",
+		"previousElementSibling", "tagName", "(add|remove)EventListener",
+		"dispatchEvent", "(get|remove|set)Attribute(NS|Node)?",
+		"(get|set)AttributeNodeNS", "getBoundingClientRect", "hasAttribute(NS)?",
+		"remove", "setPointerCapture",

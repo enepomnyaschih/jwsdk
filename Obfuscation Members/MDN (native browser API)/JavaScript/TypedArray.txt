@@ -1,7 +1,7 @@
-// TypedArray and its subclasses
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray
+		// TypedArray and its subclasses
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray
 
-"length", "buffer", "byteLength", "byteOffset", "copyWithin", "entries",
-"every", "fill", "filter", "find", "findIndex", "forEach", "indexOf", "join",
-"keys", "lastIndexOf", "map", "reduce", "reduceRight", "reverse", "set",
-"slice", "some", "sort", "subarray", "values",
+		"length", "buffer", "byteLength", "byteOffset", "copyWithin", "entries",
+		"every", "fill", "filter", "find", "findIndex", "forEach", "indexOf", "join",
+		"keys", "lastIndexOf", "map", "reduce", "reduceRight", "reverse", "set",
+		"slice", "some", "sort", "subarray", "values",
