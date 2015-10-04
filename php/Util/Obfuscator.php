@@ -21,7 +21,7 @@
 
 class JWSDK_Util_Obfuscator
 {
-	const SYMBOL_REG = '~^[A-Za-z_$][A-Za-z0-9_$]*$~';
+	const MEMBER_REG = '~^[A-Za-z_$][A-Za-z0-9_$]*$~';
 	const INVOKE_REG = '~[A-Za-z_$\)\]][A-Za-z0-9_$.]*~';
 	const DEFINE_REG = '~([{,])\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*:~';
 
@@ -119,8 +119,8 @@ class JWSDK_Util_Obfuscator
 		$match = $match[0];
 		$tokens = explode('.', $match);
 		for ($i = 1; $i < count($tokens); $i++) {
-			if (preg_match(self::SYMBOL_REG, $tokens[$i])) {
-				$tokens[$i] = $this->fileManager->getJsSymbol($tokens[$i], $tokens[0]);
+			if (preg_match(self::MEMBER_REG, $tokens[$i])) {
+				$tokens[$i] = $this->fileManager->getJsMember($tokens[$i], $tokens[0]);
 			}
 		}
 		return implode('.', $tokens);
@@ -128,6 +128,6 @@ class JWSDK_Util_Obfuscator
 
 	private function replaceDefine($match)
 	{
-		return $match[1] . "\n" . $this->fileManager->getJsSymbol($match[2], '') . ':';
+		return $match[1] . "\n" . $this->fileManager->getJsMember($match[2], '') . ':';
 	}
 }

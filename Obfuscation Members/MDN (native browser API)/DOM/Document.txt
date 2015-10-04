@@ -1,0 +1,28 @@
+// Document class
+// https://developer.mozilla.org/en-US/docs/Web/API/Document
+
+// We strongly discourage you from using this ignore-list for obfuscation
+// performance and quality reasons.
+
+// Consider keeping "document" namespace in "notObfuscateNamespaces"
+// and accessing document via global variable "document" everywhere -
+// it allows you to avoid using this whole section.
+
+"characterSet", "doctype", "documentElement", "documentURI", "hidden",
+"implementation", "(last|preferred|selected)StyleSheetSet", "styleSheets",
+"styleSheetSets", "timeline", "URL", "visibilityState", "adoptNode",
+"createAttribute(NS)?", "createCDATASection", "createComment",
+"createDocumentFragment", "createElement(NS)?", "createEvent",
+"createNodeIterator", "createProcessingInstruction", "createRange",
+"createTextNode", "createTreeWalker", "enableStyleSheetsForSet",
+"getElementsBy(ClassName|TagName|TagNameNS)", "importNode", "getElementById",
+"querySelector(All)?", "createExpression", "createNSResolver", "evaluate",
+
+// HTMLDocument
+
+"activeElement", "anchors", "body", "cookie", "defaultView", "designMode",
+"dir", "domain", "embeds", "forms", "head", "images", "lastModified", "links",
+"location", "plugins", "readyState", "referrer", "scripts", "title", "URL",
+"close", "execCommand", "getElementsByName", "getSelection", "hasFocus",
+"open", "queryCommand(Enabled|Indeterm|State|Supported|Value)", "write",
+"writeln",

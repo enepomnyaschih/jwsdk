@@ -1,0 +1,9 @@
+// jQuery Effects API
+// http://api.jquery.com/category/effects/
+
+// Recommended methods
+"animate", "clearQueue", "delay", "dequeue", "finish", "queue", "stop",
+"toggle",
+
+// Specific effects (better skip and use recommended methods above)
+"fade(In|Out|To|Toggle)", "hide", "show", "slide(Down|Toggle|Up)",

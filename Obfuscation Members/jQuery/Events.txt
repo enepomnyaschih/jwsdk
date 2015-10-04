@@ -1,0 +1,23 @@
+// jQuery Events API
+// http://api.jquery.com/category/events/
+
+// Recommended methods
+"bind", "delegate", "off", "on", "one", "trigger(Handler)?", "unbind",
+"undelegate",
+
+// Event object cross-browser members (better filter out for your purposes)
+"(alt|ctrl|meta|shift)Key", "bubbles", "button", "buttons", "cancelable",
+"char(Code)?", "(client|offset|page|screen)(X|Y)",
+"(current|delegate|original|related)Target", "data", "detail", "eventPhase",
+"isDefaultPrevented", "isImmediatePropagationStopped", "isPropagationStopped",
+"key(Code)?", "namespace", "preventDefault", "result",
+"stopImmediatePropagation", "stopPropagation", "target", "timeStamp",
+"toElement", "type", "view", "which",
+
+// Specific events (better skip and use recommended methods above)
+"blur", "change", "click", "dblclick", "focus(in|out)?", "hover",
+"key(down|press|up)", "mouse(down|enter|leave|move|out|over|up)", "ready",
+"resize", "scroll", "select", "submit",
+
+// Deprecated (better skip and avoid using in code)
+"die", "error", "live", "load", "toggle", "unload",

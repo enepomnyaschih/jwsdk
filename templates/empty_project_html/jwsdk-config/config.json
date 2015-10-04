@@ -22,465 +22,86 @@
 	"obfuscate"     : false,
 //	"obfuscateDebugFormat": "_%v_", // enable to use predictable renaming pattern instead of obfuscation, useful for debugging
 
-	// Obfuscation ignore-lists. The default lists use MDN for reference,
-	// including all features but experimental/deprecated/vendor-specific ones.
-	// If you don't use some API class/method, it is smart to comment it out
-	// in this list to improve obfuscation performance and quality.
-	// DOM API list is not complete, because it is huge.
-	// DOM API and jQuery are disabled by default - please enable whatever you use.
-	"notObfuscateNamespaces": [ // PHP regular expressions
-		// Native
-		"Object",
-		"Array",
-		"ArrayBuffer",
-		"Boolean",
-		"DataView",
-		"Date",
+	// Members of these namespaces won't be obfuscated.
+	//
+	// Feel free to extend the list if you use some third-party framework
+	// or just want to prevent obfuscation of specific namespaces.
+	//
+	// All strings here are regular expressions.
+	//
+	// Notice that namespace name must be used explicitly every time you
+	// use this feature. For example, the next expression will be
+	// obfuscated regardless of "document" presence in this list:
+	//
+	// var d = document;
+	// d.body.appendChild(child); // obfuscated to something like d.a.b(c)
+	//
+	// To fix that, avoid using mediator variables:
+	//
+	// document.body.appendChild(child); // correct
+	"notObfuscateNamespaces": [
+		// Native classes
+		"Object", "Array", "ArrayBuffer", "Boolean", "DataView", "Date",
 		"(Eval|Internal|Range|Reference|Syntax|Type|URI)?Error",
-		"Float(32|64)Array",
-		"Function",
-		"(Int|Uint)(8|16|32)Array",
-		"Intl",
-		"JSON",
-		"Math",
-		"Number",
-		"RegExp",
-		"String",
-		"TypedArray",
+		"Float(32|64)Array", "Function", "(Int|Uint)(8|16|32)Array", "Intl",
+		"JSON", "Math", "Number", "RegExp", "String", "TypedArray",
 		"Uint8ClampedArray",
 
-		"document",
-		"window",
-		"location",
-		"console",
+		// Global objects
+		"document", "window", "location", "console",
 
 		// jQuery
-		"jQuery",
-		"\\$"
+		"jQuery", "\\$"
 	],
-	"notObfuscateSymbols": [ // PHP regular expressions
-		// Object, common
-		"constructor",
-		"hasOwnProperty",
-		"isPrototypeOf",
-		"propertyIsEnumerable",
-		"to(Locale)?String",
-		"valueOf",
+
+	// These members won't be obfuscated.
+	//
+	// Default member lists are taken from MDN documentation.
+	//
+	// Find more members in "Obfuscation Members" folder in jWidget SDK
+	// installation directory.
+	//
+	// Feel free to extend the list if you use some third-party framework
+	// or just want to prevent obfuscation of specific members.
+	//
+	// All strings here are regular expressions.
+	//
+	// If you don't want to overload this list, you can use special JS
+	// syntax tweaks to prevent member obfuscation:
+	//
+	// - object. member   // insert a space before member name
+	// - object["member"] // use square bracket syntax
+	//
+	// If the framework you use has a namespace (e.g. Ext, YUI, ...)
+	// consider adding it to "notObfuscateNamespaces" list above.
+	"notObfuscateMembers": [
+		// Object
+		"constructor", "hasOwnProperty", "isPrototypeOf",
+		"propertyIsEnumerable", "to(Locale)?String", "valueOf",
 
 		// Array
-		"length",
-		"pop",
-		"push",
-		"reverse",
-		"shift",
-		"sort",
-		"splice",
-		"unshift",
-		"concat",
-		"join",
-		"indexOf",
-		"lastIndexOf",
-		"forEach",
-		"every",
-		"some",
-		"filter",
-		"map",
-		"reduce",
-		"reduceRight",
-
-		// ArrayBuffer
-		"byteLength",
-		"slice",
-
-		// DataView
-		"buffer",
-		"byteLength",
-		"byteOffset",
-		"(get|set)(Int|Uint)(8|16|32)",
-		"(get|set)Float(32|64)",
+		"length", "pop", "push", "reverse", "shift", "sort", "splice",
+		"unshift", "concat", "join", "indexOf", "lastIndexOf", "forEach",
+		"every", "some", "filter", "map", "reduce", "reduceRight",
 
 		// Date
 		"(get|set)(UTC)?(Date|FullYear|Hours|Milliseconds|Minutes|Month|Seconds)",
-		"(get|set)(Time|Year)",
-		"getTimezoneOffset",
-		"to(Locale)?(Date|Time)String",
-		"to(ISO|UTC)String",
-		"toJSON",
-
-		// Error and its subclasses
-		"message",
-		"name",
-		"fileName",
-		"lineNumber",
-		"columnNumber",
-		"stack",
-
-		// TypedArray and its subclasses
-		"length",
-		"buffer",
-		"byteLength",
-		"byteOffset",
-		"copyWithin",
-		"entries",
-		"every",
-		"fill",
-		"filter",
-		"find",
-		"findIndex",
-		"forEach",
-		"indexOf",
-		"join",
-		"keys",
-		"lastIndexOf",
-		"map",
-		"reduce",
-		"reduceRight",
-		"reverse",
-		"set",
-		"slice",
-		"some",
-		"sort",
-		"subarray",
-		"values",
+		"(get|set)(Time|Year)", "getTimezoneOffset",
+		"to(Locale)?(Date|Time)String", "to(ISO|UTC)String", "toJSON",
 
 		// Function
-		"apply",
-		"bind",
-		"call",
-
-		// Intl.Collator
-		"compare",
-		"resolvedOptions",
-
-		// Intl.DateTimeFormat, Intl.NumberFormat
-		"format",
-		"resolvedOptions",
+		"apply", "bind", "call",
 
 		// Number
 		"to(Exponential|Fixed|Precision)",
 
 		// RegExp
-		"global",
-		"ignoreCase",
-		"multiline",
-		"source",
-		"exec",
-		"test",
+		"global", "ignoreCase", "multiline", "source", "exec", "test",
 
 		// String
-		"length",
-		"charAt",
-		"charCodeAt",
-		"concat",
-		"indexOf",
-		"lastIndexOf",
-		"localeCompare",
-		"match",
-		"replace",
-		"search",
-		"slice",
-		"split",
-		"substr",
-		"substring",
-		"to(Locale)?(Lower|Upper)Case",
-		"trim",
-		"anchor",
-		"link",
-
-		// Document. Consider enabling "document" namespace in "notObfuscateNamespaces"
-		// and accessing document via global variable "document" everywhere -
-		// it allows you to disable this whole section
-		"characterSet",
-		"doctype",
-		"documentElement",
-		"documentURI",
-		"hidden",
-		"implementation",
-		"(last|preferred|selected)StyleSheetSet",
-		"styleSheets",
-		"styleSheetSets",
-		"timeline",
-		"URL",
-		"visibilityState",
-		"adoptNode",
-		"createAttribute(NS)?",
-		"createCDATASection",
-		"createComment",
-		"createDocumentFragment",
-		"createElement(NS)?",
-		"createEvent",
-		"createNodeIterator",
-		"createProcessingInstruction",
-		"createRange",
-		"createTextNode",
-		"createTreeWalker",
-		"enableStyleSheetsForSet",
-		"getElementsBy(ClassName|TagName|TagNameNS)",
-		"importNode",
-		"getElementById",
-		"querySelector(All)?",
-		"createExpression",
-		"createNSResolver",
-		"evaluate",
-
-		// HTMLDocument
-		"activeElement",
-		"anchors",
-		"body",
-		"cookie",
-		"defaultView",
-		"designMode",
-		"dir",
-		"domain",
-		"embeds",
-		"forms",
-		"head",
-		"images",
-		"lastModified",
-		"links",
-		"location",
-		"plugins",
-		"readyState",
-		"referrer",
-		"scripts",
-		"title",
-		"URL",
-		"close",
-		"execCommand",
-		"getElementsByName",
-		"getSelection",
-		"hasFocus",
-		"open",
-		"queryCommand(Enabled|Indeterm|State|Supported|Value)",
-		"write",
-		"writeln",
-
-		// Document. Consider enabling "window" namespace in "notObfuscateNamespaces"
-		// and accessing window via global variable "window" everywhere -
-		// it allows you to disable this whole section.
-		// Alternative solution: you can access window members as global variables -
-		// it prevents their obfuscation too.
-		"applicationCache",
-		"caches",
-		"crypto",
-		"dialogArguments",
-		"document",
-		"frameElement",
-		"frames",
-		"fullScreen",
-		"history",
-		"(inner|outer)(Height|Width)",
-		"innerWidth",
-		"length",
-		"location",
-		"locationbar",
-		"localStorage",
-		"menubar",
-		"messageManager",
-		"mozAnimationStartTime",
-		"name",
-		"navigator",
-		"opener",
-		"pageXOffset",
-		"pageYOffset",
-		"sessionStorage",
-		"speechSynthesis",
-		"parent",
-		"performance",
-		"personalbar",
-		"returnValue",
-		"screen",
-		"screenX",
-		"screenY",
-		"scrollbars",
-		"scrollX",
-		"scrollY",
-		"self",
-		"status",
-		"statusbar",
-		"toolbar",
-		"top",
-		"window",
-		"addEventListener",
-		"alert",
-		"atob",
-		"blur",
-		"btoa",
-		"clearImmediate",
-		"clearInterval",
-		"clearTimeout",
-		"close",
-		"confirm",
-		"dispatchEvent",
-		"dump",
-		"fetch",
-		"find",
-		"focus",
-		"getAttention",
-		"getAttentionWithCycleCount",
-		"getComputedStyle",
-		"getSelection",
-		"matchMedia",
-		"maximize",
-		"minimize",
-		"moveBy",
-		"moveTo",
-		"mozRequestAnimationFrame",
-		"open",
-		"openDialog",
-		"postMessage",
-		"print",
-		"prompt",
-		"removeEventListener",
-		"resizeBy",
-		"resizeTo",
-		"restore",
-		"scroll(By|ByLines|ByPages|To)?",
-		"setCursor",
-		"setImmediate",
-		"setInterval",
-		"setResizable",
-		"setTimeout",
-		"showModalDialog",
-		"sizeToContent",
-		"stop",
-		"updateCommands",
-
-		// Node. Consider using jQuery/MooTools/etc
-		"baseURI",
-		"childNodes",
-		"firstChild",
-		"lastChild",
-		"nextSibling",
-		"nodeName",
-		"nodeType",
-		"nodeValue",
-		"ownerDocument",
-		"parentNode",
-		"parentElement",
-		"previousSibling",
-		"textContent",
-		"appendChild",
-		"cloneNode",
-		"compareDocumentPosition",
-		"contains",
-		"hasChildNodes",
-		"insertBefore",
-		"isDefaultNamespace",
-		"isEqualNode",
-		"lookupPrefix",
-		"lookupNamespaceURI",
-		"normalize",
-		"removeChild",
-		"replaceChild",
-
-		// Element. Consider using jQuery/MooTools/etc
-		"attributes",
-		"childElementCount",
-		"children",
-		"classList",
-		"className",
-		"(client|scroll)(Height|Left|Top|Width)",
-		"firstElementChild",
-		"id",
-		"(inner|outer)HTML",
-		"lastElementChild",
-		"namespaceURI",
-		"nextElementSibling",
-		"previousElementSibling",
-		"tagName",
-		"(add|remove)EventListener",
-		"dispatchEvent",
-		"(get|remove|set)Attribute(NS|Node)?",
-		"(get|set)AttributeNodeNS",
-		"getBoundingClientRect",
-		"hasAttribute(NS)?",
-		"remove",
-		"setPointerCapture",
-
-		// Event. Very inconsistent between browsers - consider using a framework
-		"bubbles",
-		"cancelable",
-		"currentTarget",
-		"defaultPrevented",
-		"eventPhase",
-		"target",
-		"timeStamp",
-		"type",
-		"isTrusted",
-		"preventDefault",
-		"stopImmediatePropagation",
-		"stopPropagation",
-
-		// Event subscription properties. Consider using addEventListener instead
-		"onabort",
-		"onbeforeinstallprompt",
-		"onbeforeunload",
-		"onblur",
-		"oncancel",
-		"oncanplay",
-		"oncanplaythrough",
-		"onchange",
-		"onclick",
-		"onclose",
-		"oncontextmenu",
-		"oncuechange",
-		"ondblclick",
-		"ondevice(light|motion|orientation|proximity)",
-		"ondrag(end|enter|exit|leave|over|start)?",
-		"ondrop",
-		"ondurationchange",
-		"onemptied",
-		"onended",
-		"onerror",
-		"onfocus",
-		"ongotpointercapture",
-		"onhashchange",
-		"oninput",
-		"oninvalid",
-		"onkey(down|press|up)",
-		"onlanguagechange",
-		"onload",
-		"onloadeddata",
-		"onloadedmetadata",
-		"onloadstart",
-		"onlostpointercapture",
-		"onmouse(down|enter|leave|move|out|over|up|wheel)",
-		"onmozbeforepaint",
-		"onpageshow",
-		"onpagehide",
-		"onpaint",
-		"onpause",
-		"onplay",
-		"onplaying",
-		"onpointer(down|move|up|cancel|over|out|enter|leave)",
-		"onpopstate",
-		"onprogress",
-		"onratechange",
-		"onreadystatechange",
-		"onreset",
-		"onresize",
-		"onscroll",
-		"onseeked",
-		"onseeking",
-		"onselect",
-		"onselectstart",
-		"onselectionchange",
-		"onshow",
-		"onstalled",
-		"onsubmit",
-		"onsuspend",
-		"ontimeupdate",
-		"onunload",
-		"onuserproximity",
-		"onvolumechange",
-		"onwaiting",
-
-		// jQuery
-		"width", "height", "innerWidth", "innerHeight", "outerWidth", "outerHeight",
-		"toggleClass", "addClass", "removeClass", "text", "css", "attr", "val", "prop", "append",
-		"select", "focus", "blur", "trigger", "click", "bind", "unbind", "submit",
-		"preventDefault", "stopPropagation", "stopImmediatePropagation", "shiftKey", "ctrlKey"
+		"length", "charAt", "charCodeAt", "concat", "indexOf", "lastIndexOf",
+		"localeCompare", "match", "replace", "search", "slice", "split",
+		"substr", "substring", "to(Locale)?(Lower|Upper)Case", "trim"
 	],
 
 	// Data URI is base64-formatted file contents in CSS files. Minor Web optimization.

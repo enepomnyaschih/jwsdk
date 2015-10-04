@@ -1,0 +1,4 @@
+// DataView class
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView
+
+"buffer", "byteLength", "byteOffset", "(get|set)(Int|Uint)(8|16|32)", "(get|set)Float(32|64)",

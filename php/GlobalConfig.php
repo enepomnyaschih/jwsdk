@@ -116,13 +116,13 @@ class JWSDK_GlobalConfig
 				'config.json', 'global config', 'obfuscate must be boolean');
 		}
 
-		if (!isset($this->json['listObfuscatedSymbols']))
-			$this->json['listObfuscatedSymbols'] = false;
+		if (!isset($this->json['listObfuscatedMembers']))
+			$this->json['listObfuscatedMembers'] = false;
 
-		if (!is_bool($this->json['listObfuscatedSymbols']))
+		if (!is_bool($this->json['listObfuscatedMembers']))
 		{
 			throw new JWSDK_Exception_InvalidFileFormat(
-				'config.json', 'global config', 'listObfuscatedSymbols must be boolean');
+				'config.json', 'global config', 'listObfuscatedMembers must be boolean');
 		}
 
 		if (!isset($this->json['embedDataUri']))
@@ -171,22 +171,22 @@ class JWSDK_GlobalConfig
 			}
 		}
 
-		if (!isset($this->json['notObfuscateSymbols']))
-			$this->json['notObfuscateSymbols'] = array();
+		if (!isset($this->json['notObfuscateMembers']))
+			$this->json['notObfuscateMembers'] = array();
 
-		$notObfuscateSymbols = &$this->json['notObfuscateSymbols'];
-		if (!is_array($notObfuscateSymbols))
+		$notObfuscateMembers = &$this->json['notObfuscateMembers'];
+		if (!is_array($notObfuscateMembers))
 		{
 			throw new JWSDK_Exception_InvalidFileFormat(
-				'config.json', 'global config', 'notObfuscateSymbols must be array of strings');
+				'config.json', 'global config', 'notObfuscateMembers must be array of strings');
 		}
 
-		foreach ($notObfuscateSymbols as $value)
+		foreach ($notObfuscateMembers as $value)
 		{
 			if (!is_string($value))
 			{
 				throw new JWSDK_Exception_InvalidFileFormat(
-					'config.json', 'global config', 'notObfuscateSymbols must be array of strings');
+					'config.json', 'global config', 'notObfuscateMembers must be array of strings');
 			}
 		}
 
@@ -304,9 +304,9 @@ class JWSDK_GlobalConfig
 		return $this->json['obfuscate'];
 	}
 
-	public function isListObfuscatedSymbols() // Boolean
+	public function isListObfuscatedMembers() // Boolean
 	{
-		return $this->json['listObfuscatedSymbols'];
+		return $this->json['listObfuscatedMembers'];
 	}
 
 	public function getObfuscateDebugFormat() // String
@@ -336,11 +336,11 @@ class JWSDK_GlobalConfig
 		return isset($mimeTypes[$extension]) ? $mimeTypes[$extension] : "image/$extension";
 	}
 
-	public function isNotObfuscateSymbol( // Boolean
-		$symbol) // String
+	public function isNotObfuscateMember( // Boolean
+		$member) // String
 	{
-		foreach ($this->json['notObfuscateSymbols'] as $pattern) {
-			if (preg_match("~^$pattern$~", $symbol)) {
+		foreach ($this->json['notObfuscateMembers'] as $pattern) {
+			if (preg_match("~^$pattern$~", $member)) {
 				return true;
 			}
 		}

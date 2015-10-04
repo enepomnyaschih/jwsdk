@@ -21,20 +21,87 @@
 	// JS obfuscation settings
 	"obfuscate"     : false,
 //	"obfuscateDebugFormat": "_%v_", // enable to use predictable renaming pattern instead of obfuscation, useful for debugging
-	"notObfuscateNamespaces": [ // PHP regular expressions
-		"document", "window", "Math", "JSON", // Native
-		"jQuery", "\\$"                       // jQuery
-	],
-	"notObfuscateSymbols": [ // PHP regular expressions
-		// Native
-		"call", "length", "push", "slice", "indexOf", "split", "join", "replace", "toLowerCase",
-		"toUpperCase", "test", "exec", "className", "offsetWidth", "clientWidth",
+
+	// Members of these namespaces won't be obfuscated.
+	//
+	// Feel free to extend the list if you use some third-party framework
+	// or just want to prevent obfuscation of specific namespaces.
+	//
+	// All strings here are regular expressions.
+	//
+	// Notice that namespace name must be used explicitly every time you
+	// use this feature. For example, the next expression will be
+	// obfuscated regardless of "document" presence in this list:
+	//
+	// var d = document;
+	// d.body.appendChild(child); // obfuscated to something like d.a.b(c)
+	//
+	// To fix that, avoid using mediator variables:
+	//
+	// document.body.appendChild(child); // correct
+	"notObfuscateNamespaces": [
+		// Native classes
+		"Object", "Array", "ArrayBuffer", "Boolean", "DataView", "Date",
+		"(Eval|Internal|Range|Reference|Syntax|Type|URI)?Error",
+		"Float(32|64)Array", "Function", "(Int|Uint)(8|16|32)Array", "Intl",
+		"JSON", "Math", "Number", "RegExp", "String", "TypedArray",
+		"Uint8ClampedArray",
+
+		// Global objects
+		"document", "window", "location", "console",
 
 		// jQuery
-		"width", "height", "innerWidth", "innerHeight", "outerWidth", "outerHeight",
-		"toggleClass", "addClass", "removeClass", "text", "css", "attr", "val", "prop", "append",
-		"select", "focus", "blur", "trigger", "click", "bind", "unbind", "submit",
-		"preventDefault", "stopPropagation", "stopImmediatePropagation", "shiftKey", "ctrlKey"
+		"jQuery", "\\$"
+	],
+
+	// These members won't be obfuscated.
+	//
+	// Default member lists are taken from MDN documentation.
+	//
+	// Find more members in "Obfuscation Members" folder in jWidget SDK
+	// installation directory.
+	//
+	// Feel free to extend the list if you use some third-party framework
+	// or just want to prevent obfuscation of specific members.
+	//
+	// All strings here are regular expressions.
+	//
+	// If you don't want to overload this list, you can use special JS
+	// syntax tweaks to prevent member obfuscation:
+	//
+	// - object. member   // insert a space before member name
+	// - object["member"] // use square bracket syntax
+	//
+	// If the framework you use has a namespace (e.g. Ext, YUI, ...)
+	// consider adding it to "notObfuscateNamespaces" list above.
+	"notObfuscateMembers": [
+		// Object
+		"constructor", "hasOwnProperty", "isPrototypeOf",
+		"propertyIsEnumerable", "to(Locale)?String", "valueOf",
+
+		// Array
+		"length", "pop", "push", "reverse", "shift", "sort", "splice",
+		"unshift", "concat", "join", "indexOf", "lastIndexOf", "forEach",
+		"every", "some", "filter", "map", "reduce", "reduceRight",
+
+		// Date
+		"(get|set)(UTC)?(Date|FullYear|Hours|Milliseconds|Minutes|Month|Seconds)",
+		"(get|set)(Time|Year)", "getTimezoneOffset",
+		"to(Locale)?(Date|Time)String", "to(ISO|UTC)String", "toJSON",
+
+		// Function
+		"apply", "bind", "call",
+
+		// Number
+		"to(Exponential|Fixed|Precision)",
+
+		// RegExp
+		"global", "ignoreCase", "multiline", "source", "exec", "test",
+
+		// String
+		"length", "charAt", "charCodeAt", "concat", "indexOf", "lastIndexOf",
+		"localeCompare", "match", "replace", "search", "slice", "split",
+		"substr", "substring", "to(Locale)?(Lower|Upper)Case", "trim"
 	],
 
 	// Data URI is base64-formatted file contents in CSS files. Minor Web optimization.

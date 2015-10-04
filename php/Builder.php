@@ -78,13 +78,13 @@ class JWSDK_Builder
 		$this->pageManager->buildPages();
 		if ($this->globalConfig->isObfuscate()) {
 			$tempPath = $this->globalConfig->getTempPath();
-			$jsSymbols = $this->fileManager->getJsSymbols();
-			JWSDK_Util_File::write("$tempPath/obfuscation-map.json", json_encode($jsSymbols));
-			if ($this->globalConfig->isListObfuscatedSymbols()) {
+			$jsMembers = $this->fileManager->getJsMembers();
+			JWSDK_Util_File::write("$tempPath/obfuscation-map.json", json_encode($jsMembers));
+			if ($this->globalConfig->isListObfuscatedMembers()) {
 				$runDir = $this->globalConfig->getRunDir();
-				$jsSymbolArray = array_keys($jsSymbols);
-				sort($jsSymbolArray);
-				JWSDK_Util_File::write('symbols.txt', implode("\n", $jsSymbolArray) . "\n");
+				$jsMemberArray = array_keys($jsMembers);
+				sort($jsMemberArray);
+				JWSDK_Util_File::write('members.txt', implode("\n", $jsMemberArray) . "\n");
 			}
 		}
 	}

@@ -38,8 +38,8 @@ class JWSDK_File_Manager
 	private $globalConfig;        // JWSDK_GlobalConfig
 	private $attachers = array(); // Map from type:String to JWSDK_File_Attacher
 	private $files = array();     // Map from name:String to JWSDK_File
-	private $jsSymbols = array(); // Map from String to String, for obfuscation
-	private $symbolIndex = 0;     // Integer
+	private $jsMembers = array(); // Map from String to String, for obfuscation
+	private $memberIndex = 0;     // Integer
 
 	public function __construct(
 		$globalConfig) // JWSDK_GlobalConfig
@@ -131,43 +131,43 @@ class JWSDK_File_Manager
 		return $this->globalConfig->getPublicPath() . "/$name";
 	}
 
-	public function getJsSymbol( // String
-		$symbol,    // String
+	public function getJsMember( // String
+		$member,    // String
 		$namespace) // String
 	{
-		if ($this->globalConfig->isNotObfuscateSymbol($symbol) ||
+		if ($this->globalConfig->isNotObfuscateMember($member) ||
 			$this->globalConfig->isNotObfuscateNamespace($namespace) ||
-			in_array($symbol, self::$RESERVED_WORDS, true)) {
-			return $symbol;
+			in_array($member, self::$RESERVED_WORDS, true)) {
+			return $member;
 		}
 		$format = $this->globalConfig->getObfuscateDebugFormat();
 		if (isset($format)) {
-			return str_replace('%v', $symbol, $format);
+			return str_replace('%v', $member, $format);
 		}
-		if (!isset($this->jsSymbols[$symbol])) {
-			$this->jsSymbols[$symbol] = $this->newJsSymbol();
+		if (!isset($this->jsMembers[$member])) {
+			$this->jsMembers[$member] = $this->newJsMember();
 		}
-		return $this->jsSymbols[$symbol];
+		return $this->jsMembers[$member];
 	}
 
-	public function getJsSymbols() // Map<String>
+	public function getJsMembers() // Map<String>
 	{
-		return $this->jsSymbols;
+		return $this->jsMembers;
 	}
 
-	private function newJsSymbol() // String
+	private function newJsMember() // String
 	{
 		do {
-			$this->symbolIndex++;
-			$symbol = '';
-			$index = $this->symbolIndex;
+			$this->memberIndex++;
+			$member = '';
+			$index = $this->memberIndex;
 			do {
 				$index -= 1;
-				$symbol = self::$ALPHABET[$index % strlen(self::$ALPHABET)] . $symbol;
+				$member = self::$ALPHABET[$index % strlen(self::$ALPHABET)] . $member;
 				$index = (int)($index / strlen(self::$ALPHABET));
 			} while ($index != 0);
-		} while ($this->globalConfig->isNotObfuscateSymbol($symbol) || in_array($symbol, self::$RESERVED_WORDS, true));
-		return $symbol;
+		} while ($this->globalConfig->isNotObfuscateMember($member) || in_array($member, self::$RESERVED_WORDS, true));
+		return $member;
 	}
 
 	private function registerAttacher(
