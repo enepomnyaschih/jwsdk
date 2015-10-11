@@ -37,13 +37,18 @@ include_once $jwsdkDir . 'php/Mode.php';
 include_once $jwsdkDir . 'php/Mode/Debug.php';
 include_once $jwsdkDir . 'php/Mode/Release.php';
 
-if ((count($argv) < 2) || !JWSDK_Mode::getMode($argv[1]))
+function printUsage()
 {
 	fwrite(STDERR,
-		"USAGE jwsdk <mode> [<path_to_config.json>]\n\n" .
+		"\nUSAGE jwsdk [<mode>] [<path>]\n\n" .
 		"Supported modes:\n" .
-		JWSDK_Mode::getModesDescription());
+		JWSDK_Mode::getModesDescription() . "\n\n" .
+		"Path refers to global config JSON file or a folder containing config.json file.\n" .
+		"Path defaults to jwsdk-config/config.json (if exists) or config.json.\n");
+}
 
+if (count($argv) > 2 && !JWSDK_Mode::getMode($argv[1])) {
+	printUsage();
 	exit(1);
 }
 
@@ -112,11 +117,27 @@ include_once $jwsdkDir . 'php/Resource/Manager.php';
 include_once $jwsdkDir . 'php/Template.php';
 include_once $jwsdkDir . 'php/Template/Manager.php';
 
-echo "Building frontend with jWidget SDK 0.7...\n";
-
 try
 {
-	$builder = new JWSDK_Builder($argv[0], $argv[1], (count($argv) < 3) ? null : $argv[2]);
+	$mode = JWSDK_Mode::getMode((count($argv) > 1) ? $argv[1] : 'debug');
+	$config = (count($argv) > 2) ? $argv[2] : null;
+	if (!$mode) {
+		$mode = JWSDK_Mode::getMode('debug');
+		$config = (count($argv) > 1) ? $argv[1] : null;
+	}
+	if (!is_string($config)) {
+		$config = file_exists('jwsdk-config/config.json') ? 'jwsdk-config' : '.';
+	}
+	if (!preg_match('/\.json$/', $config)) {
+		$config .= '/config.json';
+	}
+	if (!file_exists($config)) {
+		printUsage();
+		exit(1);
+	}
+	$modeName = strtoupper($mode->getId());
+	echo "Building frontend in $modeName mode with jWidget SDK 0.7...\n";
+	$builder = new JWSDK_Builder($argv[0], $mode, $config);
 	$builder->buildPages();
 	$builder->saveCache();
 }

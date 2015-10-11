@@ -35,36 +35,25 @@ class JWSDK_Builder
 
 	public function __construct(
 		$runPath,    // String
-		$modeName,   // String
+		$mode,       // JWSDK_Mode
 		$configPath) // String
 	{
 		$runDir = JWSDK_Util_File::getDirectory($runPath);
 
-		if (!is_string($configPath))
-			$configPath = '.';
-
-		if (!preg_match('/\.json$/', $configPath))
+		$slashIndex = strrpos($configPath, '/');
+		if ($slashIndex === false)
 		{
-			$configDir  = $configPath;
-			$configName = 'config.json';
+			$configDir  = '.';
+			$configName = $configPath;
 		}
 		else
 		{
-			$slashIndex = strrpos($configPath, '/');
-			if ($slashIndex === false)
-			{
-				$configDir  = '.';
-				$configName = $configPath;
-			}
-			else
-			{
-				$configDir  = substr($configPath, 0, $slashIndex);
-				$configName = substr($configPath, $slashIndex + 1);
-			}
+			$configDir  = substr($configPath, 0, $slashIndex);
+			$configName = substr($configPath, $slashIndex + 1);
 		}
 
 		$this->globalConfig = new JWSDK_GlobalConfig($runDir, $configDir, $configName);
-		$this->mode = JWSDK_Mode::getMode($modeName);
+		$this->mode = $mode;
 		$this->buildCache = new JWSDK_BuildCache($this->globalConfig->getTempPath() . '/buildcache.json');
 
 		$this->fileManager = new JWSDK_File_Manager($this->globalConfig);
