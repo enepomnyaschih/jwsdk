@@ -53,6 +53,7 @@ class JWSDK_File_Attacher_Js extends JWSDK_Resource_Attacher
 			$index = $matches[0][1] + strlen($matches[0][0]);
 		}
 		$result[] = substr($contents, $index);
+		$result[] = ';';
 		$contents = implode('', $result);
 
 		if (!$globalConfig->isObfuscate()) {

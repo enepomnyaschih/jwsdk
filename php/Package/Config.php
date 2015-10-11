@@ -346,6 +346,12 @@ class JWSDK_Package_Config extends JWSDK_Package
 		*/
 		$sourceFiles = $this->getSourceFiles();
 
+		if ($this->buildCache->input->getPackageSdkVersion($this->getName()) !== JWSDK_Builder::VERSION) {
+			if (VERBOSE_VERSIONING)
+				echo "-- SDK version has been changed after compression\n";
+			return true;
+		}
+
 		foreach ($this->fileManager->getAttachers() as $type => $attacher)
 		{
 			if (!$this->hasFilesOfAttacher($type))

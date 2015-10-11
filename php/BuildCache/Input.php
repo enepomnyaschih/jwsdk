@@ -62,6 +62,12 @@ class JWSDK_BuildCache_Input
 		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'dtsOutputMtime'));
 	}
 
+	public function getPackageSdkVersion( // String
+		$packageName) // String
+	{
+		return JWSDK_Util_Json::get($this->json, array('packages', $packageName, 'sdkVersion'));
+	}
+
 	public function getPackageResourceMtime( // Timestamp
 		$packageName,  // String
 		$resourceName) // String

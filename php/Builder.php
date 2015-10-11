@@ -21,6 +21,8 @@
 
 class JWSDK_Builder
 {
+	const VERSION = '0.7';
+
 	private $globalConfig;    // JWSDK_GlobalConfig
 	private $mode;            // JWSDK_Mode
 	private $buildCache;      // JWSDK_BuildCache

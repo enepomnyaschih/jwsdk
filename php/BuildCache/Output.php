@@ -49,21 +49,22 @@ class JWSDK_BuildCache_Output
 		$packageName, // String
 		$value)       // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'globalConfigMtime'), $value);
+		JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'globalConfigMtime'), $value);
+		JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'sdkVersion'), JWSDK_Builder::VERSION);
 	}
 
 	public function setPackageConfigMtime(
 		$packageName, // String
 		$value)       // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'configMtime'), $value);
+		JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'configMtime'), $value);
 	}
 
 	public function setPackageDtsOutputMtime(
 		$packageName, // String
 		$value)       // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'dtsOutputMtime'), $value);
+		JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'dtsOutputMtime'), $value);
 	}
 
 	public function setPackageResourceMtime(
@@ -71,7 +72,7 @@ class JWSDK_BuildCache_Output
 		$resourceName, // String
 		$value)        // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'resources', $resourceName, 'mtime'), $value);
+		JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'resources', $resourceName, 'mtime'), $value);
 	}
 
 	public function setPackageResourceTargetMtime(
@@ -79,6 +80,6 @@ class JWSDK_BuildCache_Output
 		$resourceName, // String
 		$value)        // Timestamp
 	{
-		return JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'resources', $resourceName, 'targetMtime'), $value);
+		JWSDK_Util_Json::set($this->json, array('packages', $packageName, 'resources', $resourceName, 'targetMtime'), $value);
 	}
 }
