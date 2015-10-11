@@ -36,7 +36,7 @@ class JWSDK_Util_Obfuscator
 		$contents, // String
 		$fileManager) // JWSDK_File_Manager
 	{
-		$this->contents = $contents;
+		$this->contents = JWSDK_Util_String::removeComments($contents, JWSDK_Util_String::COMMENTS_JS);
 		$this->fileManager = $fileManager;
 		$this->length = strlen($contents);
 	}
@@ -52,7 +52,7 @@ class JWSDK_Util_Obfuscator
 				$isEscape = false;
 				continue;
 			}
-			$char = $this->contents[$this->current];
+			$char = substr($this->contents, $this->current, 1);
 			if ($char === '\\') {
 				if ($isString1 || $isString2 || $isRegex) {
 					$isEscape = true;
