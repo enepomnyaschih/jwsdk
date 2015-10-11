@@ -1,0 +1,30 @@
+		// Window class
+		// https://developer.mozilla.org/en-US/docs/Web/API/Window
+
+		// We strongly discourage you from using this ignore-list for obfuscation
+		// performance and quality reasons.
+
+		// Consider enabling "window" namespace in "notObfuscateNamespaces"
+		// and accessing window via global variable "window" everywhere -
+		// it allows you to avoid using this whole section.
+
+		// Alternative solution: you can access window members as global variables -
+		// it prevents their obfuscation too.
+
+		"applicationCache", "caches", "crypto", "dialogArguments", "document",
+		"frameElement", "frames", "fullScreen", "history",
+		"(inner|outer)(Height|Width)", "innerWidth", "length", "location",
+		"locationbar", "localStorage", "menubar", "messageManager",
+		"mozAnimationStartTime", "name", "navigator", "opener", "pageXOffset",
+		"pageYOffset", "sessionStorage", "speechSynthesis", "parent", "performance",
+		"personalbar", "returnValue", "screen", "screenX", "screenY", "scrollbars",
+		"scrollX", "scrollY", "self", "status", "statusbar", "toolbar", "top",
+		"window", "addEventListener", "alert", "atob", "blur", "btoa",
+		"clearImmediate", "clearInterval", "clearTimeout", "close", "confirm",
+		"dispatchEvent", "dump", "fetch", "find", "focus", "getAttention",
+		"getAttentionWithCycleCount", "getComputedStyle", "getSelection", "matchMedia",
+		"maximize", "minimize", "moveBy", "moveTo", "mozRequestAnimationFrame", "open",
+		"openDialog", "postMessage", "print", "prompt", "removeEventListener",
+		"resizeBy", "resizeTo", "restore", "scroll(By|ByLines|ByPages|To)?",
+		"setCursor", "setImmediate", "setInterval", "setResizable", "setTimeout",
+		"showModalDialog", "sizeToContent", "stop", "updateCommands",

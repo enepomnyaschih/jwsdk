@@ -1,0 +1,14 @@
+		// Node class
+		// https://developer.mozilla.org/en-US/docs/Web/API/Node
+
+		// We strongly discourage you from using this ignore-list for obfuscation
+		// performance and quality reasons.
+
+		// Consider using jQuery/MooTools/etc instead.
+
+		"baseURI", "childNodes", "firstChild", "lastChild", "nextSibling", "nodeName",
+		"nodeType", "nodeValue", "ownerDocument", "parentNode", "parentElement",
+		"previousSibling", "textContent", "appendChild", "cloneNode",
+		"compareDocumentPosition", "contains", "hasChildNodes", "insertBefore",
+		"isDefaultNamespace", "isEqualNode", "lookupPrefix", "lookupNamespaceURI",
+		"normalize", "removeChild", "replaceChild",

@@ -1,0 +1,16 @@
+		// jQuery Ajax API
+		// http://api.jquery.com/category/ajax/
+
+		// Commonly used jQuery.ajax method configuration members
+		"cache", "complete", "context", "dataType", "error", "success", "traditional",
+		"type", "url",
+
+		// Other members (better filter out for your purposes)
+		"accepts", "async", "beforeSend", "contents", "contentType", "converters",
+		"crossDomain", "dataFilter", "global", "headers", "ifModified", "isLocal",
+		"jsonp(Callback)?", "method", "mimeType", "password", "processData",
+		"scriptCharset", "statusCode", "timeout", "username", "xhr(Fields)?",
+		"responseJSON",
+
+		// Rarely used element methods
+		"ajax(Complete|Error|Send|Start|Stop|Success)", "load", "serialize(Array)?",

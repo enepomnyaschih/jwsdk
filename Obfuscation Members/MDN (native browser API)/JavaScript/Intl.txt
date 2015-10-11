@@ -1,0 +1,10 @@
+		// Intl.Collator class
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Collator
+
+		"compare", "resolvedOptions",
+
+		// Intl.DateTimeFormat, Intl.NumberFormat classes
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat
+
+		"format", "resolvedOptions",

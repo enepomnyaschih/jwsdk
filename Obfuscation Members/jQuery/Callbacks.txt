@@ -1,0 +1,5 @@
+		// jQuery Callbacks Object API
+		// http://api.jquery.com/category/callbacks-object/
+
+		"add", "disable", "disabled", "empty", "fire(With)?", "fired", "has", "lock",
+		"locked", "remove",

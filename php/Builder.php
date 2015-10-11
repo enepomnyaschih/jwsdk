@@ -76,6 +76,17 @@ class JWSDK_Builder
 	public function buildPages()
 	{
 		$this->pageManager->buildPages();
+		if ($this->globalConfig->isObfuscate()) {
+			$tempPath = $this->globalConfig->getTempPath();
+			$jsMembers = $this->fileManager->getJsMembers();
+			JWSDK_Util_File::write("$tempPath/obfuscation-map.json", json_encode($jsMembers));
+			if ($this->globalConfig->isListObfuscatedMembers()) {
+				$runDir = $this->globalConfig->getRunDir();
+				$jsMemberArray = array_keys($jsMembers);
+				sort($jsMemberArray);
+				JWSDK_Util_File::write('members.txt', implode("\n", $jsMemberArray) . "\n");
+			}
+		}
 	}
 
 	public function saveCache()

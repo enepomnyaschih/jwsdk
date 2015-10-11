@@ -39,4 +39,6 @@
 	},
 
 	"javaCmd" : "java"
+
+	// see templates/obfuscation for additional config options
 }

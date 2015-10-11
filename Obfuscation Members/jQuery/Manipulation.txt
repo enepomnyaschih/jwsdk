@@ -1,0 +1,8 @@
+		// jQuery Manipulation API
+		// http://api.jquery.com/category/manipulation/
+
+		"(add|has|remove|toggle)Class", "after", "(append|prepend)(To)?", "attr",
+		"before", "clone", "css", "detach", "empty", "height", "html",
+		"(inner|outer)(Height|Width)", "insert(After|Before)", "offset", "position",
+		"prop", "remove(Attr|Class|Prop)?", "replace(All|With)", "scroll(Left|Top)",
+		"text", "unwrap", "val", "width", "wrap(All|Inner)?", "left", "top",

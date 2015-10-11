@@ -1,0 +1,136 @@
+/*
+	Copy these members over to your config.json to enable JS code obfuscation.
+
+	When obfuscation is disabled, only YUI compressor code optimizations are
+	performed in release build, renaming local variables and function
+	arguments to very short and unreadable names such as "a", "b", "c" etc.
+	This way, build output can be exposed for future use by other JS modules.
+	This approach never breaks your code, but it can be easily decompiled.
+
+	When obfuscation is enabled, release build also renames all your
+	class/object members. It makes code even shorter and more unreadable, but
+	you won't be able to use build output in external JS modules. However,
+	jWidget SDK tries to make your code internally compatible to make sure
+	that it can be interpreted properly by browser. So, this is a good
+	obfuscation solution for end-user applications.
+
+	The implementation is very similar to Google Closure Compiler's. However,
+	jWidget SDK obfuscator supports multi-package build (which is useful if
+	your application consists of multiple pages) and has very nice
+	configuration options to make development easier.
+
+	The same original names are renamed to the same target names. Obfuscated
+	code is very hard to decompile, but it requires some configuration & code
+	style discipline from developer to not break the release build. To make it
+	easier for developer to validate and debug obfuscated code, jWidget SDK
+	provides two configuration options: listObfuscatedMembers and
+	obfuscateDebugFormat (see below).
+
+	What is not obfuscated:
+	- Global variables
+	- Members written in quote notation:
+	  object["member"] (in contrast to object.member)
+	  { "member" : 0 } (in contrast to { member : 0 })
+	- Members having whitespace or line break prefix: object. member
+	- Members matching two ignore-lists below: notObfuscateNamespaces and
+	  notObfuscateMembers
+*/
+{
+	// Enable obfuscation in release build.
+	"obfuscate": true,
+
+	// Upon build, generates members.txt file in a current directory containing
+	// sorted list of all obfuscated members in your code. Putting this file
+	// under version control allows you to review all new obfuscated members on
+	// each commit, which helps you to avoid unintended obfuscations.
+	"listObfuscatedMembers": false,
+
+	// Enable to use predictable renaming pattern instead of obfuscation,
+	// useful for debugging.
+//	"obfuscateDebugFormat": "_%v_",
+
+	// Members of these namespaces won't be obfuscated.
+	//
+	// Feel free to extend the list if you use some third-party framework
+	// or just want to prevent obfuscation of specific namespaces.
+	//
+	// All strings here are regular expressions.
+	//
+	// Notice that namespace name must be used explicitly every time you
+	// use this feature. For example, the next expression will be
+	// obfuscated regardless of "document" presence in ignore-list:
+	//
+	// var d = document;
+	// d.body.appendChild(child); // obfuscated to something like d.a.b(c)
+	//
+	// To fix that, avoid using mediator variables:
+	//
+	// document.body.appendChild(child); // correct
+	"notObfuscateNamespaces": [
+		// Native classes
+		"Object", "Array", "ArrayBuffer", "Boolean", "DataView", "Date",
+		"(Eval|Internal|Range|Reference|Syntax|Type|URI)?Error",
+		"Float(32|64)Array", "Function", "(Int|Uint)(8|16|32)Array", "Intl",
+		"JSON", "Math", "Number", "RegExp", "String", "TypedArray",
+		"Uint8ClampedArray",
+
+		// Global objects
+		"document", "window", "location", "console",
+
+		// jQuery
+		"jQuery", "\\$",
+
+		// jWidget
+		"JW", "JWSDK"
+	],
+
+	// These members won't be obfuscated.
+	//
+	// Default member lists are taken from MDN documentation.
+	//
+	// Find more members in "Obfuscation Members" folder in jWidget SDK
+	// installation directory.
+	//
+	// Feel free to extend the list if you use some third-party framework
+	// or just want to prevent obfuscation of specific members.
+	//
+	// All strings here are regular expressions.
+	//
+	// If you don't want to overload this list, you can use special JS
+	// syntax tweaks to prevent member obfuscation:
+	//
+	// - object. member   // insert a space before member name
+	// - object["member"] // use square bracket syntax
+	//
+	// If the framework you use has a namespace (e.g. Ext, YUI, ...)
+	// consider adding it to "notObfuscateNamespaces" list above.
+	"notObfuscateMembers": [
+		// Object
+		"constructor", "hasOwnProperty", "isPrototypeOf",
+		"propertyIsEnumerable", "to(Locale)?String", "valueOf",
+
+		// Array
+		"length", "pop", "push", "reverse", "shift", "sort", "splice",
+		"unshift", "concat", "join", "indexOf", "lastIndexOf", "forEach",
+		"every", "some", "filter", "map", "reduce", "reduceRight",
+
+		// Date
+		"(get|set)(UTC)?(Date|FullYear|Hours|Milliseconds|Minutes|Month|Seconds)",
+		"(get|set)(Time|Year)", "getTimezoneOffset",
+		"to(Locale)?(Date|Time)String", "to(ISO|UTC)String", "toJSON",
+
+		// Function
+		"apply", "bind", "call",
+
+		// Number
+		"to(Exponential|Fixed|Precision)",
+
+		// RegExp
+		"global", "ignoreCase", "multiline", "source", "exec", "test",
+
+		// String
+		"length", "charAt", "charCodeAt", "concat", "indexOf", "lastIndexOf",
+		"localeCompare", "match", "replace", "search", "slice", "split",
+		"substr", "substring", "to(Locale)?(Lower|Upper)Case", "trim"
+	]
+}

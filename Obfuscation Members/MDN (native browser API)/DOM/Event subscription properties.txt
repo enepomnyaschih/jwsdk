@@ -1,0 +1,25 @@
+		// Event subscription properties
+		// https://developer.mozilla.org/en-US/docs/Web/API/Window
+		// https://developer.mozilla.org/en-US/docs/Web/API/Document
+
+		// We strongly discourage you from using this ignore-list for obfuscation
+		// performance and quality reasons.
+
+		// Consider using addEventListener instead.
+
+		"onabort", "onbeforeinstallprompt", "onbeforeunload", "onblur", "oncancel",
+		"oncanplay", "oncanplaythrough", "onchange", "onclick", "onclose",
+		"oncontextmenu", "oncuechange", "ondblclick",
+		"ondevice(light|motion|orientation|proximity)",
+		"ondrag(end|enter|exit|leave|over|start)?", "ondrop", "ondurationchange",
+		"onemptied", "onended", "onerror", "onfocus", "ongotpointercapture",
+		"onhashchange", "oninput", "oninvalid", "onkey(down|press|up)",
+		"onlanguagechange", "onload", "onloadeddata", "onloadedmetadata",
+		"onloadstart", "onlostpointercapture",
+		"onmouse(down|enter|leave|move|out|over|up|wheel)", "onmozbeforepaint",
+		"onpageshow", "onpagehide", "onpaint", "onpause", "onplay", "onplaying",
+		"onpointer(down|move|up|cancel|over|out|enter|leave)", "onpopstate",
+		"onprogress", "onratechange", "onreadystatechange", "onreset", "onresize",
+		"onscroll", "onseeked", "onseeking", "onselect", "onselectstart",
+		"onselectionchange", "onshow", "onstalled", "onsubmit", "onsuspend",
+		"ontimeupdate", "onunload", "onuserproximity", "onvolumechange", "onwaiting",

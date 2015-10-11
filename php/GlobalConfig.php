@@ -26,6 +26,9 @@ class JWSDK_GlobalConfig
 	private $json;      // Object
 	private $mtime;     // Timestamp
 
+	private $notObfuscateNamespaces;
+	private $notObfuscateMembers;
+
 	public function __construct(
 		$runDir,    // String
 		$configDir, // String
@@ -50,6 +53,7 @@ class JWSDK_GlobalConfig
 			'tempPath',
 			'tsTarget',
 			'urlPrefix',
+			'obfuscateDebugFormat',
 			'javaCmd'
 		);
 
@@ -59,6 +63,7 @@ class JWSDK_GlobalConfig
 			'jsonPath' => null,
 			'snippetsPath' => null,
 			'tsTarget' => 'ES5',
+			'obfuscateDebugFormat' => null,
 			'javaCmd' => 'java'
 		);
 
@@ -103,6 +108,24 @@ class JWSDK_GlobalConfig
 		{
 			throw new JWSDK_Exception_InvalidFileFormat(
 				'config.json', 'global config', 'conversionLog must be boolean');
+		}
+
+		if (!isset($this->json['obfuscate']))
+			$this->json['obfuscate'] = false;
+
+		if (!is_bool($this->json['obfuscate']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'obfuscate must be boolean');
+		}
+
+		if (!isset($this->json['listObfuscatedMembers']))
+			$this->json['listObfuscatedMembers'] = false;
+
+		if (!is_bool($this->json['listObfuscatedMembers']))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'listObfuscatedMembers must be boolean');
 		}
 
 		if (!isset($this->json['embedDataUri']))
@@ -150,6 +173,48 @@ class JWSDK_GlobalConfig
 					'config.json', 'global config', 'mimeTypes must be dictionary of strings');
 			}
 		}
+
+		if (!isset($this->json['notObfuscateMembers']))
+			$this->json['notObfuscateMembers'] = array();
+
+		$notObfuscateMembers = &$this->json['notObfuscateMembers'];
+		if (!is_array($notObfuscateMembers))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'notObfuscateMembers must be array of strings');
+		}
+
+		foreach ($notObfuscateMembers as $value)
+		{
+			if (!is_string($value))
+			{
+				throw new JWSDK_Exception_InvalidFileFormat(
+					'config.json', 'global config', 'notObfuscateMembers must be array of strings');
+			}
+		}
+
+		$this->notObfuscateMembers = $this->mergePatterns($notObfuscateMembers);
+
+		if (!isset($this->json['notObfuscateNamespaces']))
+			$this->json['notObfuscateNamespaces'] = array();
+
+		$notObfuscateNamespaces = $this->json['notObfuscateNamespaces'];
+		if (!is_array($notObfuscateNamespaces))
+		{
+			throw new JWSDK_Exception_InvalidFileFormat(
+				'config.json', 'global config', 'notObfuscateNamespaces must be array of strings');
+		}
+
+		foreach ($notObfuscateNamespaces as $value)
+		{
+			if (!is_string($value))
+			{
+				throw new JWSDK_Exception_InvalidFileFormat(
+					'config.json', 'global config', 'notObfuscateNamespaces must be array of strings');
+			}
+		}
+
+		$this->notObfuscateNamespaces = $this->mergePatterns($notObfuscateNamespaces);
 	}
 
 	public function isTemplateProcessorEnabled() // Boolean
@@ -241,6 +306,21 @@ class JWSDK_GlobalConfig
 		return $this->json['conversionLog'];
 	}
 
+	public function isObfuscate() // Boolean
+	{
+		return $this->json['obfuscate'];
+	}
+
+	public function isListObfuscatedMembers() // Boolean
+	{
+		return $this->json['listObfuscatedMembers'];
+	}
+
+	public function getObfuscateDebugFormat() // String
+	{
+		return $this->json['obfuscateDebugFormat'];
+	}
+
 	public function isEmbedDataUri() // Boolean
 	{
 		return $this->json['embedDataUri'];
@@ -263,6 +343,18 @@ class JWSDK_GlobalConfig
 		return isset($mimeTypes[$extension]) ? $mimeTypes[$extension] : "image/$extension";
 	}
 
+	public function isNotObfuscateMember( // Boolean
+		$member) // String
+	{
+		return preg_match($this->notObfuscateMembers, $member);
+	}
+
+	public function isNotObfuscateNamespace( // Boolean
+		$namespace) // String
+	{
+		return preg_match($this->notObfuscateNamespaces, $namespace);
+	}
+
 	public function getJavaCmd() // String
 	{
 		return $this->json['javaCmd'];
@@ -271,5 +363,22 @@ class JWSDK_GlobalConfig
 	public function getMtime() // Timestamp
 	{
 		return $this->mtime;
+	}
+
+	private function mergePatterns( // String
+		$patterns) // Array<String>
+	{
+		$result = '~^(?:';
+		$first = true;
+		foreach ($patterns as $pattern) {
+			if ($first) {
+				$first = false;
+			} else {
+				$result .= '|';
+			}
+			$result .= '(?:' . $pattern . ')';
+		}
+		$result .= ')$~';
+		return $result;
 	}
 }

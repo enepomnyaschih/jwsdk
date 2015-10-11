@@ -21,10 +21,26 @@
 
 class JWSDK_File_Manager
 {
+	private static $ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	private static $RESERVED_WORDS = array(
+		// ES6
+		'break', 'case', 'class', 'catch', 'const', 'continue', 'debugger', 'default', 'delete',
+		'do', 'else', 'export', 'extends', 'finally', 'for', 'function', 'if', 'import', 'in',
+		'instanceof', 'let', 'new', 'return', 'super', 'switch', 'this', 'throw', 'try', 'typeof',
+		'var', 'void', 'while', 'with', 'yield', 'null', 'true', 'false',
+		// Future
+		'enum', 'await', 'implements', 'package', 'protected', 'static', 'interface', 'private', 'public',
+		// Unused
+		'abstract', 'boolean', 'byte', 'char', 'double', 'final', 'float', 'goto', 'int', 'long',
+		'native', 'short', 'synchronized', 'transient', 'volatile', 'prototype'
+	);
+
 	private $globalConfig;        // JWSDK_GlobalConfig
 	private $attachers = array(); // Map from type:String to JWSDK_File_Attacher
 	private $files = array();     // Map from name:String to JWSDK_File
-	
+	private $jsMembers = array(); // Map from String to String, for obfuscation
+	private $memberIndex = 0;     // Integer
+
 	public function __construct(
 		$globalConfig) // JWSDK_GlobalConfig
 	{
@@ -114,7 +130,46 @@ class JWSDK_File_Manager
 	{
 		return $this->globalConfig->getPublicPath() . "/$name";
 	}
-	
+
+	public function getJsMember( // String
+		$member,    // String
+		$namespace) // String
+	{
+		if ($this->globalConfig->isNotObfuscateMember($member) ||
+			$this->globalConfig->isNotObfuscateNamespace($namespace) ||
+			in_array($member, self::$RESERVED_WORDS, true)) {
+			return $member;
+		}
+		$format = $this->globalConfig->getObfuscateDebugFormat();
+		if (isset($format)) {
+			return str_replace('%v', $member, $format);
+		}
+		if (!isset($this->jsMembers[$member])) {
+			$this->jsMembers[$member] = $this->newJsMember();
+		}
+		return $this->jsMembers[$member];
+	}
+
+	public function getJsMembers() // Map<String>
+	{
+		return $this->jsMembers;
+	}
+
+	private function newJsMember() // String
+	{
+		do {
+			$this->memberIndex++;
+			$member = '';
+			$index = $this->memberIndex;
+			do {
+				$index -= 1;
+				$member = self::$ALPHABET[$index % strlen(self::$ALPHABET)] . $member;
+				$index = (int)($index / strlen(self::$ALPHABET));
+			} while ($index != 0);
+		} while ($this->globalConfig->isNotObfuscateMember($member) || in_array($member, self::$RESERVED_WORDS, true));
+		return $member;
+	}
+
 	private function registerAttacher(
 		$attacher) // JWSDK_Resource_Attacher
 	{

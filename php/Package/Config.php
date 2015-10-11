@@ -186,7 +186,7 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		try
 		{
-			if ($this->isCompressedModified())
+			if ($this->globalConfig->isObfuscate() || $this->isCompressedModified())
 				return $this->initCompressedFilesModified();
 			else
 				return $this->initCompressedFilesUnmodified();

@@ -27,6 +27,7 @@ include_once $jwsdkDir . 'php/Util/Array.php';
 include_once $jwsdkDir . 'php/Util/Css.php';
 include_once $jwsdkDir . 'php/Util/File.php';
 include_once $jwsdkDir . 'php/Util/Json.php';
+include_once $jwsdkDir . 'php/Util/Obfuscator.php';
 include_once $jwsdkDir . 'php/Util/Os.php';
 include_once $jwsdkDir . 'php/Util/String.php';
 include_once $jwsdkDir . 'php/Util/Ts.php';
