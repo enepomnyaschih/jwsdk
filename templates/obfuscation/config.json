@@ -31,19 +31,9 @@
 	- Members written in quote notation:
 	  object["member"] (in contrast to object.member)
 	  { "member" : 0 } (in contrast to { member : 0 })
-	- Members having whitespace symbols prefix: object. member
+	- Members having whitespace or line break prefix: object. member
 	- Members matching two ignore-lists below: notObfuscateNamespaces and
 	  notObfuscateMembers
-
-	KNOWN ISSUES:
-	- Regular expressions must be prefixed by an opening bracket to prevent
-	  obfuscation:
-	  var regex = /xyz.abc/;   // wrong: abc will be unintendedly obfuscated
-	  var regex = (/xyz.abc/); // correct
-	- Wrapped JS is not obfuscated:
-	  var x = object.
-	              member;      // wrong: member won't be obfuscated
-	  var x = object.member;   // correct
 */
 {
 	// Enable obfuscation in release build.

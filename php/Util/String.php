@@ -117,7 +117,7 @@ class JWSDK_Util_String
 		return $buf;
 	}
 
-	private static function findUnescaped($haystack, $needle, $index)
+	public static function findUnescaped($haystack, $needle, $index)
 	{
 		$len = strlen($haystack);
 		while ($index < $len) {

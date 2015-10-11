@@ -38,70 +38,40 @@ class JWSDK_Util_Obfuscator
 	{
 		$this->contents = JWSDK_Util_String::removeComments($contents, JWSDK_Util_String::COMMENTS_JS);
 		$this->fileManager = $fileManager;
-		$this->length = strlen($contents);
+		$this->length = strlen($this->contents);
 	}
 
 	public function obfuscate() // String
 	{
-		$isString1 = false;
-		$isString2 = false;
-		$isRegex   = false;
-		$isEscape  = false;
-		for ($this->current = 0; $this->current < $this->length; $this->current++) {
-			if ($isEscape) {
-				$isEscape = false;
-				continue;
-			}
+		$expectOperator = false;
+
+		while ($this->current < $this->length)
+		{
 			$char = substr($this->contents, $this->current, 1);
-			if ($char === '\\') {
-				if ($isString1 || $isString2 || $isRegex) {
-					$isEscape = true;
-				}
-			}
-			if ($isString1) {
-				if ($char === "'") {
-					$this->dump();
-					$isString1 = false;
-				}
-				continue;
-			}
-			if ($isString2) {
-				if ($char === '"') {
-					$this->dump();
-					$isString2 = false;
-				}
-				continue;
-			}
-			if ($isRegex) {
-				if ($char === '/') {
-					$this->dump();
-					$isRegex = false;
-				}
-				continue;
-			}
-			$isWrap = false;
-			if ($char === "'") {
+			if ($char === '"' || $char === "'" || (!$expectOperator && $char === '/'))
+			{
 				$this->replace();
-				$isString1 = true;
+				$next = JWSDK_Util_String::findUnescaped($this->contents, $char, $this->current + 1);
+				$next = ($next !== false) ? ($next + 1) : $this->length;
+				$this->result .= substr($this->contents, $this->current, $next - $this->current);
+				$this->current = $next;
+				$this->begin = $next;
+				$expectOperator = true;
 			}
-			if ($char === '"') {
-				$this->replace();
-				$isString2 = true;
-			}
-			if ($char === '/' && $this->current > 0 && $this->contents[$this->current - 1] == '(') {
-				$this->replace();
-				$isRegex = true;
+			else
+			{
+				if (preg_match('~[+\-\*\/%=><\?\:&\|\~\^\{\(,;\.]~', $char)) {
+					$expectOperator = false;
+				} else if (!preg_match('~\s~', $char)) {
+					$expectOperator = true;
+				}
+				$this->current++;
 			}
 		}
-		$this->replace();
-		return $this->result;
-	}
 
-	private function dump()
-	{
-		//$this->result .= "\n=== DUMP ===\n";
-		$this->result .= substr($this->contents, $this->begin, $this->current + 1 - $this->begin);
-		$this->begin = $this->current + 1;
+		$this->replace();
+
+		return $this->result;
 	}
 
 	private function replace()
@@ -111,7 +81,6 @@ class JWSDK_Util_Obfuscator
 		$fragment = preg_replace_callback(self::INVOKE_REG, array($this, 'replaceInvoke'), $fragment);
 		$fragment = preg_replace_callback(self::DEFINE_REG, array($this, 'replaceDefine'), $fragment);
 		$this->result .= $fragment;
-		$this->begin = $this->current;
 	}
 
 	private function replaceInvoke($match)
