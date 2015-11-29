@@ -4,6 +4,12 @@ https://github.com/enepomnyaschih/jwsdk/wiki
 
 ## Changelog
 
+### 0.7.1 (November 29, 2015)
+
+Improvements:
+
+- Scripts return correct error code now
+
 ### 0.7 (October 11, 2015)
 
 New features:

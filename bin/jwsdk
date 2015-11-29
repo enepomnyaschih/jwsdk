@@ -1,2 +1,3 @@
-#!/bin/sh
-/usr/bin/php $(dirname $0)/../build.php $1 $2
+#!/bin/bash
+php $(dirname $0)/../build.php $1 $2
+exit $?

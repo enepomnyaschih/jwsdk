@@ -136,7 +136,7 @@ try
 		exit(1);
 	}
 	$modeName = strtoupper($mode->getId());
-	echo "Building frontend in $modeName mode with jWidget SDK 0.7...\n";
+	echo "Building frontend in $modeName mode with jWidget SDK 0.7.1...\n";
 	$builder = new JWSDK_Builder($argv[0], $mode, $config);
 	$builder->buildPages();
 	$builder->saveCache();
