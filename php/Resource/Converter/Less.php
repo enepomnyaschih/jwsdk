@@ -31,7 +31,8 @@ class JWSDK_Resource_Converter_Less extends JWSDK_Resource_Converter_CssBase
 		$target,       // String
 		$globalConfig) // JWSDK_GlobalConfig
 	{
+		$publicPathOs = JWSDK_Process::escapePath($globalConfig->getPublicPath());
 		$sourceOs = JWSDK_Process::escapePath($source);
-		return new JWSDK_Process('LESS compilation', "lessc $sourceOs", $source, $target, true, false);
+		return new JWSDK_Process('LESS compilation', "lessc --include-path=$publicPathOs $sourceOs", $source, $target, true, false);
 	}
 }

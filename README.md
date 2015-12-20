@@ -4,6 +4,12 @@ https://github.com/enepomnyaschih/jwsdk/wiki
 
 ## Changelog
 
+### 0.7.2 (December 19, 2015)
+
+Improvements:
+
+- Added public folder to LESS compiler include paths ([#101](https://github.com/enepomnyaschih/jwsdk/issues/101))
+
 ### 0.7.1 (November 29, 2015)
 
 Improvements:

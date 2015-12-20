@@ -21,7 +21,7 @@
 
 class JWSDK_Builder
 {
-	const VERSION = '0.7';
+	const VERSION = '0.7.2';
 
 	private $globalConfig;    // JWSDK_GlobalConfig
 	private $mode;            // JWSDK_Mode
