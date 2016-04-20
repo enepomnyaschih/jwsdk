@@ -7,6 +7,7 @@ https://github.com/enepomnyaschih/jwsdk/wiki
 ### 0.8
 
 - Added SVG file format support
+- Added dist output folder support
 
 ### 0.7.2 (December 19, 2015)
 

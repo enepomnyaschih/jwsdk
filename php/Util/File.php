@@ -99,6 +99,14 @@ class JWSDK_Util_File
 		$process->execute();
 	}
 
+	public static function copy(
+		$from, // String
+		$to)   // String
+	{
+		self::mkdir($to);
+		copy($from, $to);
+	}
+
 	public static function getDirectory( // String
 		$filePath) // String
 	{

@@ -186,10 +186,21 @@ class JWSDK_Package_Config extends JWSDK_Package
 
 		try
 		{
-			if ($this->globalConfig->isObfuscate() || $this->isCompressedModified())
-				return $this->initCompressedFilesModified();
-			else
-				return $this->initCompressedFilesUnmodified();
+			$result = ($this->globalConfig->isObfuscate() || $this->isCompressedModified()) ?
+				$this->initCompressedFilesModified() : $this->initCompressedFilesUnmodified();
+
+			foreach ($this->fileManager->getAttachers() as $type => $attacher)
+			{
+				if (!$this->hasFilesOfAttacher($type))
+					continue;
+
+				JWSDK_Util_File::copy($this->getMergePath($type), $this->getDistPath($type));
+				JWSDK_Util_File::copy($this->getBuildPath($type), $this->getBuildDistPath($type));
+			}
+
+			JWSDK_Util_File::copy($this->getDtsOutputPath(), $this->getDtsDistPath());
+
+			return $result;
 		}
 		catch (JWSDK_Exception $e)
 		{
@@ -527,6 +538,12 @@ class JWSDK_Package_Config extends JWSDK_Package
 		return $this->globalConfig->getTempPath() . '/merge/' . $this->getName() . ".$type";
 	}
 
+	private function getDistPath( // String
+		$type) // String
+	{
+		return $this->globalConfig->getTempPath() . '/dist/' . $this->getName() . ".$type";
+	}
+
 	private function getBuildName( // String
 		$type) // String
 	{
@@ -539,6 +556,12 @@ class JWSDK_Package_Config extends JWSDK_Package
 		return $this->globalConfig->getPublicPath() . '/' . $this->getBuildName($type);
 	}
 
+	private function getBuildDistPath( // String
+		$type) // String
+	{
+		return $this->globalConfig->getTempPath() . '/dist/' . $this->getName() . ".min.$type";
+	}
+
 	private function getDtsOutputName() // String
 	{
 		return $this->globalConfig->getBuildUrl() . '/d.ts/' . $this->getName() . '.d.ts';
@@ -547,5 +570,10 @@ class JWSDK_Package_Config extends JWSDK_Package
 	private function getDtsOutputPath() // String
 	{
 		return $this->globalConfig->getPublicPath() . '/' . $this->getDtsOutputName();
+	}
+
+	private function getDtsDistPath() // String
+	{
+		return $this->globalConfig->getTempPath() . '/dist/' . $this->getName() . ".d.ts";
 	}
 }
