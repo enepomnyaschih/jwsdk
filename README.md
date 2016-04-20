@@ -4,6 +4,10 @@ https://github.com/enepomnyaschih/jwsdk/wiki
 
 ## Changelog
 
+### 0.8
+
+- Added SVG file format support
+
 ### 0.7.2 (December 19, 2015)
 
 Improvements:

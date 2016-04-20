@@ -110,6 +110,7 @@ include_once $jwsdkDir . 'php/Resource/Converter/SassBase.php';
 include_once $jwsdkDir . 'php/Resource/Converter/Sass.php';
 include_once $jwsdkDir . 'php/Resource/Converter/Scss.php';
 include_once $jwsdkDir . 'php/Resource/Converter/Styl.php';
+include_once $jwsdkDir . 'php/Resource/Converter/Svg.php';
 include_once $jwsdkDir . 'php/Resource/Converter/Ts.php';
 include_once $jwsdkDir . 'php/Resource/Converter/RefTs.php';
 include_once $jwsdkDir . 'php/Resource/Converter/Util.php';
