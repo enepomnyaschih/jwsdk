@@ -38,6 +38,7 @@ class JWSDK_Builder
 		$mode,       // JWSDK_Mode
 		$configPath) // String
 	{
+
 		$runDir = JWSDK_Util_File::getDirectory($runPath);
 
 		$slashIndex = strrpos($configPath, '/');
