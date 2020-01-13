@@ -4,6 +4,10 @@ https://github.com/enepomnyaschih/jwsdk/wiki
 
 ## Changelog
 
+### 0.7.3 (January 13, 2020)
+
+- Archived the project under terms of MIT license
+
 ### 0.7.2 (December 19, 2015)
 
 Improvements:
